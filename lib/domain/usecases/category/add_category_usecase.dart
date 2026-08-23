@@ -16,14 +16,17 @@ class AddCategoryParams {
   final DateTime createdAt;
 }
 
-class AddCategoryUseCase implements UseCase<void, AddCategoryParams> {
+/// Creates a user-facing category and returns the persisted entity, so that
+/// callers learn the generated uuid without re-finding the record by name.
+/// Names are user-editable data and must never be used as identity (D-09).
+class AddCategoryUseCase implements UseCase<Category, AddCategoryParams> {
   AddCategoryUseCase(this.repository, this.uuid);
 
   final CategoryRepository repository;
   final Uuid uuid;
 
   @override
-  Future<void> call(AddCategoryParams params) async {
+  Future<Category> call(AddCategoryParams params) async {
     if (params.name.trim().isEmpty) {
       throw const CategoryValidationException(
         CategoryValidationError.emptyName,
@@ -41,13 +44,13 @@ class AddCategoryUseCase implements UseCase<void, AddCategoryParams> {
         CategoryValidationError.duplicateName,
       );
     }
-    return repository.addCategory(
-      Category(
-        id: uuid.v4(),
-        name: params.name,
-        icon: params.icon,
-        createdAt: params.createdAt,
-      ),
+    final category = Category(
+      id: uuid.v4(),
+      name: params.name,
+      icon: params.icon,
+      createdAt: params.createdAt,
     );
+    await repository.addCategory(category);
+    return category;
   }
 }

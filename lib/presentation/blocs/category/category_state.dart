@@ -11,9 +11,15 @@ final class CategoryLoading extends CategoryState {
 final class CategoriesLoaded extends CategoryState {
   const CategoriesLoaded({
     required this.categories,
+    this.lastCreatedCategoryId,
   });
 
   final List<Category> categories;
+
+  /// Id of the category the user created during this session, if any.
+  /// The add-expense form consumes it to pre-select a category made mid-flow
+  /// (D-10), then clears it so the selection fires exactly once.
+  final String? lastCreatedCategoryId;
 }
 
 final class CategoryLoaded extends CategoryState {

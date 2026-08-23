@@ -38,6 +38,13 @@ final class GetAllCategoriesEvent extends CategoryEvent {
   const GetAllCategoriesEvent();
 }
 
+/// Dispatched by the add-expense form once it has consumed the auto-select of
+/// a category created mid-flow, so the selection fires exactly once per
+/// creation and a later reload cannot re-apply it.
+final class ClearLastCreatedCategoryRequested extends CategoryEvent {
+  const ClearLastCreatedCategoryRequested();
+}
+
 final class GetCategoryByIdEvent extends CategoryEvent {
   const GetCategoryByIdEvent({
     required this.id,

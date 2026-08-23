@@ -174,7 +174,12 @@ class _StubGetIncomesUseCase implements GetIncomesUseCase {
 
 class _StubAddCategoryUseCase implements AddCategoryUseCase {
   @override
-  Future<void> call(AddCategoryParams params) async {}
+  Future<Category> call(AddCategoryParams params) async => Category(
+    id: 'stub-category-id',
+    name: params.name,
+    icon: params.icon,
+    createdAt: params.createdAt,
+  );
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

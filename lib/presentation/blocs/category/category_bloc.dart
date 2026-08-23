@@ -24,6 +24,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<DeleteCategoryEvent>(_onDeleteCategory);
     on<GetAllCategoriesEvent>(_onGetAllCategories);
     on<GetCategoryByIdEvent>(_onGetCategoryById);
+    on<ClearLastCreatedCategoryRequested>(_onClearLastCreatedCategory);
   }
 
   final AddCategoryUseCase addCategoryUseCase;
@@ -32,19 +33,26 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final GetAllCategoriesUseCase getAllCategoriesUseCase;
   final GetSingleCategoryUseCase getCategoryByIdUseCase;
 
+  /// Session-scoped id of the category created via [AddCategoryEvent].
+  /// Stamped on every subsequent [CategoriesLoaded] so it survives the reloads
+  /// fired by `_onAddCategory` and by the add-expense form's `initState`.
+  /// The bloc is a lazy singleton, so this resets naturally on app restart.
+  String? _lastCreatedCategoryId;
+
   Future<void> _onAddCategory(
     AddCategoryEvent event,
     Emitter<CategoryState> emit,
   ) async {
     emit(const CategoryLoading());
     try {
-      await addCategoryUseCase(
+      final created = await addCategoryUseCase(
         AddCategoryParams(
           name: event.name,
           icon: event.icon,
           createdAt: DateTime.now(),
         ),
       );
+      _lastCreatedCategoryId = created.id;
       emit(
         const CategorySuccess(
           message: 'categoryAddedSuccess',
@@ -113,10 +121,26 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     emit(const CategoryLoading());
     try {
       final categories = await getAllCategoriesUseCase(NoParams());
-      emit(CategoriesLoaded(categories: categories));
+      emit(
+        CategoriesLoaded(
+          categories: categories,
+          lastCreatedCategoryId: _lastCreatedCategoryId,
+        ),
+      );
     } catch (e) {
       debugPrint('error in _onGetAllCategories: $e');
       emit(const CategoryError(message: 'genericError'));
+    }
+  }
+
+  void _onClearLastCreatedCategory(
+    ClearLastCreatedCategoryRequested event,
+    Emitter<CategoryState> emit,
+  ) {
+    _lastCreatedCategoryId = null;
+    final current = state;
+    if (current is CategoriesLoaded) {
+      emit(CategoriesLoaded(categories: current.categories));
     }
   }
 
