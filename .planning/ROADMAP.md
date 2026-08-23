@@ -81,7 +81,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 14-05-PLAN.md - CAT-01: localized `defaultCategoryName` and default resolution moved into `ExpenseBloc` (wave 2)
+- [x] 14-05-PLAN.md - CAT-01: localized `defaultCategoryName` and default resolution moved into `ExpenseBloc` (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
