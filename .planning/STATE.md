@@ -3,28 +3,28 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: E2E Polish
 status: executing
-stopped_at: Completed 14-05-PLAN.md (CAT-01 default resolution moved into ExpenseBloc)
-last_updated: "2026-08-23T18:45:00.000Z"
-last_activity: 2026-08-23 -- Plan 14-05 complete, wave 2 closed, 250/250 tests green
+stopped_at: Completed 14-06-PLAN.md (CAT-01 closed end to end; Phase 14 complete)
+last_updated: "2026-08-23T19:05:00.000Z"
+last_activity: 2026-08-23 -- Plan 14-06 complete, wave 3 closed, Phase 14 done, 259/259 tests green
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
 
-**Status:** Executing Phase 14
-**Last Updated:** 2026-08-20
+**Status:** Phase 14 complete - ready to plan Phase 15
+**Last Updated:** 2026-08-23
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-08-20)
 
 **Core value:** Users can always see where their money went - fast entry, accurate totals, no friction.
-**Current focus:** Phase 14 — Data Correctness Fixes
+**Current focus:** Phase 14 complete; next is Phase 15 — Amount Display Policy
 
 ## Milestone History
 
@@ -35,6 +35,14 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 ## Accumulated Context
 
 - **Open blockers:** none.
+- **14-06 decision:** `AddCategoryUseCase` now returns the created `Category` (`UseCase<Category, AddCategoryParams>`) instead of `void`, so `CategoryBloc` learns the generated uuid without re-finding the record by its user-editable name. Two file-private `_StubAddCategoryUseCase` doubles had to be widened with it (`test/helpers/fake_blocs.dart`, and the one in `add_expense_form_view_test.dart` that Task 3 then deleted); missing either breaks compilation of the WHOLE suite, not just the declaring file.
+- **14-06 decision:** `CategoriesLoaded.lastCreatedCategoryId` is stamped on EVERY subsequent emission rather than cleared after the first stamp. The add-expense form fires its own `GetAllCategoriesEvent` from `initState`, so a marker cleared internally would already be gone by the time the form subscribes. It is cleared only by the explicit `ClearLastCreatedCategoryRequested` the form dispatches after consuming it. Locked by the four D-10 bloc cases - do not "tidy" this into a self-clearing field.
+- **14-06 decision:** `CategoryState` stays non-Equatable. `lastCreatedCategoryId` was added as an optional named parameter, so every existing `CategoriesLoaded(categories: ...)` call site remained valid and identity-based equality (which guarantees every emit is observed as a change) was left alone.
+- **14-06 decision:** the D-10 auto-select is triple-gated - only when `_selectedCategory == null`, only once per form instance (`_autoSelectConsumed`), and only while the bloc marker is non-null. It deliberately does NOT set `_hasInteracted`: doing so would enable the submit button without the user typing, a rendered-state change UI-SPEC section 6 forbids. The count of exactly 3 `_hasInteracted = true` sites in the form is a guard - do not add a fourth.
+- **14-06 test-harness note:** `BlocListener` only ever sees states emitted AFTER it subscribes; `whenListen(bloc, const Stream<X>.empty(), initialState: ...)` seeds `bloc.state` but emits nothing, so any widget test exercising a listener must drive a broadcast `StreamController` and push states strictly after `pumpApp` returns, pumping twice per emission. `add_expense_form_view_test.dart` is the reference implementation. Never use `pumpAndSettle` in that file - `CommonDropdownButton.build` schedules an `addPostFrameCallback` on every build.
+- **14-06 behavior change (user-visible):** saving an expense with no category selected now files it against the app-managed default resolved by `GetOrCreateDefaultCategoryUseCase`, and a category created mid-flow arrives pre-selected so the fallback is not reached at all. Verified end to end against the real Hive DI graph: a user category named "Groceries" came back byte-identical, the expense landed on a separate newly created default, the marker persisted, and a second no-category save reused the same default.
+- **14-06 residual (documented trade-off, not a defect):** on a database with no `default_category_id` marker yet, the resolver performs a one-time legacy adoption of the oldest category whose name is in the closed set `{daily, zilnic, ежедневно}`. A user who had already created a category with one of those exact names will see it become the default. That is the deliberate D-08/D-09 decision so existing installs keep the default they already have; it runs at most once per database.
+- **14-06 deferred:** a deterministic cross-layer integration test for the no-category save path was NOT added. The version written during verification synchronised with real Hive writes via fixed 400ms delays - too flaky to commit. A proper one should await specific `ExpenseBloc` transitions under the live binding used by `test/integration/expense_crud_flow_test.dart`.
 - **14-05 decision:** `AddExpenseStarted.categoryId` is nullable but still a `required` named parameter. Null means "no category selected, resolve the default"; keeping it required forces every call site to state its intent instead of falling into the fallback by omission.
 - **14-05 decision:** the default is resolved inside `_onAddExpense`'s existing `try`, before `AddExpenseParams` is built. That placement is the whole fix - the widget's un-caught `await sl<AddCategoryUseCase>()` became a caught failure that emits `actionError`. A new `on CategoryValidationException` branch sits before the generic `catch` and passes `selectedMonth` explicitly like every other branch.
 - **14-05 decision:** the `sl<CategoryBloc>().add(GetAllCategoriesEvent())` refresh is gated on `selectedCategoryId == null`. Gating keeps the common save path from touching GetIt for `CategoryBloc` at all, and keeps every pre-existing test free of that registration. Locked by bloc test Cases 5a and 5b - do not ungate it.
@@ -78,19 +86,19 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 
 ## Current Position
 
-Phase: 14 (Data Correctness Fixes) — EXECUTING
+Phase: 14 (Data Correctness Fixes) — COMPLETE
 Plan: 6 of 6
-Status: Executing Phase 14
-Last activity: 2026-08-23 -- Plan 14-05 complete (CAT-01 in ExpenseBloc), 250/250 tests green
+Status: Phase 14 complete; all 4 requirements met (INC-05, STATS-04, CAT-01, UX-08)
+Last activity: 2026-08-23 -- Plan 14-06 complete (CAT-01 closed end to end), 259/259 tests green
 
-Progress: [████████░░] 83%
+Progress: [██████████] 100%
 
 ## Session Continuity
 
-Last session: 2026-08-23T21:45:00+03:00
-Stopped at: Completed 14-05-PLAN.md (CAT-01 default resolution moved into ExpenseBloc)
-Resume file: .planning/phases/14-data-correctness-fixes/14-06-PLAN.md
-Next: /gsd:execute-phase 14 (wave 2 complete; wave 3 starts with 14-06, the last plan of the phase)
+Last session: 2026-08-23T22:05:00+03:00
+Stopped at: Completed 14-06-PLAN.md (widget fallback deleted, mid-flow auto-select added; Phase 14 closed)
+Resume file: none - Phase 14 is complete
+Next: /gsd:plan-phase 15 (Amount Display Policy, FMT-01/FMT-02)
 
 Note: `fvm flutter pub get` was run this session to restore missing pinned packages
 (flutter_bloc 9.1.1, bloc 9.2.0, bloc_test 10.0.0, mocktail 1.0.5, fl_chart 1.1.1)
@@ -98,6 +106,14 @@ that were absent from the pub cache; pubspec.lock unchanged. Baseline verified:
 169/169 tests pass in 27s. `fvm flutter analyze` exits 1 on a clean tree due to 3
 pre-existing infos (app_constants.dart:12, expenses_screen.dart:154,
 income_screen.dart:156), so all plan gates use `--no-fatal-infos`.
+
+Note (14-06): test suite is now 259/259 (250 + 5 bloc/use-case cases + 4 net new
+widget cases); analyzer still reports exactly the same 3 pre-existing infos. The
+form widget test was rewritten wholesale and, because essentially every line
+changed, was formatted - it now passes `dart format --set-exit-if-changed`,
+taking the legacy format-dirty list from 44 to 43.
+`add_expense_form_view.dart` also became format-clean, incidentally: its dirty
+region was inside the fallback block that was deleted.
 
 Note (14-05): test suite is now 250/250 (244 + 6 new CAT-01 bloc cases); analyzer
 still reports exactly the same 3 pre-existing infos. Four more legacy files were

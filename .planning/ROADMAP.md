@@ -48,7 +48,7 @@ See [v1.2-ROADMAP.md](.planning/milestones/v1.2-ROADMAP.md) for full details.
 The 169-test suite must stay green after every phase; update assertions where behavior intentionally changes (e.g. amount formatting).
 Every new user-facing string ships with EN/RO/RU ARB entries.
 
-- [ ] **Phase 14: Data Correctness Fixes** - Filters, charts, lists, and category creation always reflect the data the user actually entered
+- [x] **Phase 14: Data Correctness Fixes** - Filters, charts, lists, and category creation always reflect the data the user actually entered
 - [ ] **Phase 15: Amount Display Policy** - Full-format amounts app-wide, ellipsis-trim with long-press tooltip when they do not fit
 - [ ] **Phase 16: Stats PDF Export** - Stats tab exports to PDF honoring the active filter, including all-months; export hidden when there is no data
 - [ ] **Phase 17: Localization Completeness** - Language switch translates every remaining string and date format
@@ -69,7 +69,7 @@ Every new user-facing string ships with EN/RO/RU ARB entries.
   3. Creating a category during the first-expense flow (no categories exist yet) adds it without overwriting any previously created category
   4. The expenses list shows week groups newest-first with the current week always pinned at the top (e.g. current week 24 first, then 23, 22, ...)
 
-**Plans**: 6 plans in 3 waves
+**Plans**: 6 plans in 3 waves - 6/6 complete (all 4 requirements met: INC-05, STATS-04, CAT-01, UX-08)
 
 Plans:
 **Wave 1**
@@ -85,7 +85,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 14-06-PLAN.md - CAT-01: widget fallback deleted and mid-flow category auto-selected (wave 3)
+- [x] 14-06-PLAN.md - CAT-01: widget fallback deleted and mid-flow category auto-selected (wave 3)
 
 **UI hint**: yes
 
