@@ -133,7 +133,18 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
             date: event.date,
           ),
         );
-        add(const LoadIncomesRequested());
+        // INC-05: `st` is the last place the pre-add filter is known - the
+        // reload emits IncomeLoading and wipes it - so decide here.
+        // D-01: jump to the entry's month + year. D-02: when "All months" is
+        // active keep it, moving only the year.
+        final allMonthsActive = st.selectedMonth == null;
+        add(
+          LoadIncomesRequested(
+            focusYear: event.date.year,
+            focusMonth: allMonthsActive ? null : event.date.month,
+            hasFocus: true,
+          ),
+        );
         sl<StatsBloc>().add(LoadMonthlyStats(year: DateTime.now().year));
       } on IncomeValidationException catch (e) {
         debugPrint('error in _onAddIncome: $e');
@@ -162,7 +173,16 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
     if (state case final IncomeSuccess st) {
       try {
         await updateIncomeUseCase(event.income);
-        add(const LoadIncomesRequested());
+        // D-03: an edited date gets the same jump as an add, so the entry
+        // never silently disappears from the visible list after saving.
+        final allMonthsActive = st.selectedMonth == null;
+        add(
+          LoadIncomesRequested(
+            focusYear: event.income.date.year,
+            focusMonth: allMonthsActive ? null : event.income.date.month,
+            hasFocus: true,
+          ),
+        );
         sl<StatsBloc>().add(LoadMonthlyStats(year: DateTime.now().year));
       } on IncomeValidationException catch (e) {
         debugPrint('error in _onUpdateIncome: $e');
