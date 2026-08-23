@@ -76,13 +76,16 @@ class _StubAddIncomeUseCase implements AddIncomeUseCase {
 // Fixtures
 // ---------------------------------------------------------------------------
 
-Income _fakeIncome({String id = 'inc-1'}) => Income(
-  id: id,
-  amount: 500.0,
-  description: 'Salary',
-  date: DateTime(DateTime.now().year, 5, 1),
-  createdAt: DateTime(DateTime.now().year, 5, 1),
-);
+Income _fakeIncome({String id = 'inc-1', DateTime? date}) {
+  final effectiveDate = date ?? DateTime(DateTime.now().year, 5, 1);
+  return Income(
+    id: id,
+    amount: 500.0,
+    description: 'Salary',
+    date: effectiveDate,
+    createdAt: effectiveDate,
+  );
+}
 
 IncomeSuccess _successSeed({List<Income>? incomes}) {
   final list = incomes ?? [_fakeIncome()];
@@ -402,6 +405,291 @@ void main() {
           'actionError',
           isNull,
         ),
+      ],
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // INC-05: the year/month filter follows a newly added or edited entry.
+  // Jump cases use fixed calendar years so they are deterministic year-round;
+  // only the no-focus cases (6 and 7) are allowed to read DateTime.now().
+  // -------------------------------------------------------------------------
+
+  group('IncomeBloc - INC-05 filter jump', () {
+    // Registered/reset at GROUP level, not inside each blocTest: bloc_test runs
+    // its own `tearDown` inside the test body, so a failed expectation skips
+    // the reset and leaks the StatsBloc registration into the next test as a
+    // bogus "already registered" cascade. A group tearDown always runs.
+    setUp(() {
+      _stubAdd = _StubAddIncomeUseCase();
+      _stubUpdate = _StubUpdateIncomeUseCase();
+      _stubDelete = _StubDeleteIncomeUseCase();
+      _stubGet = _StubGetIncomesUseCase();
+      GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+    });
+
+    tearDown(() async => GetIt.instance.reset());
+
+    final marchEntry = _fakeIncome(id: 'inc-mar', date: DateTime(2026, 3, 15));
+    final augustEntry = _fakeIncome(id: 'inc-aug', date: DateTime(2026, 8, 10));
+    final priorYearEntry = _fakeIncome(
+      id: 'inc-2025',
+      date: DateTime(2025, 3, 15),
+    );
+
+    IncomeSuccess seed({
+      required int selectedYear,
+      required List<int> availableYears,
+      required List<int> availableMonths,
+      required List<Income> incomes,
+      int? selectedMonth,
+      List<Income>? filtered,
+    }) => IncomeSuccess(
+      allIncomes: incomes,
+      filteredIncomes: filtered ?? incomes,
+      selectedYear: selectedYear,
+      selectedMonth: selectedMonth,
+      availableYears: availableYears,
+      availableMonths: availableMonths,
+    );
+
+    // Case 1 (D-01)
+    blocTest<IncomeBloc, IncomeState>(
+      'adding into another month jumps the filter to that month and year',
+      setUp: () {
+        _stubGet.returnValue = [marchEntry, augustEntry];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: 2026,
+        selectedMonth: 8,
+        availableYears: const [2026],
+        availableMonths: const [3, 8],
+        incomes: [marchEntry, augustEntry],
+        filtered: [augustEntry],
+      ),
+      act: (bloc) => bloc.add(
+        AddIncomeStarted(
+          amount: '500.00',
+          description: 'Salary',
+          date: DateTime(2026, 3, 15),
+        ),
+      ),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', 2026)
+            .having((s) => s.selectedMonth, 'selectedMonth', 3)
+            .having(
+              (s) => s.filteredIncomes.map((i) => i.id),
+              'filteredIncomes ids',
+              contains('inc-mar'),
+            ),
+      ],
+    );
+
+    // Case 2 (D-01) - the jump is unconditional, not "only when hidden".
+    blocTest<IncomeBloc, IncomeState>(
+      'jumps even when the new entry was already visible',
+      setUp: () {
+        _stubGet.returnValue = [
+          marchEntry,
+          _fakeIncome(id: 'inc-mar-2', date: DateTime(2026, 3, 20)),
+          augustEntry,
+        ];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: 2026,
+        selectedMonth: 3,
+        availableYears: const [2026],
+        availableMonths: const [3, 8],
+        incomes: [marchEntry, augustEntry],
+        filtered: [marchEntry],
+      ),
+      act: (bloc) => bloc.add(
+        AddIncomeStarted(
+          amount: '500.00',
+          description: 'Salary',
+          date: DateTime(2026, 3, 20),
+        ),
+      ),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', 2026)
+            .having((s) => s.selectedMonth, 'selectedMonth', 3),
+      ],
+    );
+
+    // Case 3 (D-02)
+    blocTest<IncomeBloc, IncomeState>(
+      'keeps All months when the entry lands in the selected year',
+      setUp: () {
+        _stubGet.returnValue = [marchEntry, augustEntry];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: 2026,
+        availableYears: const [2026],
+        availableMonths: const [8],
+        incomes: [augustEntry],
+      ),
+      act: (bloc) => bloc.add(
+        AddIncomeStarted(
+          amount: '500.00',
+          description: 'Salary',
+          date: DateTime(2026, 3, 15),
+        ),
+      ),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', 2026)
+            .having((s) => s.selectedMonth, 'selectedMonth', isNull),
+      ],
+    );
+
+    // Case 4 (D-02)
+    blocTest<IncomeBloc, IncomeState>(
+      'moves only the year when All months is active and the year differs',
+      setUp: () {
+        _stubGet.returnValue = [priorYearEntry, marchEntry, augustEntry];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: 2026,
+        availableYears: const [2026, 2025],
+        availableMonths: const [3, 8],
+        incomes: [marchEntry, augustEntry],
+      ),
+      act: (bloc) => bloc.add(
+        AddIncomeStarted(
+          amount: '500.00',
+          description: 'Salary',
+          date: DateTime(2025, 3, 15),
+        ),
+      ),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', 2025)
+            .having((s) => s.selectedMonth, 'selectedMonth', isNull),
+      ],
+    );
+
+    // Case 5 (D-03) - editing a date applies the same jump.
+    blocTest<IncomeBloc, IncomeState>(
+      'editing an entry date jumps the filter to the new month',
+      setUp: () {
+        _stubGet.returnValue = [
+          marchEntry,
+          _fakeIncome(id: 'inc-aug', date: DateTime(2026, 3, 15)),
+          _fakeIncome(id: 'inc-aug-2', date: DateTime(2026, 8, 20)),
+        ];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: 2026,
+        selectedMonth: 8,
+        availableYears: const [2026],
+        availableMonths: const [3, 8],
+        incomes: [marchEntry, augustEntry],
+        filtered: [augustEntry],
+      ),
+      act: (bloc) => bloc.add(
+        UpdateIncomeStarted(
+          _fakeIncome(id: 'inc-aug', date: DateTime(2026, 3, 15)),
+        ),
+      ),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', 2026)
+            .having((s) => s.selectedMonth, 'selectedMonth', 3)
+            .having(
+              (s) => s.filteredIncomes.map((i) => i.id),
+              'filteredIncomes ids',
+              contains('inc-aug'),
+            ),
+      ],
+    );
+
+    // Case 6 - delete keeps the now-based reset (no decision covers delete).
+    blocTest<IncomeBloc, IncomeState>(
+      'deleting still resets the filter to the current-date defaults',
+      setUp: () {
+        _stubGet.returnValue = [
+          _fakeIncome(
+            id: 'keep-prior',
+            date: DateTime(DateTime.now().year - 1, 3, 15),
+          ),
+          _fakeIncome(
+            id: 'keep-now',
+            date: DateTime(DateTime.now().year, DateTime.now().month, 10),
+          ),
+        ];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: DateTime.now().year - 1,
+        selectedMonth: 3,
+        availableYears: [DateTime.now().year, DateTime.now().year - 1],
+        availableMonths: const [3],
+        incomes: [priorYearEntry],
+      ),
+      act: (bloc) => bloc.add(const DeleteIncomeStarted('inc-1')),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', DateTime.now().year)
+            .having(
+              (s) => s.selectedMonth,
+              'selectedMonth',
+              DateTime.now().month,
+            ),
+      ],
+    );
+
+    // Case 7 - a plain reload carries no focus and is unchanged.
+    test('a parameterless LoadIncomesRequested carries no focus', () {
+      expect(const LoadIncomesRequested().hasFocus, isFalse);
+      expect(const LoadIncomesRequested().focusYear, isNull);
+      expect(const LoadIncomesRequested().focusMonth, isNull);
+    });
+
+    blocTest<IncomeBloc, IncomeState>(
+      'a plain reload still selects the current-date defaults',
+      setUp: () {
+        _stubGet.returnValue = [
+          _fakeIncome(
+            id: 'keep-prior',
+            date: DateTime(DateTime.now().year - 1, 3, 15),
+          ),
+          _fakeIncome(
+            id: 'keep-now',
+            date: DateTime(DateTime.now().year, DateTime.now().month, 10),
+          ),
+        ];
+      },
+      build: _makeBloc,
+      seed: () => seed(
+        selectedYear: DateTime.now().year - 1,
+        selectedMonth: 3,
+        availableYears: [DateTime.now().year, DateTime.now().year - 1],
+        availableMonths: const [3],
+        incomes: [priorYearEntry],
+      ),
+      act: (bloc) => bloc.add(const LoadIncomesRequested()),
+      expect: () => [
+        const IncomeLoading(),
+        isA<IncomeSuccess>()
+            .having((s) => s.selectedYear, 'selectedYear', DateTime.now().year)
+            .having(
+              (s) => s.selectedMonth,
+              'selectedMonth',
+              DateTime.now().month,
+            ),
       ],
     );
   });
