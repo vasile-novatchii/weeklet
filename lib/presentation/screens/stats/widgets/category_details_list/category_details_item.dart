@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/category_color_utils.dart';
@@ -53,7 +55,10 @@ class CategoryDetailsItem extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: stat.percentage,
+              // Display-only floor (UI-SPEC section 3 / D-07): a 0.27%
+              // category otherwise renders a zero-pixel fill. Zero stays zero
+              // so a category with no spending keeps an empty track.
+              value: stat.percentage > 0 ? max(stat.percentage, 0.02) : 0.0,
               backgroundColor: context.colorScheme.outline,
               valueColor: AlwaysStoppedAnimation<Color>(color),
               minHeight: 6,
