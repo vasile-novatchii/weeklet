@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: E2E Polish
 status: executing
-stopped_at: Completed 14-03-PLAN.md (INC-05 income filter follows a new or edited entry)
-last_updated: "2026-08-23T18:17:20.000Z"
-last_activity: 2026-08-23 -- Plan 14-03 complete, 231/231 tests green
+stopped_at: Completed 14-04-PLAN.md (CAT-01 default-category marker plus domain resolver)
+last_updated: "2026-08-23T18:52:00.000Z"
+last_activity: 2026-08-23 -- Plan 14-04 complete, wave 1 closed, 244/244 tests green
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -35,6 +35,13 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 ## Accumulated Context
 
 - **Open blockers:** none.
+- **14-04 decision:** the default-category marker is a primitive `String` stored under `default_category_id` in the shared settings `Box<dynamic>`, NOT a `CategoryModel` `@HiveField`. `hive_generator` is commented out of `pubspec.yaml` (analyzer conflict with `bloc_test`), so `category_model.g.dart` cannot be regenerated and must never be hand-edited. Any future app-managed primitive marker should follow the same route - zero Hive schema change.
+- **14-04 decision:** default-category identity is the stored id, never the name. Name matching survives only inside a one-time legacy adoption step over the closed set `{daily, zilnic, ежедневно}`, and is immediately superseded by an id marker so it can never run twice on the same database. A renamed default is still found; a user category named "Daily" can never be hijacked.
+- **14-04 decision:** `GetOrCreateDefaultCategoryUseCase` creates via `repository.addCategory` directly, deliberately bypassing `AddCategoryUseCase`. The duplicate-name guard stays a user-facing rule only; routing the fallback through it re-creates the defect where an uncaught `CategoryValidationError.duplicateName` silently aborted the expense save. Locked by test Case 9 - do not "fix" this by re-routing through the use case.
+- **14-04 decision:** a dangling marker (pointing at a deleted category) is treated as absent and falls through to adoption or creation, rewriting the marker - it never returns null and never throws.
+- **14-04 note (no user-visible change yet):** this plan is domain plus data only. `add_expense_form_view.dart` still contains the widget-side `'daily'` fallback and still calls `sl<AddCategoryUseCase>()` directly; nothing calls the new use case yet. 14-05 moves resolution into `ExpenseBloc` with a localized name, 14-06 deletes the widget fallback. The D-11 layer violation is NOT closed until 14-06.
+- **14-04 note for 14-05:** the localized name must be passed in as a plain `String` - the use case imports no Flutter package by design. The three ARB values must match `knownDefaultNames` semantically (EN "Daily" / RO "Zilnic" / RU "Ежедневно") so an already-populated database adopts its existing default rather than creating a second one.
+- **Repo debt (confirmed again in 14-04):** `test/helpers/test_hive_env.dart` and `test/presentation/blocs/category/category_bloc_test.dart` both fail `dart format --set-exit-if-changed` at `HEAD`, independent of any phase-14 edit. Two more of the 44 legacy files. Still deliberately not reformatted inside correctness plans.
 - **14-03 decision:** `LoadIncomesRequested` carries an explicit `hasFocus` flag alongside nullable `focusYear`/`focusMonth`, because `focusMonth: null` is a meaningful "keep All months" instruction (D-02) and must stay distinguishable from a plain reload. Any future filter mode (e.g. INC-07 preservation in Phase 18) should extend this event rather than add a parallel mechanism.
 - **14-03 decision:** the jump target is computed inside the CRUD handler's `IncomeSuccess` pattern match, since the reload emits `IncomeLoading` and destroys the pre-add filter state before `_onLoadIncomes` runs.
 - **14-03 decision:** an out-of-set focus value degrades safely - `focusYear` must exist in `availableYears`, and a non-null `focusMonth` absent from `availableMonths` falls back to `null` ("All months", always a valid dropdown item) rather than to the now-based month, so the Material dropdown can never assert.
@@ -65,18 +72,18 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 ## Current Position
 
 Phase: 14 (Data Correctness Fixes) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Executing Phase 14
-Last activity: 2026-08-23 -- Plan 14-03 complete (INC-05), 231/231 tests green
+Last activity: 2026-08-23 -- Plan 14-04 complete (CAT-01 foundation), 244/244 tests green
 
-Progress: [█████░░░░░] 50%
+Progress: [███████░░░] 67%
 
 ## Session Continuity
 
-Last session: 2026-08-23T21:17:20+03:00
-Stopped at: Completed 14-03-PLAN.md (INC-05 income filter follows a new or edited entry)
-Resume file: .planning/phases/14-data-correctness-fixes/14-04-PLAN.md
-Next: /gsd:execute-phase 14 (wave 1 continues: 14-04)
+Last session: 2026-08-23T21:52:00+03:00
+Stopped at: Completed 14-04-PLAN.md (CAT-01 default-category marker plus domain resolver)
+Resume file: .planning/phases/14-data-correctness-fixes/14-05-PLAN.md
+Next: /gsd:execute-phase 14 (wave 1 complete; wave 2 starts with 14-05)
 
 Note: `fvm flutter pub get` was run this session to restore missing pinned packages
 (flutter_bloc 9.1.1, bloc 9.2.0, bloc_test 10.0.0, mocktail 1.0.5, fl_chart 1.1.1)
