@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -189,10 +191,15 @@ class ModernDonutChart extends StatelessWidget {
       final isTouched = i == touchedIndex;
       final double radius = isTouched ? 28.0 : 20.0;
       final color = CategoryColorUtils.getColor(stat.category.name);
+      // Display-only floor (UI-SPEC section 1 / D-05): fl_chart draws slice
+      // angles strictly proportional to `value`, so a sub-1% category would
+      // be swallowed by `sectionsSpace`. Never applied to a numeric surface.
+      final displayValue = max(stat.totalAmount, totalExpenses * 0.03);
+      final percent = stat.percentage * 100;
 
       return PieChartSectionData(
         color: color,
-        value: stat.totalAmount,
+        value: displayValue,
         title: '',
         radius: radius,
         showTitle: false,
@@ -210,7 +217,7 @@ class ModernDonutChart extends StatelessWidget {
                   ],
                 ),
                 child: Text(
-                  '${(stat.percentage * 100).toInt()}%',
+                  percent < 1 ? '<1%' : '${percent.toInt()}%',
                   style: context.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: color,
