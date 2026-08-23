@@ -336,6 +336,8 @@ Future<void> init() async {
       updateExpenseUseCase: sl<UpdateExpenseUseCase>(),
       deleteExpenseUseCase: sl<DeleteExpenseUseCase>(),
       getExpensesUseCase: sl<GetAllExpensesUseCase>(),
+      getOrCreateDefaultCategoryUseCase:
+          sl<GetOrCreateDefaultCategoryUseCase>(),
     ),
   );
 

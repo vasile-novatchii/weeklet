@@ -9,6 +9,7 @@ import 'package:weeklet/domain/usecases/base/use_case.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/add_expense_usecase.dart';
@@ -116,6 +117,21 @@ class _StubGetAllExpensesUseCase implements GetAllExpensesUseCase {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _StubGetOrCreateDefaultCategoryUseCase
+    implements GetOrCreateDefaultCategoryUseCase {
+  @override
+  Future<Category> call(GetOrCreateDefaultCategoryParams params) async =>
+      Category(
+        id: 'stub-default-category',
+        name: params.localizedName,
+        icon: 'home',
+        createdAt: DateTime(2025),
+      );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 // ---------------------------------------------------------------------------
 // Stub use cases for FakeIncomeBloc
 // ---------------------------------------------------------------------------
@@ -207,6 +223,8 @@ class FakeExpenseBloc extends ExpenseBloc {
         updateExpenseUseCase: _StubUpdateExpenseUseCase(),
         deleteExpenseUseCase: _StubDeleteExpenseUseCase(),
         getExpensesUseCase: _StubGetAllExpensesUseCase(),
+        getOrCreateDefaultCategoryUseCase:
+            _StubGetOrCreateDefaultCategoryUseCase(),
       );
 }
 

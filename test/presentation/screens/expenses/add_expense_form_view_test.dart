@@ -84,6 +84,7 @@ void main() {
         amount: '0',
         description: '',
         categoryId: '',
+        defaultCategoryName: '',
         date: DateTime(2025),
       ),
     );

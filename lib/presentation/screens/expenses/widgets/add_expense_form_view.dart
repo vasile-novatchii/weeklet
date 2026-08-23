@@ -142,6 +142,7 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
         amount: _amountController.text,
         description: _descriptionController.text.trim(),
         categoryId: finalCategoryId,
+        defaultCategoryName: AppLocalizations.of(context).defaultCategoryName,
         date: _selectedDate!,
       ),
     );

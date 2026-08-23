@@ -26,6 +26,7 @@ import 'package:weeklet/domain/repositories/statistics_repository.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/add_expense_usecase.dart';
@@ -239,6 +240,12 @@ Future<void> initTestDi() async {
       GetIt.instance<CategoryRepository>(),
     ),
   );
+  GetIt.instance.registerLazySingleton(
+    () => GetOrCreateDefaultCategoryUseCase(
+      GetIt.instance<CategoryRepository>(),
+      GetIt.instance<Uuid>(),
+    ),
+  );
 
   // DOMAIN layer - UseCases (Expense)
   GetIt.instance.registerLazySingleton(
@@ -387,6 +394,8 @@ Future<void> initTestDi() async {
       updateExpenseUseCase: GetIt.instance<UpdateExpenseUseCase>(),
       deleteExpenseUseCase: GetIt.instance<DeleteExpenseUseCase>(),
       getExpensesUseCase: GetIt.instance<GetAllExpensesUseCase>(),
+      getOrCreateDefaultCategoryUseCase:
+          GetIt.instance<GetOrCreateDefaultCategoryUseCase>(),
     ),
   );
 

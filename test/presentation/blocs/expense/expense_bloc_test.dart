@@ -2,8 +2,10 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:weeklet/domain/entities/expense.dart';
+import 'package:weeklet/domain/entities/category.dart';
 import 'package:weeklet/domain/exceptions/expense_exceptions.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
+import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/add_expense_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/delete_expense_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/get_all_expenses_usecase.dart';
@@ -69,9 +71,32 @@ class _StubGetAllExpensesUseCase implements GetAllExpensesUseCase {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _StubGetOrCreateDefaultCategoryUseCase
+    implements GetOrCreateDefaultCategoryUseCase {
+  Category returnValue = _fakeDefaultCategory();
+  int callCount = 0;
+  String? lastLocalizedName;
+  bool shouldThrow = false;
+  Object? throwable;
+
+  @override
+  Future<Category> call(GetOrCreateDefaultCategoryParams params) async {
+    callCount++;
+    lastLocalizedName = params.localizedName;
+    if (shouldThrow) throw throwable ?? Exception('default category error');
+    return returnValue;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
+
+Category _fakeDefaultCategory({String id = 'cat-default'}) =>
+    Category(id: id, name: 'Daily', icon: 'home', createdAt: DateTime(2025));
 
 Expense _fakeExpense({String id = 'exp-1'}) => Expense(
   id: id,
@@ -101,12 +126,14 @@ late _StubAddExpenseUseCase _stubAdd;
 late _StubUpdateExpenseUseCase _stubUpdate;
 late _StubDeleteExpenseUseCase _stubDelete;
 late _StubGetAllExpensesUseCase _stubGet;
+late _StubGetOrCreateDefaultCategoryUseCase _stubDefaultCategory;
 
 ExpenseBloc _makeBloc() => ExpenseBloc(
   addExpenseUseCase: _stubAdd,
   updateExpenseUseCase: _stubUpdate,
   deleteExpenseUseCase: _stubDelete,
   getExpensesUseCase: _stubGet,
+  getOrCreateDefaultCategoryUseCase: _stubDefaultCategory,
 );
 
 // ---------------------------------------------------------------------------
@@ -120,6 +147,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     test('initial state is ExpenseInitial', () {
@@ -135,6 +163,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
@@ -163,6 +192,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
@@ -206,6 +236,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
@@ -221,6 +252,7 @@ void main() {
           amount: '100.00',
           description: 'Lunch',
           categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
           date: DateTime(DateTime.now().year, 5, 1),
         ),
       ),
@@ -244,6 +276,7 @@ void main() {
           amount: '100.00',
           description: '',
           categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
           date: DateTime(DateTime.now().year, 5, 1),
         ),
       ),
@@ -271,6 +304,7 @@ void main() {
           amount: '100.00',
           description: 'Lunch',
           categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
           date: DateTime(DateTime.now().year, 5, 1),
         ),
       ),
@@ -292,6 +326,7 @@ void main() {
           amount: '100.00',
           description: 'Lunch',
           categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
           date: DateTime(DateTime.now().year, 5, 1),
         ),
       ),
@@ -305,6 +340,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
@@ -348,6 +384,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
@@ -389,6 +426,7 @@ void main() {
       _stubUpdate = _StubUpdateExpenseUseCase();
       _stubDelete = _StubDeleteExpenseUseCase();
       _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
     });
 
     blocTest<ExpenseBloc, ExpenseState>(
