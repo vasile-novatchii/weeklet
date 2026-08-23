@@ -223,4 +223,25 @@ void main() {
       expect(repository.lastAdded!.id, isNotEmpty);
     });
   });
+
+  group('AddCategoryUseCase — returns the created category (D-09)', () {
+    test(
+      'returned Category matches the record handed to repository.addCategory',
+      () async {
+        final created = await useCase(
+          AddCategoryParams(
+            name: 'Food',
+            icon: 'food_icon',
+            createdAt: DateTime(2024, 1, 15),
+          ),
+        );
+
+        expect(repository.lastAdded, isNotNull);
+        expect(created.id, repository.lastAdded!.id);
+        expect(created.name, repository.lastAdded!.name);
+        expect(created.icon, repository.lastAdded!.icon);
+        expect(created.createdAt, repository.lastAdded!.createdAt);
+      },
+    );
+  });
 }

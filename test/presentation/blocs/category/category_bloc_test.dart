@@ -21,13 +21,20 @@ class _StubCategoryRepository implements CategoryRepository {
     this.returnedCategory,
   });
 
-  final bool shouldThrow;
+  bool shouldThrow;
   final List<Category> returnedCategories;
   final Category? returnedCategory;
+
+  /// The last category handed to [addCategory]; also served back from
+  /// [getAllCategories] so a reload sees what was just created.
+  Category? lastAdded;
+  final List<Category> _added = [];
 
   @override
   Future<void> addCategory(Category category) async {
     if (shouldThrow) throw Exception('add failed');
+    lastAdded = category;
+    _added.add(category);
   }
 
   @override
@@ -43,7 +50,7 @@ class _StubCategoryRepository implements CategoryRepository {
   @override
   Future<List<Category>> getAllCategories() async {
     if (shouldThrow) throw Exception('get all failed');
-    return returnedCategories;
+    return [...returnedCategories, ..._added];
   }
 
   @override
@@ -278,6 +285,117 @@ void main() {
           (s) => s.message,
           'message',
           'errorCategoryNotFound',
+        ),
+      ],
+    );
+  });
+
+  // ------------------------------------------------------------------
+  // D-10: the session's last created category id
+  // ------------------------------------------------------------------
+  group('CategoryBloc - D-10 last created category', () {
+    late _StubCategoryRepository repo;
+
+    blocTest<CategoryBloc, CategoryState>(
+      'AddCategoryEvent stamps the created id on the reloaded CategoriesLoaded',
+      build: () {
+        repo = _StubCategoryRepository();
+        return _makeBloc(repo);
+      },
+      act: (bloc) =>
+          bloc.add(const AddCategoryEvent(name: 'Groceries', icon: 'home')),
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategorySuccess>(),
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>().having(
+          (s) => s.lastCreatedCategoryId,
+          'lastCreatedCategoryId',
+          repo.lastAdded!.id,
+        ),
+      ],
+    );
+
+    blocTest<CategoryBloc, CategoryState>(
+      'the marker survives a later, unrelated GetAllCategoriesEvent',
+      build: () {
+        repo = _StubCategoryRepository();
+        return _makeBloc(repo);
+      },
+      act: (bloc) async {
+        bloc.add(const AddCategoryEvent(name: 'Groceries', icon: 'home'));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        bloc.add(const GetAllCategoriesEvent());
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      },
+      verify: (bloc) {
+        final state = bloc.state;
+        expect(state, isA<CategoriesLoaded>());
+        expect(
+          (state as CategoriesLoaded).lastCreatedCategoryId,
+          repo.lastAdded!.id,
+        );
+      },
+    );
+
+    blocTest<CategoryBloc, CategoryState>(
+      'ClearLastCreatedCategoryRequested nulls the marker for good',
+      build: () {
+        repo = _StubCategoryRepository();
+        return _makeBloc(repo);
+      },
+      act: (bloc) async {
+        bloc.add(const AddCategoryEvent(name: 'Groceries', icon: 'home'));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        bloc.add(const ClearLastCreatedCategoryRequested());
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        bloc.add(const GetAllCategoriesEvent());
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      },
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategorySuccess>(),
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>().having(
+          (s) => s.lastCreatedCategoryId,
+          'lastCreatedCategoryId',
+          isNotNull,
+        ),
+        isA<CategoriesLoaded>().having(
+          (s) => s.lastCreatedCategoryId,
+          'lastCreatedCategoryId',
+          isNull,
+        ),
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>().having(
+          (s) => s.lastCreatedCategoryId,
+          'lastCreatedCategoryId',
+          isNull,
+        ),
+      ],
+    );
+
+    blocTest<CategoryBloc, CategoryState>(
+      'a failed AddCategoryEvent leaves lastCreatedCategoryId null',
+      build: () {
+        repo = _StubCategoryRepository(shouldThrow: true);
+        return _makeBloc(repo);
+      },
+      act: (bloc) async {
+        bloc.add(const AddCategoryEvent(name: 'Groceries', icon: 'home'));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+        repo.shouldThrow = false;
+        bloc.add(const GetAllCategoriesEvent());
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      },
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategoryError>(),
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>().having(
+          (s) => s.lastCreatedCategoryId,
+          'lastCreatedCategoryId',
+          isNull,
         ),
       ],
     );
