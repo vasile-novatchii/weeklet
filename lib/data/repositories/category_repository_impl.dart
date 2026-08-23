@@ -45,4 +45,12 @@ class CategoryRepositoryImpl implements CategoryRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<String?> getDefaultCategoryId() =>
+      localDataSource.getDefaultCategoryId();
+
+  @override
+  Future<void> setDefaultCategoryId(String id) =>
+      localDataSource.setDefaultCategoryId(id);
 }

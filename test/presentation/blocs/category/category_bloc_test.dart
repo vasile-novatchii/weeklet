@@ -54,6 +54,12 @@ class _StubCategoryRepository implements CategoryRepository {
 
   @override
   Future<void> clearAll() async {}
+
+  @override
+  Future<String?> getDefaultCategoryId() async => null;
+
+  @override
+  Future<void> setDefaultCategoryId(String id) async {}
 }
 
 // Shared fixture category

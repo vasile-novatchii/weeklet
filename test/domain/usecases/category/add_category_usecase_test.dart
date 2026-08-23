@@ -8,6 +8,7 @@ import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 // Minimal in-memory stub — no Hive, no DI
 class _StubCategoryRepository implements CategoryRepository {
   Category? lastAdded;
+  String? defaultCategoryId;
   final List<Category> _storedCategories = [];
 
   @override
@@ -31,6 +32,12 @@ class _StubCategoryRepository implements CategoryRepository {
 
   @override
   Future<Category?> getCategoryById(String id) => Future.value(null);
+
+  @override
+  Future<String?> getDefaultCategoryId() async => defaultCategoryId;
+
+  @override
+  Future<void> setDefaultCategoryId(String id) async => defaultCategoryId = id;
 }
 
 void main() {
