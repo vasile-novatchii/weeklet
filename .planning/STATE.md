@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: E2E Polish
 status: executing
-stopped_at: Completed 14-02-PLAN.md (STATS-04 minimum donut slice + progress-bar fill)
-last_updated: "2026-08-23T14:45:00.000Z"
-last_activity: 2026-08-23 -- Plan 14-02 complete, 223/223 tests green
+stopped_at: Completed 14-03-PLAN.md (INC-05 income filter follows a new or edited entry)
+last_updated: "2026-08-23T18:17:20.000Z"
+last_activity: 2026-08-23 -- Plan 14-03 complete, 231/231 tests green
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
-  percent: 33
+  completed_plans: 3
+  percent: 50
 ---
 
 # Project State
@@ -35,6 +35,12 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 ## Accumulated Context
 
 - **Open blockers:** none.
+- **14-03 decision:** `LoadIncomesRequested` carries an explicit `hasFocus` flag alongside nullable `focusYear`/`focusMonth`, because `focusMonth: null` is a meaningful "keep All months" instruction (D-02) and must stay distinguishable from a plain reload. Any future filter mode (e.g. INC-07 preservation in Phase 18) should extend this event rather than add a parallel mechanism.
+- **14-03 decision:** the jump target is computed inside the CRUD handler's `IncomeSuccess` pattern match, since the reload emits `IncomeLoading` and destroys the pre-add filter state before `_onLoadIncomes` runs.
+- **14-03 decision:** an out-of-set focus value degrades safely - `focusYear` must exist in `availableYears`, and a non-null `focusMonth` absent from `availableMonths` falls back to `null` ("All months", always a valid dropdown item) rather than to the now-based month, so the Material dropdown can never assert.
+- **14-03 decision:** delete keeps the parameterless now-based reset. No decision covers delete and INC-07 pull-to-refresh preservation is Phase 18 scope; bloc_test Cases 6 and 7 lock this so a later plan cannot absorb it silently.
+- **14-03 behavior change (user-visible):** after adding or editing an income, the year/month filter follows that entry. With "All months" active the wide view is preserved and only the year moves. No snackbar and no new strings (D-04); the updated filter bar is the only feedback.
+- **Test debt (non-blocking, found in 14-03):** `blocTest`'s inline `tearDown:` parameter runs INSIDE the test body, so a failed expectation skips it and leaks GetIt registrations into the next test as a bogus "already registered" cascade. The new 14-03 group registers/resets at group level instead; the other groups in `income_bloc_test.dart` and any other test using the inline idiom still carry the latent cascade.
 - **14-02 decision:** chart-only distortion is confined to a task-local `displayValue` passed straight to `PieChartSectionData.value`; `stat.totalAmount` and `stat.percentage` are never reassigned, so legend, centre total, details-list amounts, and repository figures stay exact. Any future chart tweak must keep this separation.
 - **14-02 decision:** locked display constants live at the single call site, not in a shared constants file: 0.03 minimum donut share and 0.02 minimum progress-bar fill, both taken verbatim from 14-UI-SPEC sections 1 and 3.
 - **14-02 decision:** `<1%` is a deliberate hardcoded literal, not an ARB key (D-06 / UI-SPEC copywriting contract) - it is symbol-only and identical in EN/RO/RU.
@@ -59,18 +65,18 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 ## Current Position
 
 Phase: 14 (Data Correctness Fixes) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Executing Phase 14
-Last activity: 2026-08-23 -- Plan 14-02 complete (STATS-04), 223/223 tests green
+Last activity: 2026-08-23 -- Plan 14-03 complete (INC-05), 231/231 tests green
 
-Progress: [███░░░░░░░] 33%
+Progress: [█████░░░░░] 50%
 
 ## Session Continuity
 
-Last session: 2026-08-23T17:45:00+03:00
-Stopped at: Completed 14-02-PLAN.md (STATS-04 minimum donut slice + progress-bar fill)
-Resume file: .planning/phases/14-data-correctness-fixes/14-03-PLAN.md
-Next: /gsd:execute-phase 14 (wave 1 continues: 14-03, 14-04)
+Last session: 2026-08-23T21:17:20+03:00
+Stopped at: Completed 14-03-PLAN.md (INC-05 income filter follows a new or edited entry)
+Resume file: .planning/phases/14-data-correctness-fixes/14-04-PLAN.md
+Next: /gsd:execute-phase 14 (wave 1 continues: 14-04)
 
 Note: `fvm flutter pub get` was run this session to restore missing pinned packages
 (flutter_bloc 9.1.1, bloc 9.2.0, bloc_test 10.0.0, mocktail 1.0.5, fl_chart 1.1.1)

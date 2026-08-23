@@ -76,7 +76,7 @@ Plans:
 
 - [x] 14-01-PLAN.md - UX-08: shared ISO week keys (`WeekUtils.isoWeekOf`) plus pinned descending week ordering for expenses and income (wave 1)
 - [x] 14-02-PLAN.md - STATS-04: 3% minimum donut slice, `<1%` badge, minimum category progress-bar fill (wave 1)
-- [ ] 14-03-PLAN.md - INC-05: focus-target reload so the income filter follows a newly added or edited entry (wave 1)
+- [x] 14-03-PLAN.md - INC-05: focus-target reload so the income filter follows a newly added or edited entry (wave 1)
 - [ ] 14-04-PLAN.md - CAT-01: `default_category_id` marker plus `GetOrCreateDefaultCategoryUseCase` in the domain and data layers (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -180,7 +180,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 11    | v1.2      | 3/3   | Complete | 2026-05-21 |
 | 12    | v1.2      | 5/5   | Complete | 2026-06-21 |
 | 13    | v1.2      | 5/5   | Complete | 2026-07-14 |
-| 14. Data Correctness Fixes | v1.3 | 2/6 | In progress | - |
+| 14. Data Correctness Fixes | v1.3 | 3/6 | In progress | - |
 | 15. Amount Display Policy | v1.3 | 0/? | Not started | - |
 | 16. Stats PDF Export | v1.3 | 0/? | Not started | - |
 | 17. Localization Completeness | v1.3 | 0/? | Not started | - |
