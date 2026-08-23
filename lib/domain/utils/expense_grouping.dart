@@ -10,8 +10,9 @@ class ExpenseGrouping {
   /// Returns a map where key is (year, weekNumber) and value is list of expenses.
   /// Results are sorted by year and week (most recent first).
   static Map<({int year, int week}), List<Expense>> groupByWeek(
-    List<Expense> expenses,
-  ) {
+    List<Expense> expenses, {
+    DateTime? now,
+  }) {
     final grouped = <({int year, int week}), List<Expense>>{};
 
     for (final expense in expenses) {
