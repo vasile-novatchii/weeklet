@@ -236,6 +236,11 @@
     "description": "Validation error when no date has been selected"
   },
 
+  "defaultCategoryName": "Daily",
+  "@defaultCategoryName": {
+    "description": "Name given to the auto-created fallback category used when an expense is saved with no category selected. Resolved once from the active app locale at creation time and stored as a normal user-owned category; it is renamable and is NOT re-translated when the app language changes (D-09)."
+  },
+
   "addExpenseSheetTitle": "Add Expense",
   "@addExpenseSheetTitle": {
     "description": "Title of the Add Expense bottom sheet"

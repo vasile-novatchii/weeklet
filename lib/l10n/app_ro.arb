@@ -52,6 +52,7 @@
   "iconSearchHint": "Caută pictograme, de ex. \"cumpărături\" sau \"călătorie\"",
   "noIconSelectedLabel": "Nicio pictogramă selectată",
   "dateValidationRequired": "Te rugăm să selectezi o dată",
+  "defaultCategoryName": "Zilnic",
   "addExpenseSheetTitle": "Adaugă cheltuială",
   "addIncomeSheetTitle": "Adaugă venit",
   "editExpenseSheetTitle": "Editează cheltuiala",

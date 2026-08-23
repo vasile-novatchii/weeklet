@@ -52,6 +52,7 @@
   "iconSearchHint": "Поиск иконок, напр. «покупки» или «путешествие»",
   "noIconSelectedLabel": "Иконка не выбрана",
   "dateValidationRequired": "Пожалуйста, выберите дату",
+  "defaultCategoryName": "Ежедневно",
   "addExpenseSheetTitle": "Добавить расход",
   "addIncomeSheetTitle": "Добавить доход",
   "editExpenseSheetTitle": "Редактировать расход",
