@@ -57,19 +57,45 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
 
       final availableYears = IncomeFilterUtils.extractAvailableYears(incomes);
       final currentYear = DateTime.now().year;
-      final selectedYear = availableYears.contains(currentYear)
+
+      // Default (no focus): fall back to today's year when we have data for it.
+      final defaultYear = availableYears.contains(currentYear)
           ? currentYear
           : availableYears.first;
+
+      // Focus (INC-05): land on the affected entry's year. The containment
+      // check is a defensive guard - the year dropdown asserts if the selected
+      // value is not one of its items.
+      final focusYear = event.focusYear;
+      final selectedYear =
+          event.hasFocus &&
+              focusYear != null &&
+              availableYears.contains(focusYear)
+          ? focusYear
+          : defaultYear;
 
       final availableMonths = IncomeFilterUtils.extractAvailableMonthsForYear(
         incomes,
         selectedYear,
       );
 
-      final currentMonth = DateTime.now().month;
-      final selectedMonth = availableMonths.contains(currentMonth)
-          ? currentMonth
-          : (availableMonths.isNotEmpty ? availableMonths.last : null);
+      final int? selectedMonth;
+      if (event.hasFocus) {
+        // A null focusMonth means "keep All months" (D-02) and is honoured
+        // as-is. A non-null month that is somehow absent from the dropdown
+        // items falls back to null rather than to today's month, because
+        // "All months" is always valid and always keeps the entry visible.
+        final focusMonth = event.focusMonth;
+        selectedMonth =
+            focusMonth == null || availableMonths.contains(focusMonth)
+            ? focusMonth
+            : null;
+      } else {
+        final currentMonth = DateTime.now().month;
+        selectedMonth = availableMonths.contains(currentMonth)
+            ? currentMonth
+            : (availableMonths.isNotEmpty ? availableMonths.last : null);
+      }
 
       final filtered = incomes.where((income) {
         final matchYear = income.date.year == selectedYear;

@@ -9,8 +9,35 @@ sealed class IncomeEvent extends Equatable {
 }
 
 /// Event for the initial loading of the list from the database.
+///
+/// Optionally carries a focus target so a reload triggered right after a
+/// successful add or edit can land the filter on the affected entry
+/// (INC-05) instead of resetting to the current date.
 final class LoadIncomesRequested extends IncomeEvent {
-  const LoadIncomesRequested();
+  const LoadIncomesRequested({
+    this.focusYear,
+    this.focusMonth,
+    this.hasFocus = false,
+  });
+
+  /// Year the filter should land on. Only honoured when [hasFocus] is true.
+  final int? focusYear;
+
+  /// Month the filter should land on. Only honoured when [hasFocus] is true.
+  ///
+  /// A null value here is MEANINGFUL: it means "keep All months" (D-02), so it
+  /// must stay distinguishable from "no focus supplied" - hence [hasFocus].
+  final int? focusMonth;
+
+  /// Whether [focusYear] / [focusMonth] carry a real target.
+  ///
+  /// Not redundant with nullability: `focusMonth: null` is a valid focus value
+  /// ("keep All months"), so the nullable fields alone cannot express the
+  /// difference between a deliberate All-months focus and a plain reload.
+  final bool hasFocus;
+
+  @override
+  List<Object?> get props => [focusYear, focusMonth, hasFocus];
 }
 
 /// Triggered when the user wants to add a new income.
