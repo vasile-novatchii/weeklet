@@ -180,7 +180,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 11    | v1.2      | 3/3   | Complete | 2026-05-21 |
 | 12    | v1.2      | 5/5   | Complete | 2026-06-21 |
 | 13    | v1.2      | 5/5   | Complete | 2026-07-14 |
-| 14. Data Correctness Fixes | v1.3 | 4/6 | In progress | - |
+| 14. Data Correctness Fixes | v1.3 | 6/6 | Complete | 2026-08-23 |
 | 15. Amount Display Policy | v1.3 | 0/? | Not started | - |
 | 16. Stats PDF Export | v1.3 | 0/? | Not started | - |
 | 17. Localization Completeness | v1.3 | 0/? | Not started | - |
