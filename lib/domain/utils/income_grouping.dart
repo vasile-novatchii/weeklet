@@ -10,8 +10,9 @@ class IncomeGrouping {
   /// Returns a map where key is (year, weekNumber) and value is list of incomes.
   /// Results are sorted by year and week (most recent first).
   static Map<({int year, int week}), List<Income>> groupByWeek(
-    List<Income> incomes,
-  ) {
+    List<Income> incomes, {
+    DateTime? now,
+  }) {
     final grouped = <({int year, int week}), List<Income>>{};
 
     for (final income in incomes) {
