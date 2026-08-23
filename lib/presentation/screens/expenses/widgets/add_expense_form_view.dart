@@ -5,9 +5,6 @@ import 'package:weeklet/core/di/service_locator.dart' show sl;
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/form_helpers.dart';
 import 'package:weeklet/domain/entities/category.dart';
-import 'package:weeklet/domain/usecases/base/use_case.dart';
-import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
-import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
@@ -37,6 +34,9 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
   String? _dateError;
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
   bool _hasInteracted = false;
+
+  /// Guards the D-10 auto-select so it applies at most once per form instance.
+  bool _autoSelectConsumed = false;
 
   @override
   void initState() {
@@ -71,7 +71,27 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
     return true;
   }
 
-  Future<void> _onSave() async {
+  /// Pre-selects a category the user created mid-flow (D-10), so the
+  /// no-category fallback never fires right after they made their own
+  /// category. Never overrides a manual selection and never fires twice.
+  void _onCategoryChanged(BuildContext context, CategoryState state) {
+    if (_autoSelectConsumed || _selectedCategory != null) return;
+    if (state is! CategoriesLoaded) return;
+
+    final createdId = state.lastCreatedCategoryId;
+    if (createdId == null) return;
+
+    final matches = state.categories.where((c) => c.id == createdId);
+    if (matches.isEmpty) return;
+
+    setState(() {
+      _selectedCategory = matches.first;
+    });
+    _autoSelectConsumed = true;
+    context.read<CategoryBloc>().add(const ClearLastCreatedCategoryRequested());
+  }
+
+  void _onSave() {
     final isValid = FormHelpers.validateForm(
       _formKey,
       [_validateDate],
@@ -84,64 +104,11 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
       return;
     }
 
-    String? finalCategoryId = _selectedCategory?.id;
-
-    if (finalCategoryId == null) {
-      final categoryState = context.read<CategoryBloc>().state;
-      if (categoryState is CategoriesLoaded) {
-        final dailyCategory = categoryState.categories
-            .where((c) => c.name.trim().toLowerCase() == 'daily')
-            .firstOrNull;
-
-        if (dailyCategory != null) {
-          finalCategoryId = dailyCategory.id;
-        } else {
-          await sl<AddCategoryUseCase>().call(
-            AddCategoryParams(
-              name: 'Daily',
-              icon: 'home',
-              createdAt: DateTime.now(),
-            ),
-          );
-          final updatedCategories =
-              await sl<GetAllCategoriesUseCase>().call(NoParams());
-          final created = updatedCategories.firstWhere(
-            (c) => c.name.trim().toLowerCase() == 'daily',
-          );
-          finalCategoryId = created.id;
-
-          if (mounted) {
-            context.read<CategoryBloc>().add(const GetAllCategoriesEvent());
-          }
-        }
-      } else {
-        await sl<AddCategoryUseCase>().call(
-          AddCategoryParams(
-            name: 'Daily',
-            icon: 'home',
-            createdAt: DateTime.now(),
-          ),
-        );
-        final updatedCategories =
-            await sl<GetAllCategoriesUseCase>().call(NoParams());
-        final created = updatedCategories.firstWhere(
-          (c) => c.name.trim().toLowerCase() == 'daily',
-        );
-        finalCategoryId = created.id;
-
-        if (mounted) {
-          context.read<CategoryBloc>().add(const GetAllCategoriesEvent());
-        }
-      }
-    }
-
-    if (!mounted) return;
-
     context.read<ExpenseBloc>().add(
       AddExpenseStarted(
         amount: _amountController.text,
         description: _descriptionController.text.trim(),
-        categoryId: finalCategoryId,
+        categoryId: _selectedCategory?.id,
         defaultCategoryName: AppLocalizations.of(context).defaultCategoryName,
         date: _selectedDate!,
       ),
@@ -155,12 +122,19 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
         ? settingsState.currencySymbol
         : AppConstants.DEFAULT_CURRENCY;
 
-    return BlocListener<ExpenseBloc, ExpenseState>(
-      listener: (context, state) {
-        if (state is ExpenseSuccess && state.actionError == null) {
-          context.pop();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ExpenseBloc, ExpenseState>(
+          listener: (context, state) {
+            if (state is ExpenseSuccess && state.actionError == null) {
+              context.pop();
+            }
+          },
+        ),
+        BlocListener<CategoryBloc, CategoryState>(
+          listener: _onCategoryChanged,
+        ),
+      ],
       child: GestureDetector(
         onTap: context.unfocus,
         child: Scaffold(
