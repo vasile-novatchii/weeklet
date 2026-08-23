@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:weeklet/domain/entities/expense.dart';
 import 'package:weeklet/domain/entities/category.dart';
+import 'package:weeklet/domain/exceptions/category_exceptions.dart';
 import 'package:weeklet/domain/exceptions/expense_exceptions.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
 import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
@@ -10,6 +11,8 @@ import 'package:weeklet/domain/usecases/expense/add_expense_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/delete_expense_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/get_all_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/update_expense_usecase.dart';
+import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
+import 'package:weeklet/presentation/blocs/category/category_state.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_bloc.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_event.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_state.dart';
@@ -23,10 +26,12 @@ import '../../../helpers/fake_blocs.dart';
 class _StubAddExpenseUseCase implements AddExpenseUseCase {
   bool shouldThrow = false;
   Object? throwable;
+  AddExpenseParams? lastParams;
 
   @override
   Future<void> call(AddExpenseParams params) async {
     if (shouldThrow) throw throwable ?? Exception('stub error');
+    lastParams = params;
   }
 
   @override
@@ -444,6 +449,194 @@ void main() {
           isNull,
         ),
       ],
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // CAT-01 / D-11: the no-category fallback decision now lives in the Bloc.
+  // -------------------------------------------------------------------------
+  group('ExpenseBloc - CAT-01 default category resolution', () {
+    late FakeCategoryBloc fakeCategoryBloc;
+
+    // Registered at GROUP level, not via blocTest's inline `tearDown:`, which
+    // runs inside the test body and is skipped by a failing expectation,
+    // leaking GetIt registrations into the next test.
+    setUp(() {
+      _stubAdd = _StubAddExpenseUseCase();
+      _stubUpdate = _StubUpdateExpenseUseCase();
+      _stubDelete = _StubDeleteExpenseUseCase();
+      _stubGet = _StubGetAllExpensesUseCase();
+      _stubDefaultCategory = _StubGetOrCreateDefaultCategoryUseCase();
+      _stubGet.returnValue = [_fakeExpense()];
+      fakeCategoryBloc = FakeCategoryBloc();
+      GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+    });
+
+    tearDown(() async {
+      await fakeCategoryBloc.close();
+      await GetIt.instance.reset();
+    });
+
+    // Case 1
+    blocTest<ExpenseBloc, ExpenseState>(
+      'a non-null categoryId bypasses default resolution entirely',
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [const ExpenseLoading(), isA<ExpenseSuccess>()],
+      verify: (_) {
+        expect(_stubDefaultCategory.callCount, 0);
+        expect(_stubAdd.lastParams?.categoryId, 'cat-1');
+      },
+    );
+
+    // Case 2
+    blocTest<ExpenseBloc, ExpenseState>(
+      'a null categoryId resolves the default and files the expense there',
+      setUp: () {
+        GetIt.instance.registerSingleton<CategoryBloc>(fakeCategoryBloc);
+        _stubDefaultCategory.returnValue = _fakeDefaultCategory(
+          id: 'cat-default',
+        );
+      },
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: null,
+          defaultCategoryName: 'Zilnic',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [const ExpenseLoading(), isA<ExpenseSuccess>()],
+      verify: (_) {
+        expect(_stubDefaultCategory.callCount, 1);
+        // The locale-resolved string is passed straight through, never a
+        // hardcoded 'Daily' (threat T-14-05-03).
+        expect(_stubDefaultCategory.lastLocalizedName, 'Zilnic');
+        expect(_stubAdd.lastParams?.categoryId, 'cat-default');
+      },
+    );
+
+    // Case 3 - regression guard for Root Cause 3 defect (b): the widget used
+    // to await the fallback with no try/catch, so a thrown duplicateName
+    // silently aborted the save with no feedback at all.
+    blocTest<ExpenseBloc, ExpenseState>(
+      'a CategoryValidationException during resolution becomes an actionError',
+      setUp: () {
+        GetIt.instance.registerSingleton<CategoryBloc>(fakeCategoryBloc);
+        _stubDefaultCategory.shouldThrow = true;
+        _stubDefaultCategory.throwable = const CategoryValidationException(
+          CategoryValidationError.duplicateName,
+        );
+      },
+      build: _makeBloc,
+      seed: () => _successSeed().copyWith(selectedMonth: 5),
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: null,
+          defaultCategoryName: 'Daily',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [
+        isA<ExpenseSuccess>()
+            .having((s) => s.actionError, 'actionError', 'duplicateName')
+            .having((s) => s.selectedMonth, 'selectedMonth', 5),
+      ],
+      verify: (_) {
+        expect(_stubAdd.lastParams, isNull);
+      },
+    );
+
+    // Case 4
+    blocTest<ExpenseBloc, ExpenseState>(
+      'a generic failure during resolution becomes actionError genericError',
+      setUp: () {
+        GetIt.instance.registerSingleton<CategoryBloc>(fakeCategoryBloc);
+        _stubDefaultCategory.shouldThrow = true;
+        _stubDefaultCategory.throwable = Exception('boom');
+      },
+      build: _makeBloc,
+      seed: () => _successSeed().copyWith(selectedMonth: 5),
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: null,
+          defaultCategoryName: 'Daily',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [
+        isA<ExpenseSuccess>()
+            .having((s) => s.actionError, 'actionError', 'genericError')
+            .having((s) => s.selectedMonth, 'selectedMonth', 5),
+      ],
+      verify: (_) {
+        expect(_stubAdd.lastParams, isNull);
+      },
+    );
+
+    // Case 5a
+    blocTest<ExpenseBloc, ExpenseState>(
+      'creating a default refreshes the category list via CategoryBloc',
+      setUp: () =>
+          GetIt.instance.registerSingleton<CategoryBloc>(fakeCategoryBloc),
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: null,
+          defaultCategoryName: 'Daily',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [const ExpenseLoading(), isA<ExpenseSuccess>()],
+      verify: (bloc) async {
+        expect(_stubDefaultCategory.callCount, 1);
+        // A GetIt StateError would have been swallowed by the generic catch
+        // and surfaced here as actionError 'genericError'.
+        expect((bloc.state as ExpenseSuccess).actionError, isNull);
+        await pumpEventQueue();
+        expect(fakeCategoryBloc.state, isA<CategoriesLoaded>());
+      },
+    );
+
+    // Case 5b - the lookup is gated on the null path, so the common case
+    // needs no CategoryBloc registration at all (threat T-14-05-04).
+    blocTest<ExpenseBloc, ExpenseState>(
+      'the non-null categoryId path never looks CategoryBloc up in GetIt',
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(
+        AddExpenseStarted(
+          amount: '100.00',
+          description: 'Lunch',
+          categoryId: 'cat-1',
+          defaultCategoryName: 'Daily',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [const ExpenseLoading(), isA<ExpenseSuccess>()],
+      verify: (bloc) {
+        expect(GetIt.instance.isRegistered<CategoryBloc>(), isFalse);
+        expect((bloc.state as ExpenseSuccess).actionError, isNull);
+      },
     );
   });
 }
