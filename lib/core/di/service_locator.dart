@@ -24,6 +24,7 @@ import 'package:weeklet/domain/usecases/settings/save_theme_usecase.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/add_expense_usecase.dart';
@@ -175,6 +176,12 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => GetSingleCategoryUseCase(
       sl<CategoryRepository>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetOrCreateDefaultCategoryUseCase(
+      sl<CategoryRepository>(),
+      sl<Uuid>(),
     ),
   );
 
