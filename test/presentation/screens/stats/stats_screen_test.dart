@@ -1,4 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:weeklet/core/theme/theme.dart';
 import 'package:weeklet/domain/entities/settings.dart';
+import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
@@ -13,6 +15,7 @@ import 'package:weeklet/presentation/blocs/stats/stats_bloc.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_event.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
 import 'package:weeklet/presentation/screens/stats/stats_screen.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_item.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart';
 import '../../../helpers/test_app.dart';
 import '../../../helpers/test_data.dart';
@@ -145,6 +148,145 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.byType(CustomScrollView), findsNothing);
         expect(find.byType(StatsErrorView), findsOneWidget);
+      },
+    );
+  });
+
+  // ---------------------------------------------------------------------------
+  // STATS-04: a category with real spending must never vanish from the donut
+  // or from the category details list. The fixture mirrors the e2e acceptance
+  // example - a 23 MDL category inside an ~8570 MDL year (~0.27%).
+  // ---------------------------------------------------------------------------
+
+  group('StatsScreen - STATS-04 small category visibility', () {
+    const totalExpenses = 8570.8;
+    const bigAmount = 8547.8;
+    const tinyAmount = 23.0;
+    const bigPercentage = bigAmount / totalExpenses;
+    const tinyPercentage = tinyAmount / totalExpenses;
+
+    final bigStat = CategoryStats(
+      category: fakeCategory(id: 'cat-big', name: 'Food'),
+      totalAmount: bigAmount,
+      percentage: bigPercentage,
+    );
+    final tinyStat = CategoryStats(
+      category: fakeCategory(id: 'cat-tiny', name: 'Transport'),
+      totalAmount: tinyAmount,
+      percentage: tinyPercentage,
+    );
+
+    void seedLoaded(
+      List<CategoryStats> categoryStats, {
+      int touchedIndex = -1,
+    }) {
+      final state = MonthlyStatsLoaded(
+        stats: MonthlyStats(
+          totalIncome: 10000.0,
+          totalExpenses: totalExpenses,
+          balance: 10000.0 - totalExpenses,
+          incomeGrowthPercentage: 0.0,
+          expenseGrowthPercentage: 0.0,
+          categoryStats: categoryStats,
+        ),
+        year: DateTime.now().year,
+        touchedIndex: touchedIndex,
+      );
+
+      when(() => mockStatsBloc.state).thenReturn(state);
+      whenListen(
+        mockStatsBloc,
+        const Stream<StatsState>.empty(),
+        initialState: state,
+      );
+    }
+
+    List<PieChartSectionData> donutSections(WidgetTester tester) =>
+        tester.widget<PieChart>(find.byType(PieChart)).data.sections;
+
+    List<LinearProgressIndicator> progressBars(WidgetTester tester) => tester
+        .widgetList<LinearProgressIndicator>(
+          find.descendant(
+            of: find.byType(CategoryDetailsItem),
+            matching: find.byType(LinearProgressIndicator),
+          ),
+        )
+        .toList();
+
+    testWidgets(
+      'renders one donut section per category with spending',
+      (tester) async {
+        seedLoaded([bigStat, tinyStat]);
+
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        expect(donutSections(tester), hasLength(2));
+      },
+    );
+
+    testWidgets(
+      'floors a sub-1% slice at a 3% display share, leaving others exact',
+      (tester) async {
+        seedLoaded([bigStat, tinyStat]);
+
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        final sections = donutSections(tester);
+
+        // The 0.27% slice is lifted to the locked 3% minimum display share so
+        // fl_chart draws a wedge wide enough to see and tap.
+        expect(sections[1].value, greaterThanOrEqualTo(totalExpenses * 0.03));
+        // The clamp is a floor, not a rewrite - the big slice keeps its exact
+        // amount.
+        expect(sections[0].value, closeTo(bigAmount, 0.001));
+      },
+    );
+
+    testWidgets(
+      'shows a <1% badge, never 0%, for a touched sub-1% slice',
+      (tester) async {
+        seedLoaded([bigStat, tinyStat], touchedIndex: 1);
+
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        expect(find.text('<1%'), findsOneWidget);
+        expect(find.text('0%'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'floors the progress bar fill so every category shows a sliver',
+      (tester) async {
+        seedLoaded([bigStat, tinyStat]);
+
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        final bars = progressBars(tester);
+
+        expect(bars, hasLength(2));
+        expect(bars[0].value, closeTo(bigPercentage, 0.0001));
+        expect(bars[1].value, greaterThanOrEqualTo(0.02));
+      },
+    );
+
+    testWidgets(
+      'keeps the progress bar empty for a zero-spend category',
+      (tester) async {
+        final zeroStat = CategoryStats(
+          category: fakeCategory(id: 'cat-zero', name: 'Utilities'),
+          totalAmount: 0.0,
+          percentage: 0.0,
+        );
+        seedLoaded([bigStat, zeroStat]);
+
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        expect(progressBars(tester)[1].value, 0.0);
       },
     );
   });
