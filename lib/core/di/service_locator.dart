@@ -97,6 +97,7 @@ Future<void> init() async {
   sl.registerLazySingleton<CategoryLocalDataSource>(
     () => CategoryLocalDataSourceImpl(
       sl<Box<CategoryModel>>(),
+      sl<Box<dynamic>>(),
     ),
   );
 

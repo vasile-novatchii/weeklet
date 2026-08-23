@@ -9,12 +9,28 @@ abstract class CategoryLocalDataSource {
   Future<List<CategoryModel>> getAllCategories();
   Future<CategoryModel?> getCategoryById(String id);
   Future<void> clearAll();
+
+  /// Reads the id of the app-managed default ("no category selected")
+  /// category, or null when no default has been resolved yet.
+  Future<String?> getDefaultCategoryId();
+
+  /// Stores [id] as the app-managed default category marker.
+  Future<void> setDefaultCategoryId(String id);
 }
 
 class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
-  CategoryLocalDataSourceImpl(this.categoryBox);
+  CategoryLocalDataSourceImpl(this.categoryBox, this.settingsBox);
 
   final Box<CategoryModel> categoryBox;
+
+  /// Shared settings box. The default-category marker is a primitive
+  /// `String` id, so it lives here rather than in a `CategoryModel`
+  /// `@HiveField` - `hive_generator` is disabled in `pubspec.yaml`
+  /// (analyzer conflict with `bloc_test`), so the generated adapter
+  /// cannot be regenerated and must never be hand-edited.
+  final Box<dynamic> settingsBox;
+
+  static const String _defaultCategoryIdKey = 'default_category_id';
 
   @override
   Future<void> addCategory(CategoryModel model) async =>
@@ -44,6 +60,30 @@ class CategoryLocalDataSourceImpl implements CategoryLocalDataSource {
       await categoryBox.clear();
     } catch (e) {
       debugPrint('[CategoryLocalDataSourceImpl.clearAll] error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String?> getDefaultCategoryId() async {
+    try {
+      return settingsBox.get(_defaultCategoryIdKey) as String?;
+    } catch (e) {
+      debugPrint(
+        '[CategoryLocalDataSourceImpl.getDefaultCategoryId] error: $e',
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> setDefaultCategoryId(String id) async {
+    try {
+      await settingsBox.put(_defaultCategoryIdKey, id);
+    } catch (e) {
+      debugPrint(
+        '[CategoryLocalDataSourceImpl.setDefaultCategoryId] error: $e',
+      );
       rethrow;
     }
   }

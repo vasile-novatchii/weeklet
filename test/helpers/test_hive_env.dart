@@ -161,6 +161,7 @@ Future<void> initTestDi() async {
   GetIt.instance.registerLazySingleton<CategoryLocalDataSource>(
     () => CategoryLocalDataSourceImpl(
       GetIt.instance<Box<CategoryModel>>(),
+      GetIt.instance<Box<dynamic>>(),
     ),
   );
 
