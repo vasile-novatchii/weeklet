@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class StatsSmallCard extends StatelessWidget {
   const StatsSmallCard({
@@ -59,19 +60,17 @@ class StatsSmallCard extends StatelessWidget {
             ],
           ),
 
-          Text(
-            NumberFormatter.formatCompactWithSign(
+          EllipsisTooltipText(
+            text: NumberFormatter.formatCurrencyWithSign(
               amount,
               currencySymbol,
               isIncome: isIncome,
             ),
-            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               color: isIncome ? Colors.green : context.colorScheme.onSurface,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-            maxLines: 1,
           ),
 
           Row(
