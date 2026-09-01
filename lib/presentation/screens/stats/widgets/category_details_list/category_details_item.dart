@@ -5,6 +5,7 @@ import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/category_color_utils.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class CategoryDetailsItem extends StatelessWidget {
   const CategoryDetailsItem({
@@ -42,8 +43,8 @@ class CategoryDetailsItem extends StatelessWidget {
                   style: context.bodyMedium,
                 ),
               ),
-              Text(
-                NumberFormatter.formatCompact(
+              EllipsisTooltipText(
+                text: NumberFormatter.formatCurrency(
                   stat.totalAmount,
                   currencySymbol,
                 ),
