@@ -154,7 +154,7 @@ void main() {
     // renders the '+' sign.
     expect(
       find.text(
-        NumberFormatter.formatCompactWithSign(
+        NumberFormatter.formatCurrencyWithSign(
           204.50,
           'MDL',
           isIncome: true,

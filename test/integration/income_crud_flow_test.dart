@@ -98,7 +98,7 @@ void main() {
     // behavior, not a bug (same pattern as Plan 13-02's expense flow).
     expect(
       find.text(
-        NumberFormatter.formatCompactWithSign(
+        NumberFormatter.formatCurrencyWithSign(
           250.00,
           'MDL',
           isIncome: true,
