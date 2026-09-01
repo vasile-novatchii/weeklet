@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 /// Row displaying weekly total with label and formatted amount
 class WeekTotalRow extends StatelessWidget {
@@ -22,11 +23,13 @@ class WeekTotalRow extends StatelessWidget {
           color: context.colorScheme.onSurfaceVariant,
         ),
       ),
-      Text(
-        formattedTotal,
-        style: context.bodyLarge?.copyWith(
-          fontWeight: .w600,
-          color: amountColor ?? context.colorScheme.primary,
+      Flexible(
+        child: EllipsisTooltipText(
+          text: formattedTotal,
+          style: context.bodyLarge?.copyWith(
+            fontWeight: .w600,
+            color: amountColor ?? context.colorScheme.primary,
+          ),
         ),
       ),
     ],
