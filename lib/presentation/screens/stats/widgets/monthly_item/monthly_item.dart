@@ -6,6 +6,7 @@ import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/utils/monthly_snapshot_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/monthly_item/monthly_bar_row.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class MonthlyItem extends StatelessWidget {
   const MonthlyItem({
@@ -23,7 +24,7 @@ class MonthlyItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final monthName = ExpenseFilterUtils.getMonthAbbreviation(snapshot.month);
-    final balanceText = NumberFormatter.formatCompact(
+    final balanceText = NumberFormatter.formatCurrency(
       snapshot.balance,
       currencySymbol,
     );
@@ -48,11 +49,13 @@ class MonthlyItem extends StatelessWidget {
                   fontSize: 16,
                 ),
               ),
-              Text(
-                balanceText,
-                style: context.labelMedium?.copyWith(
-                  color: balanceColor,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: EllipsisTooltipText(
+                  text: balanceText,
+                  style: context.labelMedium?.copyWith(
+                    color: balanceColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

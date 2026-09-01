@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class MonthlyBarRow extends StatelessWidget {
   const MonthlyBarRow({
@@ -21,7 +22,7 @@ class MonthlyBarRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final value = maxAmount > 0 ? (amount / maxAmount).clamp(0.0, 1.0) : 0.0;
-    final formattedAmount = NumberFormatter.formatCompact(
+    final formattedAmount = NumberFormatter.formatCurrency(
       amount,
       currencySymbol,
     );
@@ -39,7 +40,12 @@ class MonthlyBarRow extends StatelessWidget {
                   color: context.colorScheme.onSurfaceVariant,
                 ),
               ),
-              Text(formattedAmount, style: context.bodySmall),
+              Flexible(
+                child: EllipsisTooltipText(
+                  text: formattedAmount,
+                  style: context.bodySmall,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
