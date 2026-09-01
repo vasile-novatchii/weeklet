@@ -88,7 +88,7 @@ class ExpenseItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedAmount = NumberFormatter.formatCompactWithSign(
+    final formattedAmount = NumberFormatter.formatCurrencyWithSign(
       expense.amount,
       currencySymbol,
       isIncome: isIncome,
