@@ -106,7 +106,7 @@ void main() {
     // 45.50 MDL) — two on-screen matches is correct production behavior,
     // not a bug.
     expect(
-      find.text(NumberFormatter.formatCompactWithSign(45.50, 'MDL')),
+      find.text(NumberFormatter.formatCurrencyWithSign(45.50, 'MDL')),
       findsWidgets,
     );
 
@@ -139,11 +139,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text(NumberFormatter.formatCompactWithSign(60.25, 'MDL')),
+      find.text(NumberFormatter.formatCurrencyWithSign(60.25, 'MDL')),
       findsWidgets,
     );
     expect(
-      find.text(NumberFormatter.formatCompactWithSign(45.50, 'MDL')),
+      find.text(NumberFormatter.formatCurrencyWithSign(45.50, 'MDL')),
       findsNothing,
     );
 
