@@ -114,3 +114,7 @@ None - no external service configuration required.
 ---
 *Phase: 15-amount-display-policy*
 *Completed: 2026-09-01*
+
+## Self-Check: PASSED
+
+All 5 modified files and the SUMMARY.md itself confirmed present on disk; all 4 commits (`63a2537`, `6f4844f`, `6ce82ed`, `92618d5`) confirmed present in `git log`.
