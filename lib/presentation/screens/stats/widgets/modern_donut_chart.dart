@@ -10,6 +10,7 @@ import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_bloc.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_event.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class ModernDonutChart extends StatelessWidget {
   const ModernDonutChart({
@@ -80,27 +81,32 @@ class ModernDonutChart extends StatelessWidget {
                       ),
                     ),
                     // Center Text
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Total',
-                          style: context.labelMedium?.copyWith(
-                            color: context.colorScheme.onSurfaceVariant,
+                    SizedBox(
+                      // == centerSpaceRadius * 2 (line 58) - donut hole's
+                      // diameter.
+                      width: 140,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Total',
+                            style: context.labelMedium?.copyWith(
+                              color: context.colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          NumberFormatter.formatCompact(
-                            totalExpenses,
-                            currencySymbol,
+                          const SizedBox(height: 4),
+                          EllipsisTooltipText(
+                            text: NumberFormatter.formatCurrency(
+                              totalExpenses,
+                              currencySymbol,
+                            ),
+                            style: context.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: context.colorScheme.onSurface,
+                            ),
                           ),
-                          style: context.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: context.colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
