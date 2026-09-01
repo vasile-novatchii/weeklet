@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class StatsBalanceCard extends StatelessWidget {
   const StatsBalanceCard({
@@ -48,8 +49,8 @@ class StatsBalanceCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(
-          NumberFormatter.formatCompactWithSign(
+        EllipsisTooltipText(
+          text: NumberFormatter.formatCurrencyWithSign(
             balance,
             currencySymbol,
             isIncome: balance >= 0,

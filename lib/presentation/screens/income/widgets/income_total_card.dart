@@ -4,6 +4,7 @@ import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/utils/income_filter_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/widgets/common/ellipsis_tooltip_text.dart';
 
 class IncomeTotalCard extends StatelessWidget {
   const IncomeTotalCard({
@@ -23,7 +24,7 @@ class IncomeTotalCard extends StatelessWidget {
     final monthName = selectedMonth != null
         ? IncomeFilterUtils.getMonthName(selectedMonth!).toLowerCase()
         : '';
-    final formattedTotal = NumberFormatter.formatCompactWithSign(
+    final formattedTotal = NumberFormatter.formatCurrencyWithSign(
       total,
       currencySymbol,
       isIncome: true,
@@ -48,8 +49,8 @@ class IncomeTotalCard extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.85),
                 ),
               ),
-              Text(
-                formattedTotal,
+              EllipsisTooltipText(
+                text: formattedTotal,
                 style: context.headlineMedium?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
