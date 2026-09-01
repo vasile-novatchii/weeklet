@@ -101,7 +101,19 @@ Plans:
   3. An amount too long for its row or card is ellipsis-trimmed instead of overflowing or wrapping
   4. Long-pressing a trimmed amount shows a tooltip with the full value
 
-**Plans**: TBD
+**Plans**: 4 plans in 2 waves
+
+Plans:
+**Wave 1**
+
+- [ ] 15-01-PLAN.md - FMT-02: shared `EllipsisTooltipText` widget; wired into `ExpenseAmountText`/`WeekTotalRow` (wave 1)
+- [ ] 15-02-PLAN.md - FMT-01: full-format expense/income list rows and week-group totals (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 15-03-PLAN.md - FMT-01/FMT-02: income total card, stats balance card, stats small cards (wave 2)
+- [ ] 15-04-PLAN.md - FMT-01/FMT-02: category breakdown, monthly bar/balance rows, donut chart center total (wave 2)
+
 **UI hint**: yes
 
 Note: this phase deliberately reverses the v1.1 "compact all amounts" decision (quick task 260430-qou).
