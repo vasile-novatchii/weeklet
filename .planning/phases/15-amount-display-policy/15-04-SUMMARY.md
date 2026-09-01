@@ -125,3 +125,13 @@ None - no external service configuration required.
 ---
 *Phase: 15-amount-display-policy*
 *Completed: 2026-09-01*
+
+## Self-Check: PASSED
+
+- FOUND: lib/presentation/screens/stats/widgets/category_details_list/category_details_item.dart
+- FOUND: lib/presentation/screens/stats/widgets/monthly_item/monthly_bar_row.dart
+- FOUND: lib/presentation/screens/stats/widgets/monthly_item/monthly_item.dart
+- FOUND: lib/presentation/screens/stats/widgets/modern_donut_chart.dart
+- FOUND: commit 6f14b9e (feat(15-04): full-format and wrap category_details_item.dart)
+- FOUND: commit 036ab7c (feat(15-04): full-format and Flexible-wrap monthly_bar_row.dart and monthly_item.dart)
+- FOUND: commit 291e68f (feat(15-04): full-format and width-cap the donut chart's center Total)
