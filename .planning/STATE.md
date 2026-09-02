@@ -2,29 +2,29 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: E2E Polish
-status: executing
-stopped_at: Completed 14-06-PLAN.md (CAT-01 closed end to end; Phase 14 complete)
-last_updated: "2026-08-23T19:05:00.000Z"
-last_activity: 2026-08-23 -- Plan 14-06 complete, wave 3 closed, Phase 14 done, 259/259 tests green
+status: planning
+stopped_at: Phase 15 complete (4/4 plans); CR-01 layout bug found in code review and fixed
+last_updated: "2026-09-02T06:08:08.570Z"
+last_activity: 2026-09-02
 progress:
   total_phases: 6
-  completed_phases: 1
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  completed_phases: 2
+  total_plans: 10
+  completed_plans: 10
+  percent: 33
 ---
 
 # Project State
 
-**Status:** Phase 14 complete - ready to plan Phase 15
-**Last Updated:** 2026-08-23
+**Status:** Phase 15 complete - ready to plan Phase 16
+**Last Updated:** 2026-09-02
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-08-20)
 
 **Core value:** Users can always see where their money went - fast entry, accurate totals, no friction.
-**Current focus:** Phase 14 complete; next is Phase 15 — Amount Display Policy
+**Current focus:** Phase 15 complete; next is Phase 16 — Stats PDF Export
 
 ## Milestone History
 
@@ -86,19 +86,19 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 
 ## Current Position
 
-Phase: 14 (Data Correctness Fixes) — COMPLETE
-Plan: 6 of 6
-Status: Phase 14 complete; all 4 requirements met (INC-05, STATS-04, CAT-01, UX-08)
-Last activity: 2026-08-23 -- Plan 14-06 complete (CAT-01 closed end to end), 259/259 tests green
+Phase: 16 (Stats PDF Export)
+Plan: Not started
+Status: Phase 15 complete; ready to plan Phase 16
+Last activity: 2026-09-02 -- Phase 15 executed (4/4 plans, 2 waves); code review found and fixed a real FMT-02 layout regression (CR-01); full suite 266/266
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (Phase 15)
 
 ## Session Continuity
 
-Last session: 2026-08-23T22:05:00+03:00
-Stopped at: Completed 14-06-PLAN.md (widget fallback deleted, mid-flow auto-select added; Phase 14 closed)
-Resume file: none - Phase 14 is complete
-Next: /gsd:plan-phase 15 (Amount Display Policy, FMT-01/FMT-02)
+Last session: 2026-09-02T06:08:08.570Z
+Stopped at: Phase 15 complete (FMT-01, FMT-02 both satisfied; 15-REVIEW.md clean after CR-01 fix)
+Resume file: none - Phase 15 is complete
+Next: /gsd:discuss-phase 16 (or /gsd:plan-phase 16 to skip discussion)
 
 Note: `fvm flutter pub get` was run this session to restore missing pinned packages
 (flutter_bloc 9.1.1, bloc 9.2.0, bloc_test 10.0.0, mocktail 1.0.5, fl_chart 1.1.1)

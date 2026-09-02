@@ -49,7 +49,7 @@ The 169-test suite must stay green after every phase; update assertions where be
 Every new user-facing string ships with EN/RO/RU ARB entries.
 
 - [x] **Phase 14: Data Correctness Fixes** - Filters, charts, lists, and category creation always reflect the data the user actually entered
-- [ ] **Phase 15: Amount Display Policy** - Full-format amounts app-wide, ellipsis-trim with long-press tooltip when they do not fit
+- [x] **Phase 15: Amount Display Policy** - Full-format amounts app-wide, ellipsis-trim with long-press tooltip when they do not fit (completed 2026-09-01)
 - [ ] **Phase 16: Stats PDF Export** - Stats tab exports to PDF honoring the active filter, including all-months; export hidden when there is no data
 - [ ] **Phase 17: Localization Completeness** - Language switch translates every remaining string and date format
 - [ ] **Phase 18: Income & Home UX** - Inline income errors, filter-preserving pull-to-refresh, home income subtitle, contextual placeholders
@@ -106,13 +106,13 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 15-01-PLAN.md - FMT-02: shared `EllipsisTooltipText` widget; wired into `ExpenseAmountText`/`WeekTotalRow` (wave 1)
-- [ ] 15-02-PLAN.md - FMT-01: full-format expense/income list rows and week-group totals (wave 1)
+- [x] 15-01-PLAN.md - FMT-02: shared `EllipsisTooltipText` widget; wired into `ExpenseAmountText`/`WeekTotalRow` (wave 1)
+- [x] 15-02-PLAN.md - FMT-01: full-format expense/income list rows and week-group totals (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 15-03-PLAN.md - FMT-01/FMT-02: income total card, stats balance card, stats small cards (wave 2)
-- [ ] 15-04-PLAN.md - FMT-01/FMT-02: category breakdown, monthly bar/balance rows, donut chart center total (wave 2)
+- [x] 15-03-PLAN.md - FMT-01/FMT-02: income total card, stats balance card, stats small cards (wave 2)
+- [x] 15-04-PLAN.md - FMT-01/FMT-02: category breakdown, monthly bar/balance rows, donut chart center total (wave 2)
 
 **UI hint**: yes
 
@@ -193,7 +193,7 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18 → 19
 | 12    | v1.2      | 5/5   | Complete | 2026-06-21 |
 | 13    | v1.2      | 5/5   | Complete | 2026-07-14 |
 | 14. Data Correctness Fixes | v1.3 | 6/6 | Complete | 2026-08-23 |
-| 15. Amount Display Policy | v1.3 | 0/? | Not started | - |
+| 15. Amount Display Policy | v1.3 | 4/4 | Complete    | 2026-09-02 |
 | 16. Stats PDF Export | v1.3 | 0/? | Not started | - |
 | 17. Localization Completeness | v1.3 | 0/? | Not started | - |
 | 18. Income & Home UX | v1.3 | 0/? | Not started | - |
