@@ -43,12 +43,14 @@ class CategoryDetailsItem extends StatelessWidget {
                   style: context.bodyMedium,
                 ),
               ),
-              EllipsisTooltipText(
-                text: NumberFormatter.formatCurrency(
-                  stat.totalAmount,
-                  currencySymbol,
+              Flexible(
+                child: EllipsisTooltipText(
+                  text: NumberFormatter.formatCurrency(
+                    stat.totalAmount,
+                    currencySymbol,
+                  ),
+                  style: context.bodyMedium,
                 ),
-                style: context.bodyMedium,
               ),
             ],
           ),

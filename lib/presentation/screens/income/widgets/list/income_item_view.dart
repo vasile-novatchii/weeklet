@@ -113,9 +113,11 @@ class IncomeItemView extends StatelessWidget {
               time: formattedTime,
             ),
           ),
-          ExpenseAmountText(
-            formattedAmount: formattedAmount,
-            isIncome: true,
+          Flexible(
+            child: ExpenseAmountText(
+              formattedAmount: formattedAmount,
+              isIncome: true,
+            ),
           ),
           CommonMenuButton(menuItems: _buildMenuItems(context)),
         ],
