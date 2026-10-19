@@ -8,12 +8,16 @@ import 'package:mocktail/mocktail.dart';
 import 'package:weeklet/core/theme/theme.dart';
 import 'package:weeklet/domain/entities/settings.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
+import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
+import 'package:weeklet/presentation/blocs/export/export_event.dart';
+import 'package:weeklet/presentation/blocs/export/export_state.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_bloc.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_event.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
+import 'package:weeklet/presentation/blocs/stats/stats_tab.dart';
 import 'package:weeklet/presentation/screens/stats/stats_screen.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_item.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart';
@@ -30,6 +34,9 @@ import '../../../helpers/test_data.dart';
 class MockStatsBloc extends MockBloc<StatsEvent, StatsState>
     implements StatsBloc {}
 
+class MockExportBloc extends MockBloc<ExportEvent, ExportState>
+    implements ExportBloc {}
+
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
     implements SettingsBloc {}
 
@@ -40,6 +47,7 @@ class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
 void main() {
   late MockStatsBloc mockStatsBloc;
   late MockSettingsBloc mockSettingsBloc;
+  late MockExportBloc mockExportBloc;
 
   setUpAll(() {
     // Use concrete subclasses as fallback values — sealed classes cannot be
@@ -48,11 +56,20 @@ void main() {
     registerFallbackValue(const StatsInitial());
     registerFallbackValue(const LoadSettingsRequested());
     registerFallbackValue(const SettingsInitial());
+    registerFallbackValue(const ResetExportRequested());
+    registerFallbackValue(const ExportInitial());
   });
 
   setUp(() {
     mockStatsBloc = MockStatsBloc();
     mockSettingsBloc = MockSettingsBloc();
+    mockExportBloc = MockExportBloc();
+    when(() => mockExportBloc.state).thenReturn(const ExportInitial());
+    whenListen(
+      mockExportBloc,
+      const Stream<ExportState>.empty(),
+      initialState: const ExportInitial(),
+    );
 
     when(() => mockStatsBloc.state).thenReturn(const StatsInitial());
     whenListen(
@@ -78,11 +95,95 @@ void main() {
     providers: [
       BlocProvider<StatsBloc>.value(value: mockStatsBloc),
       BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
+      BlocProvider<ExportBloc>.value(value: mockExportBloc),
     ],
     // AppTheme required: StatsTabsSection uses context.theme.appBarTheme
     // .backgroundColor! (with null assertion) which crashes with default theme.
     theme: AppTheme.lightTheme,
   );
+
+  MonthlyStatsLoaded loadedWith({
+    double income = 1000,
+    double expenses = 500,
+    int? month,
+    StatsTab tab = StatsTab.monthly,
+    EvolutionStats? evolution,
+    List<CategoryStats> categories = const [],
+    int? year,
+  }) => MonthlyStatsLoaded(
+    stats: MonthlyStats(
+      totalIncome: income,
+      totalExpenses: expenses,
+      balance: income - expenses,
+      incomeGrowthPercentage: 0,
+      expenseGrowthPercentage: 0,
+      categoryStats: categories,
+    ),
+    month: month,
+    year: year ?? DateTime.now().year,
+    currentTab: tab,
+    evolutionStats: evolution,
+  );
+
+  void seed(StatsState state) {
+    when(() => mockStatsBloc.state).thenReturn(state);
+    whenListen(
+      mockStatsBloc,
+      const Stream<StatsState>.empty(),
+      initialState: state,
+    );
+  }
+
+  group('StatsScreen - export button visibility', () {
+    const tooltip = 'Export as PDF';
+
+    for (final entry in <String, StatsState>{
+      'initial': const StatsInitial(),
+      'loading': const StatsLoading(),
+      'failure': const StatsFailure('x'),
+    }.entries) {
+      testWidgets('hidden when ${entry.key}', (tester) async {
+        seed(entry.value);
+        await pumpStatsScreen(tester);
+        await tester.pump();
+
+        expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
+      });
+    }
+
+    testWidgets('shown with tooltip when selection has data', (tester) async {
+      seed(fakeMonthlyStatsLoaded());
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+      expect(find.byTooltip(tooltip), findsOneWidget);
+    });
+
+    testWidgets('hidden when income and expenses are both 0', (tester) async {
+      seed(loadedWith(income: 0, expenses: 0));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
+    });
+
+    testWidgets('shown for income-only selection', (tester) async {
+      seed(loadedWith(income: 800, expenses: 0));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+    });
+
+    testWidgets('shown for expense-only selection', (tester) async {
+      seed(loadedWith(income: 0, expenses: 50));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+    });
+  });
 
   group('StatsScreen', () {
     testWidgets(

@@ -4,6 +4,7 @@ import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/utils/evolution_stats_utils.dart';
+import 'package:weeklet/domain/utils/stats_export_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
@@ -31,9 +32,12 @@ class StatsScreen extends StatelessWidget {
 class StatsView extends StatelessWidget {
   const StatsView({super.key});
 
+  void _onExportTapped(BuildContext context, MonthlyStatsLoaded loaded) {}
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final statsState = context.watch<StatsBloc>().state;
     final settingsState = context.watch<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
         ? settingsState.currencySymbol
@@ -42,6 +46,15 @@ class StatsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.statsScreenTitle),
+        actions: [
+          if (statsState case final MonthlyStatsLoaded loaded)
+            if (StatsExportUtils.hasExportableData(loaded.stats))
+              IconButton(
+                icon: const Icon(Icons.picture_as_pdf),
+                tooltip: l10n.exportPdfTooltip,
+                onPressed: () => _onExportTapped(context, loaded),
+              ),
+        ],
       ),
       body: BlocBuilder<StatsBloc, StatsState>(
       builder: (context, state) => switch (state) {
