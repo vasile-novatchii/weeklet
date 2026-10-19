@@ -162,5 +162,15 @@
 
   "validationRequired": "Acest câmp este obligatoriu",
   "validationInvalidAmountFormat": "Format invalid (ex.: 10.50)",
-  "validationAmountMustBePositive": "Suma trebuie să fie mai mare decât 0"
+  "validationAmountMustBePositive": "Suma trebuie să fie mai mare decât 0",
+  "statsPdfReportTitle": "Raport statistic",
+  "statsPdfGeneratedLabel": "Generat",
+  "statsPdfCategoryBreakdownTitle": "Cheltuieli pe categorii",
+  "statsPdfColumnCategory": "Categorie",
+  "statsPdfColumnAmount": "Sumă",
+  "statsPdfColumnShare": "Pondere",
+  "statsPdfColumnMonth": "Luna",
+  "statsPdfColumnBalance": "Sold",
+  "statsPdfTotal": "Total",
+  "statsPdfNoExpenses": "Nicio cheltuială în această perioadă"
 }

@@ -162,5 +162,15 @@
 
   "validationRequired": "Это поле обязательно для заполнения",
   "validationInvalidAmountFormat": "Неверный формат (напр., 10.50)",
-  "validationAmountMustBePositive": "Сумма должна быть больше 0"
+  "validationAmountMustBePositive": "Сумма должна быть больше 0",
+  "statsPdfReportTitle": "Статистический отчёт",
+  "statsPdfGeneratedLabel": "Создано",
+  "statsPdfCategoryBreakdownTitle": "Расходы по категориям",
+  "statsPdfColumnCategory": "Категория",
+  "statsPdfColumnAmount": "Сумма",
+  "statsPdfColumnShare": "Доля",
+  "statsPdfColumnMonth": "Месяц",
+  "statsPdfColumnBalance": "Баланс",
+  "statsPdfTotal": "Итого",
+  "statsPdfNoExpenses": "Нет расходов за этот период"
 }

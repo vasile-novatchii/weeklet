@@ -739,5 +739,45 @@
   "validationAmountMustBePositive": "Amount must be greater than 0",
   "@validationAmountMustBePositive": {
     "description": "Validation error message when amount is not greater than zero"
+  },
+  "statsPdfReportTitle": "Statistics Report",
+  "@statsPdfReportTitle": {
+    "description": "Title of the statistics PDF report"
+  },
+  "statsPdfGeneratedLabel": "Generated",
+  "@statsPdfGeneratedLabel": {
+    "description": "Label before the generation date in the PDF"
+  },
+  "statsPdfCategoryBreakdownTitle": "Expenses by Category",
+  "@statsPdfCategoryBreakdownTitle": {
+    "description": "Heading of the category breakdown table in the PDF"
+  },
+  "statsPdfColumnCategory": "Category",
+  "@statsPdfColumnCategory": {
+    "description": "Category column header in the PDF"
+  },
+  "statsPdfColumnAmount": "Amount",
+  "@statsPdfColumnAmount": {
+    "description": "Amount column header in the PDF"
+  },
+  "statsPdfColumnShare": "Share",
+  "@statsPdfColumnShare": {
+    "description": "Share (percent) column header in the PDF"
+  },
+  "statsPdfColumnMonth": "Month",
+  "@statsPdfColumnMonth": {
+    "description": "Month column header in the PDF"
+  },
+  "statsPdfColumnBalance": "Balance",
+  "@statsPdfColumnBalance": {
+    "description": "Balance column header in the PDF"
+  },
+  "statsPdfTotal": "Total",
+  "@statsPdfTotal": {
+    "description": "Total row label in the PDF"
+  },
+  "statsPdfNoExpenses": "No expenses for this period",
+  "@statsPdfNoExpenses": {
+    "description": "Message shown in the PDF when there are no expenses"
   }
 }
