@@ -18,6 +18,9 @@ class AddIncomeFormView extends StatefulWidget {
   State<AddIncomeFormView> createState() => _AddIncomeFormViewState();
 }
 
+const _invalidAmountKey = 'invalidAmount';
+const _emptyDescriptionKey = 'emptyDescription';
+
 class _AddIncomeFormViewState extends State<AddIncomeFormView> {
   final _formKey = GlobalKey<FormState>();
 
@@ -26,18 +29,23 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
 
   DateTime? _selectedDate;
   bool _hasInteracted = false;
+  String? _formError;
 
   @override
   void initState() {
     super.initState();
     _amountController.addListener(_onFormInteraction);
     _descriptionController.addListener(_onFormInteraction);
+    _amountController.addListener(_clearAmountError);
+    _descriptionController.addListener(_clearDescriptionError);
   }
 
   @override
   void dispose() {
     _amountController.removeListener(_onFormInteraction);
     _descriptionController.removeListener(_onFormInteraction);
+    _amountController.removeListener(_clearAmountError);
+    _descriptionController.removeListener(_clearDescriptionError);
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -49,12 +57,30 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
     }
   }
 
+  void _clearAmountError() {
+    if (_formError == _invalidAmountKey) {
+      setState(() => _formError = null);
+    }
+  }
+
+  void _clearDescriptionError() {
+    if (_formError == _emptyDescriptionKey) {
+      setState(() => _formError = null);
+    }
+  }
+
   void _onSave() {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) return;
 
-    context.read<IncomeBloc>().add(
+    setState(() => _formError = null);
+
+    // Clear first so a repeated identical failure still re-emits (Equatable
+    // would otherwise swallow it).
+    final bloc = context.read<IncomeBloc>();
+    bloc.add(const ClearIncomeFormErrorRequested());
+    bloc.add(
       AddIncomeStarted(
         amount: _amountController.text,
         description: _descriptionController.text.trim(),
@@ -71,10 +97,29 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
         ? settingsState.currencySymbol
         : AppConstants.DEFAULT_CURRENCY;
 
+    final amountError = _formError == _invalidAmountKey
+        ? l10n.errorInvalidAmount
+        : null;
+    final descriptionError = _formError == _emptyDescriptionKey
+        ? l10n.errorEmptyDescription
+        : null;
+    final generalError =
+        _formError != null && amountError == null && descriptionError == null
+        ? l10n.errorGeneric
+        : null;
+
     return BlocListener<IncomeBloc, IncomeState>(
+      listenWhen: (prev, curr) =>
+          (prev is IncomeLoading &&
+              curr is IncomeSuccess &&
+              curr.formError == null) ||
+          (curr is IncomeSuccess && curr.formError != null),
       listener: (context, state) {
-        if (state is IncomeSuccess && state.actionError == null) {
+        if (!mounted || state is! IncomeSuccess) return;
+        if (state.formError == null) {
           context.pop();
+        } else {
+          setState(() => _formError = state.formError);
         }
       },
       child: GestureDetector(
@@ -98,10 +143,12 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
                   AmountFieldView(
                     controller: _amountController,
                     currencySymbol: currencySymbol,
+                    errorText: amountError,
                   ),
                   DescriptionFieldView(
                     controller: _descriptionController,
                     hintText: l10n.incomeDescriptionFieldHint,
+                    errorText: descriptionError,
                   ),
                   DateFieldView(
                     selectedDate: _selectedDate,
@@ -119,6 +166,7 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
           bottomNavigationBar: IncomeFormSubmitView(
             onPressed: _onSave,
             isEnabled: _hasInteracted,
+            generalError: generalError,
           ),
         ),
       ),
