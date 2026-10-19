@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/constants/category_icons.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/utils/category_icon_labels.dart';
 
 class CategoryIconView extends StatelessWidget {
   const CategoryIconView({
@@ -40,7 +42,7 @@ class CategoryIconView extends StatelessWidget {
         ),
         backgroundColor: isSelected ? selectedBgColor : unselectedBgColor,
       ),
-      tooltip: icon.label,
+      tooltip: CategoryIconLabels.of(AppLocalizations.of(context), icon),
     );
   }
 }

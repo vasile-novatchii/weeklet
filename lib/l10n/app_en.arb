@@ -880,5 +880,170 @@
   "statsSpendingByCategoryTitle": "Spending by Category",
   "@statsSpendingByCategoryTitle": {
     "description": "Title of the spending by category donut chart"
+  },
+
+  "categoryIconHome": "Home",
+  "@categoryIconHome": {
+    "description": "Label of the Home category icon"
+  },
+
+  "categoryIconWifi": "WiFi",
+  "@categoryIconWifi": {
+    "description": "Label of the WiFi category icon"
+  },
+
+  "categoryIconShoppingCart": "Cart",
+  "@categoryIconShoppingCart": {
+    "description": "Label of the Cart category icon"
+  },
+
+  "categoryIconDirectionsCar": "Car",
+  "@categoryIconDirectionsCar": {
+    "description": "Label of the Car category icon"
+  },
+
+  "categoryIconAccountBalanceWallet": "Wallet",
+  "@categoryIconAccountBalanceWallet": {
+    "description": "Label of the Wallet category icon"
+  },
+
+  "categoryIconTrendingUp": "Income",
+  "@categoryIconTrendingUp": {
+    "description": "Label of the Income category icon"
+  },
+
+  "categoryIconRestaurant": "Restaurant",
+  "@categoryIconRestaurant": {
+    "description": "Label of the Restaurant category icon"
+  },
+
+  "categoryIconLocalCafe": "Coffee",
+  "@categoryIconLocalCafe": {
+    "description": "Label of the Coffee category icon"
+  },
+
+  "categoryIconMovie": "Movie",
+  "@categoryIconMovie": {
+    "description": "Label of the Movie category icon"
+  },
+
+  "categoryIconSportsEsports": "Gaming",
+  "@categoryIconSportsEsports": {
+    "description": "Label of the Gaming category icon"
+  },
+
+  "categoryIconFitnessCenter": "Sport",
+  "@categoryIconFitnessCenter": {
+    "description": "Label of the Sport category icon"
+  },
+
+  "categoryIconFlightTakeoff": "Travel",
+  "@categoryIconFlightTakeoff": {
+    "description": "Label of the Travel category icon"
+  },
+
+  "categoryIconFavorite": "Health",
+  "@categoryIconFavorite": {
+    "description": "Label of the Health category icon"
+  },
+
+  "categoryIconSchool": "Education",
+  "@categoryIconSchool": {
+    "description": "Label of the Education category icon"
+  },
+
+  "categoryIconWork": "Work",
+  "@categoryIconWork": {
+    "description": "Label of the Work category icon"
+  },
+
+  "categoryIconDirectionsBus": "Transport",
+  "@categoryIconDirectionsBus": {
+    "description": "Label of the Transport category icon"
+  },
+
+  "categoryIconLocalGasStation": "Fuel",
+  "@categoryIconLocalGasStation": {
+    "description": "Label of the Fuel category icon"
+  },
+
+  "categoryIconPhoneIphone": "Phone",
+  "@categoryIconPhoneIphone": {
+    "description": "Label of the Phone category icon"
+  },
+
+  "categoryIconCheckroom": "Clothes",
+  "@categoryIconCheckroom": {
+    "description": "Label of the Clothes category icon"
+  },
+
+  "categoryIconChair": "Furniture",
+  "@categoryIconChair": {
+    "description": "Label of the Furniture category icon"
+  },
+
+  "categoryIconPets": "Pets",
+  "@categoryIconPets": {
+    "description": "Label of the Pets category icon"
+  },
+
+  "categoryIconShield": "Insurance",
+  "@categoryIconShield": {
+    "description": "Label of the Insurance category icon"
+  },
+
+  "categoryIconMedication": "Medicine",
+  "@categoryIconMedication": {
+    "description": "Label of the Medicine category icon"
+  },
+
+  "categoryIconMenuBook": "Books",
+  "@categoryIconMenuBook": {
+    "description": "Label of the Books category icon"
+  },
+
+  "categoryIconMusicNote": "Music",
+  "@categoryIconMusicNote": {
+    "description": "Label of the Music category icon"
+  },
+
+  "categoryIconCardGiftcard": "Gifts",
+  "@categoryIconCardGiftcard": {
+    "description": "Label of the Gifts category icon"
+  },
+
+  "categoryIconSavings": "Savings",
+  "@categoryIconSavings": {
+    "description": "Label of the Savings category icon"
+  },
+
+  "categoryIconLightbulb": "Utilities",
+  "@categoryIconLightbulb": {
+    "description": "Label of the Utilities category icon"
+  },
+
+  "categoryIconBuild": "Repairs",
+  "@categoryIconBuild": {
+    "description": "Label of the Repairs category icon"
+  },
+
+  "categoryIconPark": "Garden",
+  "@categoryIconPark": {
+    "description": "Label of the Garden category icon"
+  },
+
+  "categoryIconChildFriendly": "Kids",
+  "@categoryIconChildFriendly": {
+    "description": "Label of the Kids category icon"
+  },
+
+  "categoryIconFamilyRestroom": "Family",
+  "@categoryIconFamilyRestroom": {
+    "description": "Label of the Family category icon"
+  },
+
+  "categoryIconMoreHoriz": "Other",
+  "@categoryIconMoreHoriz": {
+    "description": "Label of the Other category icon"
   }
 }
