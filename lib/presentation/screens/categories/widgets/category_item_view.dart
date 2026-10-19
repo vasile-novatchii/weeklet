@@ -47,7 +47,7 @@ class CategoryItemView extends StatelessWidget {
         label: l10n.editMenuLabel,
         icon: Icons.edit,
         onPressed: () => _editCategory(context),
-        semanticLabel: 'Edit category',
+        semanticLabel: l10n.editCategorySemanticLabel,
       ),
       MenuItem(
         label: l10n.deleteMenuLabel,
@@ -71,7 +71,7 @@ class CategoryItemView extends StatelessWidget {
           cancelButtonTextColor: context.colorScheme.onSurface,
           cancelButtonText: l10n.cancelButtonLabel,
         ),
-        semanticLabel: 'Delete category',
+        semanticLabel: l10n.deleteCategorySemanticLabel,
       ),
     ];
   }

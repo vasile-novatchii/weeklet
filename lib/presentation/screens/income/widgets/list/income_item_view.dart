@@ -51,7 +51,7 @@ class IncomeItemView extends StatelessWidget {
         label: l10n.editMenuLabel,
         icon: Icons.edit,
         onPressed: () => _editIncome(context),
-        semanticLabel: 'Edit income',
+        semanticLabel: l10n.editIncomeSemanticLabel,
       ),
       MenuItem(
         label: l10n.deleteMenuLabel,
@@ -76,13 +76,14 @@ class IncomeItemView extends StatelessWidget {
           cancelButtonColor: context.colorScheme.outline,
           cancelButtonTextColor: context.colorScheme.onSurface,
         ),
-        semanticLabel: 'Delete income',
+        semanticLabel: l10n.deleteIncomeSemanticLabel,
       ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final formattedAmount = NumberFormatter.formatAmountWithSign(
       income.amount,
       isIncome: true,
@@ -108,8 +109,8 @@ class IncomeItemView extends StatelessWidget {
             child: ExpenseDetailsColumn(
               description: income.description.isNotEmpty
                   ? income.description
-                  : 'Income',
-              categoryName: 'Income',
+                  : l10n.incomeItemFallbackTitle,
+              categoryName: l10n.incomeItemFallbackTitle,
               time: formattedTime,
             ),
           ),

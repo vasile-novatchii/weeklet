@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/constants/category_icons.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 class SelectedIcon extends StatelessWidget {
   const SelectedIcon(
@@ -22,7 +23,9 @@ class SelectedIcon extends StatelessWidget {
       categoryIcon?.icon ?? Icons.help_outline,
       size: 24,
       color: Colors.white,
-      semanticLabel: 'Selected icon preview',
+      semanticLabel: AppLocalizations.of(
+        context,
+      ).selectedIconPreviewSemanticLabel,
     ),
   );
 }

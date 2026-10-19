@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 /// Header text for displaying week number
 class WeekHeaderText extends StatelessWidget {
@@ -12,7 +13,7 @@ class WeekHeaderText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    'Week $weekNumber',
+    AppLocalizations.of(context).weekHeaderLabel(weekNumber),
     style: context.titleMedium?.copyWith(
       fontWeight: .w400,
       color: context.colorScheme.onSurfaceVariant,

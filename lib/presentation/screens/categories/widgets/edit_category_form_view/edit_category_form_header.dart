@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 class EditCategoryFormHeader extends StatelessWidget {
   const EditCategoryFormHeader({
@@ -14,7 +15,7 @@ class EditCategoryFormHeader extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text(
-        'Edit Category',
+        AppLocalizations.of(context).editCategorySheetTitle,
         style: context.titleLarge,
       ),
       IconButton(

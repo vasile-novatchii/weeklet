@@ -57,7 +57,7 @@ class ExpenseItemView extends StatelessWidget {
         label: l10n.editMenuLabel,
         icon: Icons.edit,
         onPressed: () => _editExpense(context),
-        semanticLabel: 'Edit expense',
+        semanticLabel: l10n.editExpenseSemanticLabel,
       ),
       MenuItem(
         label: l10n.deleteMenuLabel,
@@ -82,7 +82,7 @@ class ExpenseItemView extends StatelessWidget {
           cancelButtonTextColor: context.colorScheme.onSurface,
           cancelButtonText: l10n.cancelButtonLabel,
         ),
-        semanticLabel: 'Delete expense',
+        semanticLabel: l10n.deleteExpenseSemanticLabel,
       ),
     ];
   }

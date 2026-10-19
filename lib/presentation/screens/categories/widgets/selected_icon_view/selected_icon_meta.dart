@@ -26,7 +26,7 @@ class SelectedIconMeta extends StatelessWidget {
         Text(
           categoryName?.isNotEmpty == true
               ? categoryName!
-              : 'Category name not set',
+              : l10n.categoryNameNotSetLabel,
           style: context.textTheme.bodySmall?.copyWith(
             color: context.colorScheme.onSurfaceVariant,
           ),
