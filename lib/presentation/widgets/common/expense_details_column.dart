@@ -15,28 +15,32 @@ class ExpenseDetailsColumn extends StatelessWidget {
   final String time;
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: .start,
-    children: [
-      Tooltip(
-        message: description,
-        child: Text(
-          description,
-          style: context.titleSmall?.copyWith(
-            fontWeight: .w500,
+  Widget build(BuildContext context) {
+    final hasDescription = description.trim().isNotEmpty;
+    final primary = hasDescription ? description : categoryName;
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Tooltip(
+          message: primary,
+          child: Text(
+            primary,
+            style: context.titleSmall?.copyWith(
+              fontWeight: .w500,
+            ),
+            maxLines: 1,
+            overflow: .ellipsis,
+          ),
+        ),
+        Text(
+          hasDescription ? '$categoryName \u2022 $time' : time,
+          style: context.labelSmall?.copyWith(
+            color: context.colorScheme.onSurfaceVariant,
           ),
           maxLines: 1,
           overflow: .ellipsis,
         ),
-      ),
-      Text(
-        '$categoryName \u2022 $time',
-        style: context.labelSmall?.copyWith(
-          color: context.colorScheme.onSurfaceVariant,
-        ),
-        maxLines: 1,
-        overflow: .ellipsis,
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

@@ -71,7 +71,8 @@ class ExpenseItemView extends StatelessWidget {
           iconBackgroundColor: context.colorScheme.error,
           title: l10n.deleteExpenseDialogTitle,
           subtitle1: l10n.deleteConfirmSubtitle1,
-          subtitle1AccentText: ' ${expense.description}?',
+          subtitle1AccentText:
+              ' ${expense.description.trim().isEmpty ? (category?.name ?? '') : expense.description}?',
           subtitle2: l10n.actionCannotBeUndone,
           confirmButtonColor: context.colorScheme.error,
           onConfirm: () => _deleteExpense(context),

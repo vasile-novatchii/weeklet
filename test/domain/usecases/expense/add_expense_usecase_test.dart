@@ -108,25 +108,19 @@ void main() {
     );
 
     test(
-      'throws ExpenseValidationException(emptyDescription) for empty description',
-      () {
-        expect(
-          () async => useCase(
+      'accepts empty or whitespace description and stores trimmed',
+      () async {
+        for (final d in ['', '   ']) {
+          await useCase(
             AddExpenseParams(
               amount: '100.50',
-              description: '',
+              description: d,
               categoryId: 'cat-1',
               date: DateTime(2024, 1, 15),
             ),
-          ),
-          throwsA(
-            isA<ExpenseValidationException>().having(
-              (e) => e.error,
-              'error',
-              ExpenseValidationError.emptyDescription,
-            ),
-          ),
-        );
+          );
+          expect(repository.lastAdded?.description, '');
+        }
       },
     );
 

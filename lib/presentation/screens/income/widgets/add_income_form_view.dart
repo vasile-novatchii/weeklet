@@ -101,7 +101,6 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
                   ),
                   DescriptionFieldView(
                     controller: _descriptionController,
-                    isRequired: false,
                   ),
                   DateFieldView(
                     selectedDate: _selectedDate,

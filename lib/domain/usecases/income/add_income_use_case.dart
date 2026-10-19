@@ -35,16 +35,11 @@ class AddIncomeUseCase implements UseCase<void, AddIncomeParams> {
         IncomeValidationError.invalidAmount,
       );
     }
-    if (params.description.trim().isEmpty) {
-      throw const IncomeValidationException(
-        IncomeValidationError.emptyDescription,
-      );
-    }
     final now = DateTime.now();
     return Income(
       id: uuid.v4(),
       amount: parsedAmount,
-      description: params.description,
+      description: params.description.trim(),
       date: params.date,
       createdAt: now,
     );

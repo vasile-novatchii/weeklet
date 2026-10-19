@@ -34,6 +34,19 @@ void main() {
     useCase = AddIncomeUseCase(repository, const Uuid());
   });
 
+  group('AddIncomeUseCase — optional description', () {
+    test('accepts empty description and stores trimmed', () async {
+      await useCase(
+        AddIncomeParams(
+          amount: '100',
+          description: '  ',
+          date: DateTime(2024, 1, 15),
+        ),
+      );
+      expect(repository.lastAdded?.description, '');
+    });
+  });
+
   group('AddIncomeUseCase — amount validation (ARCH-01)', () {
     test(
       'throws IncomeValidationException(invalidAmount) for non-numeric amount',

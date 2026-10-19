@@ -37,11 +37,6 @@ class AddExpenseUseCase implements UseCase<void, AddExpenseParams> {
         ExpenseValidationError.invalidAmount,
       );
     }
-    if (params.description.trim().isEmpty) {
-      throw const ExpenseValidationException(
-        ExpenseValidationError.emptyDescription,
-      );
-    }
     if (params.categoryId.trim().isEmpty) {
       throw const ExpenseValidationException(
         ExpenseValidationError.emptyCategory,
@@ -51,7 +46,7 @@ class AddExpenseUseCase implements UseCase<void, AddExpenseParams> {
     return Expense(
       id: uuid.v4(),
       amount: parsedAmount,
-      description: params.description,
+      description: params.description.trim(),
       categoryId: params.categoryId,
       createdAt: DateTime(
         params.date.year,

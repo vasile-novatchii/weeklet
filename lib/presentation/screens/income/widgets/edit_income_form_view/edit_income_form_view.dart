@@ -125,7 +125,8 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
             onTap: context.unfocus,
             child: Scaffold(
               body: SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.only(
                   left: 16,
                   right: 16,
@@ -148,7 +149,6 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
                       ),
                       DescriptionFieldView(
                         controller: _descriptionController,
-                        isRequired: false,
                       ),
                       DateFieldView(
                         selectedDate: _selectedDate,

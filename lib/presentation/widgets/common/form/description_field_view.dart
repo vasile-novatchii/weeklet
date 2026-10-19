@@ -7,11 +7,9 @@ class DescriptionFieldView extends StatelessWidget {
   const DescriptionFieldView({
     super.key,
     required this.controller,
-    this.isRequired = true,
   });
 
   final TextEditingController controller;
-  final bool isRequired;
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +25,6 @@ class DescriptionFieldView extends StatelessWidget {
           controller: controller,
           hintText: l10n.descriptionFieldHint,
           textInputAction: TextInputAction.next,
-          validator: isRequired
-              ? (value) =>
-                  (value == null || value.isEmpty) ? l10n.validationRequired : null
-              : null,
         ),
       ],
     );

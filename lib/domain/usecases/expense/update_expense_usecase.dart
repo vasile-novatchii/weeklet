@@ -15,11 +15,6 @@ class UpdateExpenseUseCase implements UseCase<void, Expense> {
   }
 
   void _validateExpense(Expense params) {
-    if (params.description.trim().isEmpty) {
-      throw const ExpenseValidationException(
-        ExpenseValidationError.emptyDescription,
-      );
-    }
     if (params.amount <= 0) {
       throw const ExpenseValidationException(
         ExpenseValidationError.invalidAmount,
