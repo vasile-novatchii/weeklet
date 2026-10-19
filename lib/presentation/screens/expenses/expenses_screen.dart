@@ -7,12 +7,15 @@ import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/router/app_routes.dart';
 import 'package:weeklet/domain/entities/category.dart';
 import 'package:weeklet/domain/utils/filter_visibility_utils.dart';
+import 'package:weeklet/domain/utils/income_filter_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_state.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_bloc.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_event.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_state.dart';
+import 'package:weeklet/presentation/blocs/income/income_bloc.dart';
+import 'package:weeklet/presentation/blocs/income/income_state.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/export/export_event.dart';
 import 'package:weeklet/presentation/blocs/export/export_state.dart';
@@ -20,6 +23,7 @@ import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/add_expense_form_view.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar.dart';
+import 'package:weeklet/presentation/screens/expenses/widgets/expenses_app_bar_title.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/list/expense_list_view.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
@@ -121,10 +125,23 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     );
   }
 
+  double? _incomeTotal(ExpenseState expenseState, IncomeState incomeState) {
+    if (expenseState is! ExpenseSuccess || incomeState is! IncomeSuccess) {
+      return null;
+    }
+    final total = IncomeFilterUtils.totalForPeriod(
+      incomeState.allIncomes,
+      expenseState.selectedYear,
+      expenseState.selectedMonth,
+    );
+    return total > 0 ? total : null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final expenseState = context.watch<ExpenseBloc>().state;
+    final incomeState = context.watch<IncomeBloc>().state;
     final isExporting = context.watch<ExportBloc>().state is ExportInProgress;
     // Hide the filter bar only when no expense exists in any period; keep it
     // while loading/failed or when other periods hold data.
@@ -185,7 +202,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text(l10n.expensesScreenTitle),
+          title: ExpensesAppBarTitle(
+            title: l10n.expensesScreenTitle,
+            currencySymbol: currencySymbol,
+            incomeTotal: _incomeTotal(expenseState, incomeState),
+          ),
           centerTitle: true,
           actions: [
             IconButton(
