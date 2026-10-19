@@ -22,7 +22,7 @@ import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar
 import 'package:weeklet/presentation/screens/expenses/widgets/list/expense_list_view.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
-import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
+import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -139,11 +139,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           listener: (context, exportState) {
             if (exportState is ExportSuccess) {
               unawaited(
-                PdfShareHelper.share(
+                PdfExportActions.present(
+                  context,
                   filePath: exportState.filePath,
                   subject: exportState.subject,
                 ).then((_) {
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   context.read<ExportBloc>().add(
                     const ResetExportRequested(),
                   );

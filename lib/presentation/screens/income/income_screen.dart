@@ -19,7 +19,7 @@ import 'package:weeklet/presentation/screens/income/widgets/income_filter_bar.da
 import 'package:weeklet/presentation/screens/income/widgets/income_total_card.dart';
 import 'package:weeklet/presentation/screens/income/widgets/list/income_list_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
-import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
+import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
 
 class IncomeScreen extends StatefulWidget {
   const IncomeScreen({super.key});
@@ -149,11 +149,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
         listener: (context, exportState) {
           if (exportState is ExportSuccess) {
             unawaited(
-              PdfShareHelper.share(
+              PdfExportActions.present(
+                context,
                 filePath: exportState.filePath,
                 subject: exportState.subject,
               ).then((_) {
-                if (!mounted) return;
+                if (!context.mounted) return;
                 context.read<ExportBloc>().add(
                   const ResetExportRequested(),
                 );

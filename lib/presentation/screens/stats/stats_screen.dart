@@ -28,7 +28,7 @@ import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart
 import 'package:weeklet/presentation/screens/stats/widgets/stats_filter_bar.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_summary_cards/stats_summary_cards.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_tabs_section.dart';
-import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
+import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -98,7 +98,8 @@ class StatsView extends StatelessWidget {
   void _onExportState(BuildContext context, ExportState exportState) {
     if (exportState is ExportSuccess) {
       unawaited(
-        PdfShareHelper.share(
+        PdfExportActions.present(
+          context,
           filePath: exportState.filePath,
           subject: exportState.subject,
         ).then((_) {

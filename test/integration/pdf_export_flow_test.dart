@@ -17,6 +17,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -92,6 +94,16 @@ void main() {
 
   late FakeSharePlatform fakeShare;
 
+  // flutter test defaults to the android platform, where the export shows
+  // the Share / Print sheet. These flows assert the direct (iOS) share path.
+  void useIosSharePath() {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+  }
+
+  // Must run at the end of the test body: flutter_test verifies foundation
+  // debug variables before tearDown callbacks run.
+  void resetPlatform() => debugDefaultTargetPlatformOverride = null;
+
   setUpAll(() {
     registerHiveAdaptersOnce();
     registerTestPathProvider();
@@ -135,6 +147,7 @@ void main() {
   testWidgets('exporting expenses generates a real PDF with correct content', (
     tester,
   ) async {
+    useIosSharePath();
     // A taller-than-default test surface is required: bottom sheets (Add /
     // Edit) are sized to 80% of screen height, and the default 800x600 test
     // window is too short to fit every field above the pinned Save button
@@ -209,6 +222,7 @@ void main() {
     if (file.existsSync()) {
       file.deleteSync();
     }
+    resetPlatform();
   });
 
   Future<ExportSuccess> exportAllMonths(
@@ -245,6 +259,7 @@ void main() {
   testWidgets('All Months exports a whole-year PDF without a snackbar', (
     tester,
   ) async {
+    useIosSharePath();
     final success = await exportAllMonths(tester);
 
     final year = DateTime.now().year;
@@ -260,6 +275,7 @@ void main() {
     expect(text, contains('Groceries at market'));
     expect(text, contains('$year'));
     if (file.existsSync()) file.deleteSync();
+    resetPlatform();
   });
 
   testWidgets('Russian locale renders RU column labels in the PDF', (

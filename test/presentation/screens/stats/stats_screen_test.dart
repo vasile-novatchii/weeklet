@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -341,6 +342,7 @@ void main() {
     });
 
     testWidgets('stats success shares the file then resets', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       await pumpWithStream(tester);
       await emit(
         tester,
@@ -359,6 +361,28 @@ void main() {
       );
       verify(() => mockExportBloc.add(any(that: isA<ResetExportRequested>())))
           .called(1);
+      debugDefaultTargetPlatformOverride = null;
+    });
+
+    testWidgets('android success shows the share/print action sheet', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      await pumpWithStream(tester);
+      await emit(
+        tester,
+        const ExportSuccess(
+          filePath: '/tmp/weeklet_stats_march_2026.pdf',
+          subject: 's',
+          exportType: ExportType.stats,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Share'), findsOneWidget);
+      expect(find.text('Print / Save as PDF'), findsOneWidget);
+      expect(fakeShare.shareCalls, isEmpty);
+      debugDefaultTargetPlatformOverride = null;
     });
 
     testWidgets('income success is ignored', (tester) async {

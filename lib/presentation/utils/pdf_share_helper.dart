@@ -4,8 +4,9 @@ import 'package:share_plus/share_plus.dart';
 
 /// Builds and sends the share/print hand-off for an exported PDF.
 ///
-/// Passing an explicit mime type and file name lets the Android Print
-/// service propose the real file name instead of "downloadfile.pdf".
+/// Builds the share_plus hand-off with the file name and PDF mime type. The
+/// Android Print / Save as PDF file name is handled separately by
+/// PdfPrintService via PdfExportActions.
 class PdfShareHelper {
   const PdfShareHelper._();
 
