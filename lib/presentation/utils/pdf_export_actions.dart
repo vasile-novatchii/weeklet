@@ -22,7 +22,7 @@ class PdfExportActions {
     required String subject,
   }) async {
     if (defaultTargetPlatform != TargetPlatform.android) {
-      await PdfShareHelper.share(filePath: filePath, subject: subject);
+      await _share(context, filePath: filePath, subject: subject);
       return;
     }
 
@@ -58,7 +58,7 @@ class PdfExportActions {
 
     switch (action) {
       case _ExportAction.share:
-        await PdfShareHelper.share(filePath: filePath, subject: subject);
+        await _share(context, filePath: filePath, subject: subject);
       case _ExportAction.print:
         try {
           await sl<PdfPrintService>().printPdf(filePath: filePath);
@@ -72,6 +72,25 @@ class PdfExportActions {
         }
       case null:
         break;
+    }
+  }
+
+  /// Shares the PDF; failures are logged and surfaced as a snackbar so the
+  /// caller's follow-up (export reset) always runs.
+  static Future<void> _share(
+    BuildContext context, {
+    required String filePath,
+    required String subject,
+  }) async {
+    try {
+      await PdfShareHelper.share(filePath: filePath, subject: subject);
+    } on Object catch (e) {
+      debugPrint('[PdfExportActions.present] share error: $e');
+      if (context.mounted) {
+        context.showErrorSnackBar(
+          AppLocalizations.of(context).pdfExportError,
+        );
+      }
     }
   }
 }

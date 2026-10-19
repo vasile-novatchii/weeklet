@@ -150,17 +150,15 @@ class _IncomeScreenState extends State<IncomeScreen> {
             (s is ExportFailure && s.exportType == ExportType.income),
         listener: (context, exportState) {
           if (exportState is ExportSuccess) {
+            final exportBloc = context.read<ExportBloc>();
             unawaited(
               PdfExportActions.present(
                 context,
                 filePath: exportState.filePath,
                 subject: exportState.subject,
-              ).then((_) {
-                if (!context.mounted) return;
-                context.read<ExportBloc>().add(
-                  const ResetExportRequested(),
-                );
-              }),
+              ).whenComplete(
+                () => exportBloc.add(const ResetExportRequested()),
+              ),
             );
           } else if (exportState is ExportFailure) {
             context.showErrorSnackBar(l10n.pdfExportError);

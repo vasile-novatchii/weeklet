@@ -112,4 +112,20 @@ void main() {
     expect(find.text('Could not open print dialog'), findsOneWidget);
     debugDefaultTargetPlatformOverride = null;
   });
+
+  testWidgets('share failure shows error snackbar and does not throw', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    fakeShare.shouldThrow = true;
+    await pumpHost(tester);
+    await tester.tap(find.text('Share'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(
+      find.text('Failed to generate PDF. Please try again.'),
+      findsOneWidget,
+    );
+    debugDefaultTargetPlatformOverride = null;
+  });
 }
