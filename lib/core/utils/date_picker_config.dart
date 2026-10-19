@@ -11,6 +11,13 @@ class DatePickerConfig {
   static DateTime get maxExpenseDate =>
       DateTime.now().add(const Duration(days: 365));
 
+  /// Locale used by the date picker for a given app locale.
+  ///
+  /// English maps to en_GB (Monday-first week, D-02); ro/ru follow the
+  /// app language (D-05).
+  static Locale pickerLocale(Locale appLocale) =>
+      appLocale.languageCode == 'en' ? const Locale('en', 'GB') : appLocale;
+
   /// Shows a date picker dialog with expense-specific configuration
   ///
   /// Returns the selected date or null if cancelled

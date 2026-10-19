@@ -8,11 +8,14 @@ import 'package:weeklet/core/utils/locale_manager.dart';
 /// [DateFormatStyle.medium] - "Jan 15, 2026"
 /// [DateFormatStyle.long] - "January 15, 2026"
 /// [DateFormatStyle.full] - "Thursday, January 15, 2026"
+/// [DateFormatStyle.input] - EN "15/01/2026", RO/RU "15.01.2026"
+/// (add/edit date input, per D-01/D-03)
 enum DateFormatStyle {
   short,
   medium,
   long,
   full,
+  input,
 }
 
 extension DateTimeExtension on DateTime {
@@ -185,6 +188,19 @@ extension DateTimeExtension on DateTime {
         return 'MMMM d, yyyy';
       case DateFormatStyle.full:
         return 'EEEE, MMMM d, yyyy';
+      case DateFormatStyle.input:
+        return _getInputPattern(locale);
+    }
+  }
+
+  /// Numeric input pattern: RO/RU `dd.MM.yyyy`, everything else `dd/MM/yyyy`.
+  String _getInputPattern(String locale) {
+    switch (locale.split('_').first) {
+      case 'ro':
+      case 'ru':
+        return 'dd.MM.yyyy';
+      default:
+        return 'dd/MM/yyyy';
     }
   }
 
