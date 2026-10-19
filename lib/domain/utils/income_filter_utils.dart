@@ -1,5 +1,6 @@
 import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/utils/expense_filter_utils.dart';
+import 'package:weeklet/domain/utils/income_grouping.dart';
 
 /// Utility class for extracting and managing income filter options.
 class IncomeFilterUtils {
@@ -31,6 +32,14 @@ class IncomeFilterUtils {
           ..sort();
 
     return monthsInYear;
+  }
+
+  /// Sums incomes for [year]; when [month] is null the whole year is summed.
+  static double totalForPeriod(List<Income> incomes, int year, int? month) {
+    final filtered = incomes.where(
+      (e) => e.date.year == year && (month == null || e.date.month == month),
+    );
+    return IncomeGrouping.calculateTotal(filtered.toList());
   }
 
   /// Gets the month name for a given month number (1-12) in [localeCode].

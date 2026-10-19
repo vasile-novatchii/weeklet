@@ -159,4 +159,42 @@ void main() {
       expect(result, equals([3]));
     });
   });
+
+  group('IncomeFilterUtils.totalForPeriod', () {
+    Income inc(String id, double amount, DateTime date) => Income(
+      id: id,
+      amount: amount,
+      description: 'Salary',
+      date: date,
+      createdAt: DateTime(2020, 1, 1),
+    );
+
+    final incomes = [
+      inc('1', 100, DateTime(2026, 3, 5)),
+      inc('2', 50, DateTime(2026, 3, 20)),
+      inc('3', 200, DateTime(2026, 5, 1)),
+      inc('4', 999, DateTime(2025, 3, 5)),
+    ];
+
+    test('totalForPeriod sums only the given month', () {
+      expect(IncomeFilterUtils.totalForPeriod(incomes, 2026, 3), 150.0);
+    });
+
+    test('totalForPeriod with null month sums the whole year', () {
+      expect(IncomeFilterUtils.totalForPeriod(incomes, 2026, null), 350.0);
+    });
+
+    test('totalForPeriod returns 0.0 for empty list', () {
+      expect(IncomeFilterUtils.totalForPeriod([], 2026, 3), 0.0);
+    });
+
+    test('totalForPeriod returns 0.0 when nothing matches', () {
+      expect(IncomeFilterUtils.totalForPeriod(incomes, 2026, 8), 0.0);
+    });
+
+    test('totalForPeriod excludes other years', () {
+      expect(IncomeFilterUtils.totalForPeriod(incomes, 2025, 3), 999.0);
+      expect(IncomeFilterUtils.totalForPeriod(incomes, 2025, null), 999.0);
+    });
+  });
 }
