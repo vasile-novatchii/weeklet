@@ -26,7 +26,9 @@ class EditIncomeFormFooter extends StatelessWidget {
     builder: (context, state) {
       final l10n = AppLocalizations.of(context);
       final isLoading = state is IncomeLoading;
-      final canSubmit = isEnabled && !isLoading;
+      // The bloc only handles add/update from IncomeSuccess, so Save stays
+      // disabled while loading or after a failed load.
+      final canSubmit = isEnabled && state is IncomeSuccess;
 
       final buttons = Row(
         spacing: 12,

@@ -120,22 +120,24 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
     return BlocListener<IncomeBloc, IncomeState>(
       // Only react to the outcome of this form's own save: a reload started
       // elsewhere (initial load, pull-to-refresh, reset, retry) must not close
-      // the sheet or surface an error here.
+      // the sheet or surface an error here. A failed reload after the save
+      // also closes the sheet - the screen behind it shows the load error.
       listenWhen: (prev, curr) =>
           _submitting &&
           ((prev is IncomeLoading &&
                   curr is IncomeSuccess &&
                   curr.formError == null) ||
-              (curr is IncomeSuccess && curr.formError != null)),
+              (curr is IncomeSuccess && curr.formError != null) ||
+              curr is IncomeFailure),
       listener: (context, state) {
-        if (!mounted || state is! IncomeSuccess) return;
-        if (state.formError == null) {
-          context.pop();
-        } else {
+        if (!mounted) return;
+        if (state case IncomeSuccess(formError: final error?)) {
           setState(() {
             _submitting = false;
-            _formError = state.formError;
+            _formError = error;
           });
+        } else {
+          context.pop();
         }
       },
       child: GestureDetector(

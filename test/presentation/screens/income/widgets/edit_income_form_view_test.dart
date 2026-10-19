@@ -259,6 +259,28 @@ void main() {
     ).called(1);
   });
 
+  testWidgets('pops when the reload after Save fails', (tester) async {
+    await openForm(tester);
+    await submit(tester);
+    await emit(tester, const IncomeLoading());
+    await emit(tester, const IncomeFailure('boom'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(EditIncomeFormView), findsNothing);
+  });
+
+  testWidgets('Save is disabled while the bloc is in IncomeFailure', (
+    tester,
+  ) async {
+    await openForm(tester, initial: const IncomeFailure('boom'));
+    await enterAmount(tester, '50');
+
+    final save = tester.widget<ElevatedButton>(
+      find.byType(ElevatedButton).last,
+    );
+    expect(save.onPressed, isNull);
+  });
+
   testWidgets('description field shows the income hint', (tester) async {
     await openForm(tester);
 
