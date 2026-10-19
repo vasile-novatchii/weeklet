@@ -281,6 +281,22 @@ void main() {
     expect(save.onPressed, isNull);
   });
 
+  testWidgets('reports open and close to the bloc', (tester) async {
+    await openForm(tester);
+    verify(
+      () => mockIncomeBloc.add(any(that: isA<IncomeFormOpened>())),
+    ).called(1);
+
+    await submit(tester);
+    await emit(tester, const IncomeLoading());
+    await emit(tester, _success());
+    await tester.pumpAndSettle();
+
+    verify(
+      () => mockIncomeBloc.add(any(that: isA<IncomeFormClosed>())),
+    ).called(1);
+  });
+
   testWidgets('description field shows the income hint', (tester) async {
     await openForm(tester);
 

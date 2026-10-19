@@ -245,13 +245,15 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) => bloc.add(
-        AddIncomeStarted(
-          amount: '500.00',
-          description: '',
-          date: DateTime(DateTime.now().year, 5, 1),
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(
+          AddIncomeStarted(
+            amount: '500.00',
+            description: '',
+            date: DateTime(DateTime.now().year, 5, 1),
+          ),
         ),
-      ),
       expect: () => [
         isA<IncomeSuccess>().having(
           (s) => s.formError,
@@ -271,13 +273,15 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) => bloc.add(
-        AddIncomeStarted(
-          amount: '500.00',
-          description: 'Salary',
-          date: DateTime(DateTime.now().year, 5, 1),
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(
+          AddIncomeStarted(
+            amount: '500.00',
+            description: 'Salary',
+            date: DateTime(DateTime.now().year, 5, 1),
+          ),
         ),
-      ),
       expect: () => [
         isA<IncomeSuccess>().having(
           (s) => s.formError,
@@ -331,7 +335,9 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) => bloc.add(UpdateIncomeStarted(_fakeIncome())),
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(UpdateIncomeStarted(_fakeIncome())),
       expect: () => [
         isA<IncomeSuccess>().having(
           (s) => s.formError,
@@ -353,13 +359,80 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) => bloc.add(UpdateIncomeStarted(_fakeIncome())),
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(UpdateIncomeStarted(_fakeIncome())),
       expect: () => [
         isA<IncomeSuccess>()
             .having((s) => s.formError, 'formError', 'invalidAmount')
             .having((s) => s.actionError, 'actionError', isNull),
       ],
       tearDown: () async => GetIt.instance.reset(),
+    );
+  });
+
+  group('IncomeBloc — form open/close', () {
+    setUp(() {
+      _stubAdd = _StubAddIncomeUseCase();
+      _stubUpdate = _StubUpdateIncomeUseCase();
+      _stubDelete = _StubDeleteIncomeUseCase();
+      _stubGet = _StubGetIncomesUseCase();
+    });
+
+    blocTest<IncomeBloc, IncomeState>(
+      'AddIncomeStarted error with no open form sets actionError',
+      setUp: () {
+        _stubAdd.shouldThrow = true;
+        _stubAdd.throwable = Exception('boom');
+        GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+      },
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(
+        AddIncomeStarted(
+          amount: '500.00',
+          description: 'Salary',
+          date: DateTime(DateTime.now().year, 5, 1),
+        ),
+      ),
+      expect: () => [
+        isA<IncomeSuccess>()
+            .having((s) => s.actionError, 'actionError', 'genericError')
+            .having((s) => s.formError, 'formError', isNull),
+      ],
+      tearDown: () async => GetIt.instance.reset(),
+    );
+
+    blocTest<IncomeBloc, IncomeState>(
+      'UpdateIncomeStarted error after the form closed sets actionError',
+      setUp: () {
+        _stubUpdate.shouldThrow = true;
+        GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+      },
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(const IncomeFormClosed())
+        ..add(UpdateIncomeStarted(_fakeIncome())),
+      expect: () => [
+        isA<IncomeSuccess>()
+            .having((s) => s.actionError, 'actionError', 'genericError')
+            .having((s) => s.formError, 'formError', isNull),
+      ],
+      tearDown: () async => GetIt.instance.reset(),
+    );
+
+    blocTest<IncomeBloc, IncomeState>(
+      'IncomeFormClosed clears a stale formError',
+      build: _makeBloc,
+      seed: () => _successSeed().copyWith(formError: 'genericError'),
+      act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
+        ..add(const IncomeFormClosed()),
+      expect: () => [
+        isA<IncomeSuccess>().having((s) => s.formError, 'formError', isNull),
+      ],
     );
   });
 
@@ -459,6 +532,7 @@ void main() {
         selectedMonth: null,
       ),
       act: (bloc) => bloc
+        ..add(const IncomeFormOpened())
         ..add(const ClearIncomeFormErrorRequested())
         ..add(
           AddIncomeStarted(

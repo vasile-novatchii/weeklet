@@ -27,12 +27,42 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
     on<IncomeFilterDateChanged>(_onFilterDateChanged);
     on<ClearIncomeActionErrorRequested>(_onClearActionError);
     on<ClearIncomeFormErrorRequested>(_onClearFormError);
+    on<IncomeFormOpened>(_onFormOpened);
+    on<IncomeFormClosed>(_onFormClosed);
   }
 
   final AddIncomeUseCase addIncomeUseCase;
   final UpdateIncomeUseCase updateIncomeUseCase;
   final DeleteIncomeUseCase deleteIncomeUseCase;
   final GetIncomesUseCase getIncomesUseCase;
+
+  /// Number of add/edit forms currently listening for `formError`.
+  int _openForms = 0;
+
+  void _onFormOpened(IncomeFormOpened event, Emitter<IncomeState> emit) {
+    _openForms++;
+  }
+
+  void _onFormClosed(IncomeFormClosed event, Emitter<IncomeState> emit) {
+    if (_openForms > 0) _openForms--;
+    if (_openForms > 0) return;
+    // No form is left to show it, so drop any stale inline error.
+    if (state case final IncomeSuccess st when st.formError != null) {
+      emit(
+        st.copyWith(
+          selectedMonth: st.selectedMonth,
+          actionError: st.actionError,
+          formError: null,
+        ),
+      );
+    }
+  }
+
+  /// Reports an add/update failure inline when a form is open, otherwise as
+  /// an `actionError` so the screen shows it as a snackbar.
+  IncomeSuccess _withSaveError(IncomeSuccess st, String error) => _openForms > 0
+      ? st.copyWith(selectedMonth: st.selectedMonth, formError: error)
+      : st.copyWith(selectedMonth: st.selectedMonth, actionError: error);
 
   void _onClearActionError(
     ClearIncomeActionErrorRequested event,
@@ -163,20 +193,10 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         sl<StatsBloc>().add(LoadMonthlyStats(year: DateTime.now().year));
       } on IncomeValidationException catch (e) {
         debugPrint('error in _onAddIncome: $e');
-        emit(
-          st.copyWith(
-            selectedMonth: st.selectedMonth,
-            formError: e.error.name,
-          ),
-        );
+        emit(_withSaveError(st, e.error.name));
       } catch (e) {
         debugPrint('error in _onAddIncome: $e');
-        emit(
-          st.copyWith(
-            selectedMonth: st.selectedMonth,
-            formError: 'genericError',
-          ),
-        );
+        emit(_withSaveError(st, 'genericError'));
       }
     }
   }
@@ -201,20 +221,10 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         sl<StatsBloc>().add(LoadMonthlyStats(year: DateTime.now().year));
       } on IncomeValidationException catch (e) {
         debugPrint('error in _onUpdateIncome: $e');
-        emit(
-          st.copyWith(
-            selectedMonth: st.selectedMonth,
-            formError: e.error.name,
-          ),
-        );
+        emit(_withSaveError(st, e.error.name));
       } catch (e) {
         debugPrint('error in _onUpdateIncome: $e');
-        emit(
-          st.copyWith(
-            selectedMonth: st.selectedMonth,
-            formError: 'genericError',
-          ),
-        );
+        emit(_withSaveError(st, 'genericError'));
       }
     }
   }

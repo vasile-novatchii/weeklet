@@ -96,3 +96,17 @@ final class ClearIncomeActionErrorRequested extends IncomeEvent {
 final class ClearIncomeFormErrorRequested extends IncomeEvent {
   const ClearIncomeFormErrorRequested();
 }
+
+/// An add or edit income form started listening for its own save outcome.
+///
+/// While at least one form is open, add/update failures are reported through
+/// `formError` (shown inline). Otherwise they fall back to `actionError` so
+/// the screen snackbar still shows them.
+final class IncomeFormOpened extends IncomeEvent {
+  const IncomeFormOpened();
+}
+
+/// An add or edit income form was closed (saved, cancelled or swiped away).
+final class IncomeFormClosed extends IncomeEvent {
+  const IncomeFormClosed();
+}

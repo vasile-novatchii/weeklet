@@ -40,9 +40,14 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
   /// double tap cannot dispatch a second add/update while the use case runs.
   bool _submitting = false;
 
+  late final IncomeBloc _incomeBloc;
+
   @override
   void initState() {
     super.initState();
+    // Tell the bloc a form is showing inline errors; on close it falls back to
+    // the screen snackbar so a failure after a swipe-away is not lost.
+    _incomeBloc = context.read<IncomeBloc>()..add(const IncomeFormOpened());
 
     _amountController = TextEditingController(
       text: widget.income.amount.toString(),
@@ -60,6 +65,7 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
 
   @override
   void dispose() {
+    _incomeBloc.add(const IncomeFormClosed());
     _amountController.removeListener(_onFormInteraction);
     _descriptionController.removeListener(_onFormInteraction);
     _amountController.removeListener(_clearAmountError);
@@ -121,9 +127,8 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
 
     // Clear first so a repeated identical failure still re-emits (Equatable
     // would otherwise swallow it).
-    final bloc = context.read<IncomeBloc>();
-    bloc.add(const ClearIncomeFormErrorRequested());
-    bloc.add(
+    _incomeBloc.add(const ClearIncomeFormErrorRequested());
+    _incomeBloc.add(
       UpdateIncomeStarted(
         Income(
           id: widget.income.id,
