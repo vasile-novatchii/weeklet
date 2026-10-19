@@ -190,6 +190,7 @@ class _EditExpenseFormViewState extends State<EditExpenseFormView> {
                           ),
                           DescriptionFieldView(
                             controller: _descriptionController,
+                            hintText: l10n.descriptionFieldHint,
                           ),
                           ExpenseFormCategoryView(
                             selectedCategory: _selectedCategory,

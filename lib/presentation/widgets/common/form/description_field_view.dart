@@ -7,9 +7,11 @@ class DescriptionFieldView extends StatelessWidget {
   const DescriptionFieldView({
     super.key,
     required this.controller,
+    required this.hintText,
   });
 
   final TextEditingController controller;
+  final String hintText;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class DescriptionFieldView extends StatelessWidget {
         ),
         InputView(
           controller: controller,
-          hintText: l10n.descriptionFieldHint,
+          hintText: hintText,
           textInputAction: TextInputAction.next,
         ),
       ],

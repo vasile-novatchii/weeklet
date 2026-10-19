@@ -186,6 +186,7 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
                   ),
                   DescriptionFieldView(
                     controller: _descriptionController,
+                    hintText: AppLocalizations.of(context).descriptionFieldHint,
                   ),
                   ExpenseFormCategoryView(
                     selectedCategory: _selectedCategory,

@@ -53,9 +53,25 @@ void main() {
       tester,
       Form(
         key: formKey,
-        child: DescriptionFieldView(controller: TextEditingController()),
+        child: DescriptionFieldView(
+          controller: TextEditingController(),
+          hintText: 'For ex.: Salary',
+        ),
       ),
     );
     expect(formKey.currentState!.validate(), isTrue);
+  });
+
+  testWidgets('DescriptionFieldView renders the supplied hint text', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      DescriptionFieldView(
+        controller: TextEditingController(),
+        hintText: 'For ex.: Salary',
+      ),
+    );
+    expect(find.text('For ex.: Salary'), findsOneWidget);
   });
 }

@@ -149,6 +149,7 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
                       ),
                       DescriptionFieldView(
                         controller: _descriptionController,
+                        hintText: l10n.incomeDescriptionFieldHint,
                       ),
                       DateFieldView(
                         selectedDate: _selectedDate,
