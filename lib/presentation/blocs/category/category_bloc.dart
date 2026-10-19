@@ -5,7 +5,9 @@ import 'package:weeklet/domain/exceptions/category_exceptions.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
+import 'package:weeklet/domain/usecases/category/ensure_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_default_category_id_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
@@ -18,12 +20,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     required this.deleteCategoryUseCase,
     required this.getAllCategoriesUseCase,
     required this.getCategoryByIdUseCase,
+    required this.ensureDefaultCategoryUseCase,
+    required this.getDefaultCategoryIdUseCase,
   }) : super(const CategoryLoading()) {
     on<AddCategoryEvent>(_onAddCategory);
     on<UpdateCategoryEvent>(_onUpdateCategory);
     on<DeleteCategoryEvent>(_onDeleteCategory);
     on<GetAllCategoriesEvent>(_onGetAllCategories);
     on<GetCategoryByIdEvent>(_onGetCategoryById);
+    on<EnsureDefaultCategoryRequested>(_onEnsureDefaultCategory);
     on<ClearLastCreatedCategoryRequested>(_onClearLastCreatedCategory);
   }
 
@@ -32,6 +37,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final DeleteCategoryUseCase deleteCategoryUseCase;
   final GetAllCategoriesUseCase getAllCategoriesUseCase;
   final GetSingleCategoryUseCase getCategoryByIdUseCase;
+  final EnsureDefaultCategoryUseCase ensureDefaultCategoryUseCase;
+  final GetDefaultCategoryIdUseCase getDefaultCategoryIdUseCase;
 
   /// Session-scoped id of the category created via [AddCategoryEvent].
   /// Stamped on every subsequent [CategoriesLoaded] so it survives the reloads
@@ -120,17 +127,39 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   ) async {
     emit(const CategoryLoading());
     try {
-      final categories = await getAllCategoriesUseCase(NoParams());
-      emit(
-        CategoriesLoaded(
-          categories: categories,
-          lastCreatedCategoryId: _lastCreatedCategoryId,
-        ),
-      );
+      await _emitLoaded(emit);
     } catch (e) {
       debugPrint('error in _onGetAllCategories: $e');
       emit(const CategoryError(message: 'genericError'));
     }
+  }
+
+  Future<void> _onEnsureDefaultCategory(
+    EnsureDefaultCategoryRequested event,
+    Emitter<CategoryState> emit,
+  ) async {
+    emit(const CategoryLoading());
+    try {
+      await ensureDefaultCategoryUseCase(
+        EnsureDefaultCategoryParams(localizedName: event.localizedName),
+      );
+      await _emitLoaded(emit);
+    } catch (e) {
+      debugPrint('error in _onEnsureDefaultCategory: $e');
+      emit(const CategoryError(message: 'genericError'));
+    }
+  }
+
+  Future<void> _emitLoaded(Emitter<CategoryState> emit) async {
+    final categories = await getAllCategoriesUseCase(NoParams());
+    final defaultId = await getDefaultCategoryIdUseCase(NoParams());
+    emit(
+      CategoriesLoaded(
+        categories: categories,
+        lastCreatedCategoryId: _lastCreatedCategoryId,
+        defaultCategoryId: defaultId,
+      ),
+    );
   }
 
   void _onClearLastCreatedCategory(
@@ -140,7 +169,12 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     _lastCreatedCategoryId = null;
     final current = state;
     if (current is CategoriesLoaded) {
-      emit(CategoriesLoaded(categories: current.categories));
+      emit(
+        CategoriesLoaded(
+          categories: current.categories,
+          defaultCategoryId: current.defaultCategoryId,
+        ),
+      );
     }
   }
 

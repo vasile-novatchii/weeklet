@@ -26,7 +26,9 @@ import 'package:weeklet/domain/repositories/settings_repository.dart';
 import 'package:weeklet/domain/repositories/statistics_repository.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
+import 'package:weeklet/domain/usecases/category/ensure_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_default_category_id_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
@@ -145,7 +147,9 @@ void registerTestPathProvider() {
 /// Call in `setUp` (or at the start of a test) for true per-test isolation.
 Future<void> initTestDi() async {
   _tempDir = await Directory.systemTemp.createTemp('weeklet_test_hive_');
-  _exportTempDir = await Directory.systemTemp.createTemp('weeklet_test_export_');
+  _exportTempDir = await Directory.systemTemp.createTemp(
+    'weeklet_test_export_',
+  );
   Hive.init(_tempDir!.path);
 
   final categoryBox = await Hive.openBox<CategoryModel>('categories');
@@ -247,6 +251,18 @@ Future<void> initTestDi() async {
     () => GetOrCreateDefaultCategoryUseCase(
       GetIt.instance<CategoryRepository>(),
       GetIt.instance<Uuid>(),
+    ),
+  );
+
+  GetIt.instance.registerLazySingleton(
+    () => EnsureDefaultCategoryUseCase(
+      GetIt.instance<CategoryRepository>(),
+      GetIt.instance<GetOrCreateDefaultCategoryUseCase>(),
+    ),
+  );
+  GetIt.instance.registerLazySingleton(
+    () => GetDefaultCategoryIdUseCase(
+      GetIt.instance<CategoryRepository>(),
     ),
   );
 
@@ -380,6 +396,10 @@ Future<void> initTestDi() async {
       deleteCategoryUseCase: GetIt.instance<DeleteCategoryUseCase>(),
       getAllCategoriesUseCase: GetIt.instance<GetAllCategoriesUseCase>(),
       getCategoryByIdUseCase: GetIt.instance<GetSingleCategoryUseCase>(),
+      ensureDefaultCategoryUseCase:
+          GetIt.instance<EnsureDefaultCategoryUseCase>(),
+      getDefaultCategoryIdUseCase:
+          GetIt.instance<GetDefaultCategoryIdUseCase>(),
     ),
   );
 

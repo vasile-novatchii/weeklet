@@ -24,7 +24,9 @@ import 'package:weeklet/domain/usecases/settings/save_locale_usecase.dart';
 import 'package:weeklet/domain/usecases/settings/save_theme_usecase.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
+import 'package:weeklet/domain/usecases/category/ensure_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_default_category_id_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
@@ -188,6 +190,18 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerLazySingleton(
+    () => EnsureDefaultCategoryUseCase(
+      sl<CategoryRepository>(),
+      sl<GetOrCreateDefaultCategoryUseCase>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetDefaultCategoryIdUseCase(
+      sl<CategoryRepository>(),
+    ),
+  );
+
   // DOMAIN layer - UseCases (Expense)
   sl.registerLazySingleton(
     () => AddExpenseUseCase(
@@ -320,6 +334,8 @@ Future<void> init() async {
       deleteCategoryUseCase: sl<DeleteCategoryUseCase>(),
       getAllCategoriesUseCase: sl<GetAllCategoriesUseCase>(),
       getCategoryByIdUseCase: sl<GetSingleCategoryUseCase>(),
+      ensureDefaultCategoryUseCase: sl<EnsureDefaultCategoryUseCase>(),
+      getDefaultCategoryIdUseCase: sl<GetDefaultCategoryIdUseCase>(),
     ),
   );
 

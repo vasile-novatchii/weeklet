@@ -6,7 +6,10 @@ import 'package:weeklet/domain/exceptions/category_exceptions.dart';
 import 'package:weeklet/domain/repositories/category_repository.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
+import 'package:weeklet/domain/usecases/category/ensure_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_default_category_id_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
@@ -29,6 +32,9 @@ class _StubCategoryRepository implements CategoryRepository {
   /// [getAllCategories] so a reload sees what was just created.
   Category? lastAdded;
   final List<Category> _added = [];
+
+  /// Stored default-category marker.
+  String? marker;
 
   @override
   Future<void> addCategory(Category category) async {
@@ -56,17 +62,21 @@ class _StubCategoryRepository implements CategoryRepository {
   @override
   Future<Category?> getCategoryById(String id) async {
     if (shouldThrow) throw Exception('get by id failed');
-    return returnedCategory;
+    if (returnedCategory != null) return returnedCategory;
+    for (final c in [...returnedCategories, ..._added]) {
+      if (c.id == id) return c;
+    }
+    return null;
   }
 
   @override
   Future<void> clearAll() async {}
 
   @override
-  Future<String?> getDefaultCategoryId() async => null;
+  Future<String?> getDefaultCategoryId() async => marker;
 
   @override
-  Future<void> setDefaultCategoryId(String id) async {}
+  Future<void> setDefaultCategoryId(String id) async => marker = id;
 }
 
 // Shared fixture category
@@ -84,6 +94,11 @@ CategoryBloc _makeBloc(_StubCategoryRepository repo) => CategoryBloc(
   deleteCategoryUseCase: DeleteCategoryUseCase(repo),
   getAllCategoriesUseCase: GetAllCategoriesUseCase(repo),
   getCategoryByIdUseCase: GetSingleCategoryUseCase(repo),
+  ensureDefaultCategoryUseCase: EnsureDefaultCategoryUseCase(
+    repo,
+    GetOrCreateDefaultCategoryUseCase(repo, const Uuid()),
+  ),
+  getDefaultCategoryIdUseCase: GetDefaultCategoryIdUseCase(repo),
 );
 
 void main() {
@@ -122,11 +137,90 @@ void main() {
     );
 
     // ------------------------------------------------------------------
+    // EnsureDefaultCategoryRequested / defaultCategoryId (UAT 5)
+    // ------------------------------------------------------------------
+    late _StubCategoryRepository ensureRepo;
+
+    blocTest<CategoryBloc, CategoryState>(
+      'EnsureDefaultCategoryRequested on empty repo seeds the default and '
+      'exposes defaultCategoryId',
+      build: () {
+        ensureRepo = _StubCategoryRepository();
+        return _makeBloc(ensureRepo);
+      },
+      act: (bloc) => bloc.add(
+        const EnsureDefaultCategoryRequested(localizedName: 'Daily'),
+      ),
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>()
+            .having((s) => s.categories.length, 'count', 1)
+            .having((s) => s.categories.first.name, 'name', 'Daily')
+            .having(
+              (s) => s.defaultCategoryId,
+              'defaultCategoryId',
+              ensureRepo.lastAdded!.id,
+            ),
+      ],
+    );
+
+    blocTest<CategoryBloc, CategoryState>(
+      'EnsureDefaultCategoryRequested with existing categories creates '
+      'nothing',
+      build: () {
+        ensureRepo = _StubCategoryRepository(
+          returnedCategories: [_fixtureCategory],
+        );
+        return _makeBloc(ensureRepo);
+      },
+      act: (bloc) => bloc.add(
+        const EnsureDefaultCategoryRequested(localizedName: 'Daily'),
+      ),
+      verify: (_) => expect(ensureRepo.lastAdded, isNull),
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>()
+            .having((s) => s.categories.length, 'count', 1)
+            .having((s) => s.defaultCategoryId, 'defaultCategoryId', isNull),
+      ],
+    );
+
+    blocTest<CategoryBloc, CategoryState>(
+      'GetAllCategoriesEvent carries defaultCategoryId and '
+      'ClearLastCreatedCategoryRequested keeps it',
+      build: () {
+        ensureRepo = _StubCategoryRepository(
+          returnedCategories: [_fixtureCategory],
+        )..marker = _fixtureCategory.id;
+        return _makeBloc(ensureRepo);
+      },
+      act: (bloc) async {
+        bloc.add(const GetAllCategoriesEvent());
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        bloc.add(const ClearLastCreatedCategoryRequested());
+      },
+      expect: () => [
+        isA<CategoryLoading>(),
+        isA<CategoriesLoaded>().having(
+          (s) => s.defaultCategoryId,
+          'defaultCategoryId',
+          'cat-1',
+        ),
+        isA<CategoriesLoaded>().having(
+          (s) => s.defaultCategoryId,
+          'defaultCategoryId',
+          'cat-1',
+        ),
+      ],
+    );
+
+    // ------------------------------------------------------------------
     // AddCategoryEvent
     // ------------------------------------------------------------------
     blocTest<CategoryBloc, CategoryState>(
       'AddCategoryEvent success emits 4 states ending in CategoriesLoaded'
-          ' with CategorySuccess message == categoryAddedSuccess',
+      ' with CategorySuccess message == categoryAddedSuccess',
       build: () => _makeBloc(_StubCategoryRepository()),
       act: (bloc) => bloc.add(
         const AddCategoryEvent(name: 'Food', icon: '🍎'),
@@ -145,7 +239,7 @@ void main() {
 
     blocTest<CategoryBloc, CategoryState>(
       'AddCategoryEvent with empty name emits '
-          '[CategoryLoading, CategoryError] with emptyName error code',
+      '[CategoryLoading, CategoryError] with emptyName error code',
       build: () => _makeBloc(_StubCategoryRepository()),
       act: (bloc) => bloc.add(
         const AddCategoryEvent(name: '', icon: '🍎'),
@@ -162,7 +256,7 @@ void main() {
 
     blocTest<CategoryBloc, CategoryState>(
       'AddCategoryEvent generic error emits '
-          '[CategoryLoading, CategoryError] with genericError',
+      '[CategoryLoading, CategoryError] with genericError',
       build: () => _makeBloc(_StubCategoryRepository(shouldThrow: true)),
       act: (bloc) => bloc.add(
         const AddCategoryEvent(name: 'Food', icon: '🍎'),
@@ -272,7 +366,7 @@ void main() {
 
     blocTest<CategoryBloc, CategoryState>(
       'GetCategoryByIdEvent not found emits '
-          '[CategoryLoading, CategoryError] with errorCategoryNotFound',
+      '[CategoryLoading, CategoryError] with errorCategoryNotFound',
       build: () => _makeBloc(
         _StubCategoryRepository(returnedCategory: null),
       ),

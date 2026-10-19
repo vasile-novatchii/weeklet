@@ -5,6 +5,7 @@ import 'package:weeklet/core/di/service_locator.dart' show sl;
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/form_helpers.dart';
 import 'package:weeklet/domain/entities/category.dart';
+import 'package:weeklet/domain/utils/default_category_selection.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
@@ -37,6 +38,9 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
 
   /// Guards the D-10 auto-select so it applies at most once per form instance.
   bool _autoSelectConsumed = false;
+
+  /// Guards the default-category preselect so it applies at most once.
+  bool _defaultPreselectConsumed = false;
 
   @override
   void initState() {
@@ -75,20 +79,42 @@ class _AddExpenseFormViewState extends State<AddExpenseFormView> {
   /// no-category fallback never fires right after they made their own
   /// category. Never overrides a manual selection and never fires twice.
   void _onCategoryChanged(BuildContext context, CategoryState state) {
-    if (_autoSelectConsumed || _selectedCategory != null) return;
+    if (_selectedCategory != null) return;
     if (state is! CategoriesLoaded) return;
 
     final createdId = state.lastCreatedCategoryId;
-    if (createdId == null) return;
+    if (_autoSelectConsumed || createdId == null) {
+      _preselectDefault(state);
+      return;
+    }
 
     final matches = state.categories.where((c) => c.id == createdId);
-    if (matches.isEmpty) return;
+    if (matches.isEmpty) {
+      _preselectDefault(state);
+      return;
+    }
 
     setState(() {
       _selectedCategory = matches.first;
     });
     _autoSelectConsumed = true;
     context.read<CategoryBloc>().add(const ClearLastCreatedCategoryRequested());
+  }
+
+  /// Pre-selects the default category while it is the only category.
+  /// Does not mark the form as interacted (Save stays disabled until the user
+  /// touches a field).
+  void _preselectDefault(CategoriesLoaded state) {
+    if (_defaultPreselectConsumed) return;
+    final id = DefaultCategorySelection.preselectedCategoryId(
+      state.categories,
+      state.defaultCategoryId,
+    );
+    if (id == null) return;
+    final matches = state.categories.where((c) => c.id == id);
+    if (matches.isEmpty) return;
+    setState(() => _selectedCategory = matches.first);
+    _defaultPreselectConsumed = true;
   }
 
   void _onSave() {

@@ -34,6 +34,7 @@ class AppInitializer extends StatefulWidget {
 class _AppInitializerState extends State<AppInitializer> {
   late final AppLifecycleListener _lifecycleListener;
   bool _isLocked = false;
+  bool _defaultCategoryRequested = false;
 
   @override
   void initState() {
@@ -42,6 +43,21 @@ class _AppInitializerState extends State<AppInitializer> {
       onResume: _onResume,
     );
     _initializeAppData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Localizations are only reachable after initState, so the one-time
+    // default-category seeding (and categories load) happens here. The name
+    // is resolved with the locale in effect now and is never renamed later.
+    if (_defaultCategoryRequested) return;
+    _defaultCategoryRequested = true;
+    context.read<CategoryBloc>().add(
+      EnsureDefaultCategoryRequested(
+        localizedName: AppLocalizations.of(context).defaultCategoryName,
+      ),
+    );
   }
 
   @override
@@ -60,8 +76,8 @@ class _AppInitializerState extends State<AppInitializer> {
     // Load all incomes
     context.read<IncomeBloc>().add(const LoadIncomesRequested());
 
-    // Load all categories
-    context.read<CategoryBloc>().add(const GetAllCategoriesEvent());
+    // Categories (with default seeding) load from didChangeDependencies,
+    // where localizations are available.
 
     // Preload stats so the Stats screen shows data immediately without a spinner
     context.read<StatsBloc>().add(

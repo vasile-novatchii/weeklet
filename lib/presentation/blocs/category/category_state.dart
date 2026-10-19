@@ -12,6 +12,7 @@ final class CategoriesLoaded extends CategoryState {
   const CategoriesLoaded({
     required this.categories,
     this.lastCreatedCategoryId,
+    this.defaultCategoryId,
   });
 
   final List<Category> categories;
@@ -20,6 +21,10 @@ final class CategoriesLoaded extends CategoryState {
   /// The add-expense form consumes it to pre-select a category made mid-flow
   /// (D-10), then clears it so the selection fires exactly once.
   final String? lastCreatedCategoryId;
+
+  /// Id of the app-managed default category (stored marker), or null when
+  /// none exists. The add-expense form uses it to pre-select the default.
+  final String? defaultCategoryId;
 }
 
 final class CategoryLoaded extends CategoryState {

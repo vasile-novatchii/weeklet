@@ -38,6 +38,14 @@ final class GetAllCategoriesEvent extends CategoryEvent {
   const GetAllCategoriesEvent();
 }
 
+/// Dispatched once at startup. Seeds the default category (named
+/// [localizedName]) only when no category exists, then loads all categories.
+final class EnsureDefaultCategoryRequested extends CategoryEvent {
+  const EnsureDefaultCategoryRequested({required this.localizedName});
+
+  final String localizedName;
+}
+
 /// Dispatched by the add-expense form once it has consumed the auto-select of
 /// a category created mid-flow, so the selection fires exactly once per
 /// creation and a later reload cannot re-apply it.

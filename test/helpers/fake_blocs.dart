@@ -8,7 +8,9 @@ import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
 import 'package:weeklet/domain/usecases/category/add_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/delete_category_usecase.dart';
+import 'package:weeklet/domain/usecases/category/ensure_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_all_categories_usecase.dart';
+import 'package:weeklet/domain/usecases/category/get_default_category_id_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_or_create_default_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/get_single_category_usecase.dart';
 import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
@@ -251,6 +253,23 @@ class FakeIncomeBloc extends IncomeBloc {
 // FakeCategoryBloc — extends CategoryBloc so it can be registered as CategoryBloc
 // ---------------------------------------------------------------------------
 
+class _StubEnsureDefaultCategoryUseCase
+    implements EnsureDefaultCategoryUseCase {
+  @override
+  Future<Category?> call(EnsureDefaultCategoryParams params) async => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _StubGetDefaultCategoryIdUseCase implements GetDefaultCategoryIdUseCase {
+  @override
+  Future<String?> call(NoParams params) async => null;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class FakeCategoryBloc extends CategoryBloc {
   FakeCategoryBloc()
     : super(
@@ -259,5 +278,7 @@ class FakeCategoryBloc extends CategoryBloc {
         deleteCategoryUseCase: _StubDeleteCategoryUseCase(),
         getAllCategoriesUseCase: _StubGetAllCategoriesUseCase(),
         getCategoryByIdUseCase: _StubGetSingleCategoryUseCase(),
+        ensureDefaultCategoryUseCase: _StubEnsureDefaultCategoryUseCase(),
+        getDefaultCategoryIdUseCase: _StubGetDefaultCategoryIdUseCase(),
       );
 }

@@ -351,6 +351,96 @@ void main() {
     );
 
     testWidgets(
+      'preselects the default category while it is the only category',
+      (tester) async {
+        await pumpFormView(tester, initialState: const CategoryLoading());
+        await tester.pump();
+
+        categoryStateController.add(
+          CategoriesLoaded(
+            categories: [fakeCategory(id: 'daily-1', name: 'Daily')],
+            defaultCategoryId: 'daily-1',
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+
+        expect(categoryView(tester).selectedCategory?.id, 'daily-1');
+        expect(find.text('Select Category'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'shows Select Category when another category exists besides default',
+      (tester) async {
+        await pumpFormView(tester, initialState: const CategoryLoading());
+        await tester.pump();
+
+        categoryStateController.add(
+          CategoriesLoaded(
+            categories: [
+              fakeCategory(id: 'daily-1', name: 'Daily'),
+              fakeCategory(id: 'cat-2', name: 'Groceries'),
+            ],
+            defaultCategoryId: 'daily-1',
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+
+        expect(categoryView(tester).selectedCategory, isNull);
+        expect(find.text('Select Category'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'default preselect never overrides a selection and applies once',
+      (tester) async {
+        final daily = fakeCategory(id: 'daily-1', name: 'Daily');
+        final other = fakeCategory(id: 'cat-2', name: 'Groceries');
+
+        await pumpFormView(tester, initialState: const CategoryLoading());
+        await tester.pump();
+
+        // Manual selection first; a later sole-default load must not replace.
+        await selectCategory(tester, other);
+        categoryStateController.add(
+          CategoriesLoaded(categories: [daily], defaultCategoryId: 'daily-1'),
+        );
+        await tester.pump();
+        await tester.pump();
+        expect(categoryView(tester).selectedCategory?.id, 'cat-2');
+      },
+    );
+
+    testWidgets(
+      'default preselect applies at most once per form instance',
+      (tester) async {
+        final daily = fakeCategory(id: 'daily-1', name: 'Daily');
+
+        await pumpFormView(tester, initialState: const CategoryLoading());
+        await tester.pump();
+
+        categoryStateController.add(
+          CategoriesLoaded(categories: [daily], defaultCategoryId: 'daily-1'),
+        );
+        await tester.pump();
+        await tester.pump();
+        expect(categoryView(tester).selectedCategory?.id, 'daily-1');
+
+        // User clears the selection, then a reload arrives: no re-apply.
+        categoryView(tester).onChanged(null);
+        await tester.pump();
+        categoryStateController.add(
+          CategoriesLoaded(categories: [daily], defaultCategoryId: 'daily-1'),
+        );
+        await tester.pump();
+        await tester.pump();
+        expect(categoryView(tester).selectedCategory, isNull);
+      },
+    );
+
+    testWidgets(
       'no GetIt lookup of use cases remains',
       (tester) async {
         // Only the three BLoCs are registered in GetIt. A surviving
