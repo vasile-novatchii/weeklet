@@ -37,14 +37,12 @@ String extractPdfUnicodeText(File pdfFile) {
 
   // Font resource name -> ToUnicode map.
   final fontMaps = <String, Map<int, String>>{};
-  final fontRe = RegExp(r'<<([^>]*?/ToUnicode\s+(\d+)\s+0\s+R[^>]*?)>>');
-  for (final m in fontRe.allMatches(text)) {
-    final dict = m.group(1)!;
-    final cmap = streams[int.parse(m.group(2)!)];
-    if (cmap == null) continue;
-    final name = RegExp(r'/Name\s*/(F\d+)').firstMatch(dict)?.group(1);
-    if (name == null) continue;
-    fontMaps[name] = _parseCMap(cmap);
+  for (final obj in text.split('endobj')) {
+    final tu = RegExp(r'/ToUnicode\s+(\d+)\s+0\s+R').firstMatch(obj);
+    final name = RegExp(r'/Name\s*/(F\d+)').firstMatch(obj)?.group(1);
+    if (tu == null || name == null) continue;
+    final cmap = streams[int.parse(tu.group(1)!)];
+    if (cmap != null) fontMaps[name] = _parseCMap(cmap);
   }
 
   final buffer = StringBuffer();
