@@ -36,10 +36,11 @@ class _StubGetIncomesUseCase implements GetIncomesUseCase {
 
 class _StubUpdateIncomeUseCase implements UpdateIncomeUseCase {
   bool shouldThrow = false;
+  Object? throwable;
 
   @override
   Future<void> call(Income params) async {
-    if (shouldThrow) throw Exception('update error');
+    if (shouldThrow) throw throwable ?? Exception('update error');
   }
 
   @override
@@ -234,7 +235,7 @@ void main() {
     );
 
     blocTest<IncomeBloc, IncomeState>(
-      'AddIncomeStarted validation exception sets actionError',
+      'AddIncomeStarted validation exception sets formError',
       setUp: () {
         _stubAdd.shouldThrow = true;
         _stubAdd.throwable = const IncomeValidationException(
@@ -253,8 +254,8 @@ void main() {
       ),
       expect: () => [
         isA<IncomeSuccess>().having(
-          (s) => s.actionError,
-          'actionError',
+          (s) => s.formError,
+          'formError',
           'emptyDescription',
         ),
       ],
@@ -262,7 +263,7 @@ void main() {
     );
 
     blocTest<IncomeBloc, IncomeState>(
-      'AddIncomeStarted generic exception sets actionError to genericError',
+      'AddIncomeStarted generic exception sets formError to genericError',
       setUp: () {
         _stubAdd.shouldThrow = true;
         _stubAdd.throwable = Exception('boom');
@@ -279,8 +280,8 @@ void main() {
       ),
       expect: () => [
         isA<IncomeSuccess>().having(
-          (s) => s.actionError,
-          'actionError',
+          (s) => s.formError,
+          'formError',
           'genericError',
         ),
       ],
@@ -323,7 +324,7 @@ void main() {
     );
 
     blocTest<IncomeBloc, IncomeState>(
-      'UpdateIncomeStarted error sets actionError to genericError',
+      'UpdateIncomeStarted error sets formError to genericError',
       setUp: () {
         _stubUpdate.shouldThrow = true;
         GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
@@ -333,10 +334,30 @@ void main() {
       act: (bloc) => bloc.add(UpdateIncomeStarted(_fakeIncome())),
       expect: () => [
         isA<IncomeSuccess>().having(
-          (s) => s.actionError,
-          'actionError',
+          (s) => s.formError,
+          'formError',
           'genericError',
         ),
+      ],
+      tearDown: () async => GetIt.instance.reset(),
+    );
+
+    blocTest<IncomeBloc, IncomeState>(
+      'UpdateIncomeStarted validation exception sets formError',
+      setUp: () {
+        _stubUpdate.throwable = const IncomeValidationException(
+          IncomeValidationError.invalidAmount,
+        );
+        _stubUpdate.shouldThrow = true;
+        GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+      },
+      build: _makeBloc,
+      seed: _successSeed,
+      act: (bloc) => bloc.add(UpdateIncomeStarted(_fakeIncome())),
+      expect: () => [
+        isA<IncomeSuccess>()
+            .having((s) => s.formError, 'formError', 'invalidAmount')
+            .having((s) => s.actionError, 'actionError', isNull),
       ],
       tearDown: () async => GetIt.instance.reset(),
     );
@@ -406,6 +427,55 @@ void main() {
           isNull,
         ),
       ],
+    );
+
+    blocTest<IncomeBloc, IncomeState>(
+      'ClearIncomeFormErrorRequested clears formError and keeps All months',
+      build: _makeBloc,
+      seed: () => _successSeed().copyWith(
+        formError: 'emptyDescription',
+        selectedMonth: null,
+      ),
+      act: (bloc) => bloc.add(const ClearIncomeFormErrorRequested()),
+      expect: () => [
+        isA<IncomeSuccess>()
+            .having((s) => s.formError, 'formError', isNull)
+            .having((s) => s.selectedMonth, 'selectedMonth', isNull),
+      ],
+    );
+
+    blocTest<IncomeBloc, IncomeState>(
+      'ClearIncomeFormErrorRequested lands before a failing add result',
+      setUp: () {
+        _stubAdd.shouldThrow = true;
+        _stubAdd.throwable = const IncomeValidationException(
+          IncomeValidationError.invalidAmount,
+        );
+        GetIt.instance.registerSingleton<StatsBloc>(FakeStatsBloc());
+      },
+      build: _makeBloc,
+      seed: () => _successSeed().copyWith(
+        formError: 'emptyDescription',
+        selectedMonth: null,
+      ),
+      act: (bloc) => bloc
+        ..add(const ClearIncomeFormErrorRequested())
+        ..add(
+          AddIncomeStarted(
+            amount: 'x',
+            description: 'Salary',
+            date: DateTime(DateTime.now().year, 5, 1),
+          ),
+        ),
+      expect: () => [
+        isA<IncomeSuccess>().having((s) => s.formError, 'formError', isNull),
+        isA<IncomeSuccess>().having(
+          (s) => s.formError,
+          'formError',
+          'invalidAmount',
+        ),
+      ],
+      tearDown: () async => GetIt.instance.reset(),
     );
   });
 
