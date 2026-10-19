@@ -9,14 +9,17 @@ import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 /** Streams an existing PDF file to the print spooler under a custom job name. */
 class PdfPrintAdapter(
     private val file: File,
     private val jobName: String,
 ) : PrintDocumentAdapter() {
+
+    private val executor: ExecutorService = Executors.newSingleThreadExecutor()
 
     override fun onLayout(
         oldAttributes: PrintAttributes?,
@@ -42,34 +45,56 @@ class PdfPrintAdapter(
         cancellationSignal: CancellationSignal,
         callback: WriteResultCallback,
     ) {
-        var input: FileInputStream? = null
-        var output: FileOutputStream? = null
+        // onWrite is delivered on the main thread; copy on a worker so a slow
+        // spooler pipe cannot block the UI.
         try {
-            input = FileInputStream(file)
-            output = FileOutputStream(destination.fileDescriptor)
-            val buffer = ByteArray(16 * 1024)
-            while (true) {
-                if (cancellationSignal.isCanceled) {
-                    callback.onWriteCancelled()
-                    return
+            executor.execute { copyToDestination(destination, cancellationSignal, callback) }
+        } catch (e: Exception) {
+            closeQuietly(destination)
+            callback.onWriteFailed(e.message)
+        }
+    }
+
+    override fun onFinish() {
+        executor.shutdown()
+    }
+
+    private fun copyToDestination(
+        destination: ParcelFileDescriptor,
+        cancellationSignal: CancellationSignal,
+        callback: WriteResultCallback,
+    ) {
+        // Owns and closes the destination descriptor when the stream closes.
+        val output = ParcelFileDescriptor.AutoCloseOutputStream(destination)
+        try {
+            FileInputStream(file).use { input ->
+                val buffer = ByteArray(16 * 1024)
+                while (true) {
+                    if (cancellationSignal.isCanceled) {
+                        callback.onWriteCancelled()
+                        return
+                    }
+                    val read = input.read(buffer)
+                    if (read < 0) break
+                    output.write(buffer, 0, read)
                 }
-                val read = input.read(buffer)
-                if (read < 0) break
-                output.write(buffer, 0, read)
+                output.flush()
             }
-            output.flush()
             callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             callback.onWriteFailed(e.message)
         } finally {
             try {
-                input?.close()
+                output.close()
             } catch (_: IOException) {
             }
-            try {
-                output?.close()
-            } catch (_: IOException) {
-            }
+        }
+    }
+
+    private fun closeQuietly(descriptor: ParcelFileDescriptor) {
+        try {
+            descriptor.close()
+        } catch (_: IOException) {
         }
     }
 }
