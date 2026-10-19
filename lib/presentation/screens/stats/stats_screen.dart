@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
-import 'package:weeklet/core/utils/category_color_utils.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
-import 'package:weeklet/domain/usecases/export/stats_pdf_labels.dart';
 import 'package:weeklet/domain/utils/evolution_stats_utils.dart';
 import 'package:weeklet/domain/utils/filter_visibility_utils.dart';
 import 'package:weeklet/domain/utils/stats_export_utils.dart';
@@ -30,6 +28,7 @@ import 'package:weeklet/presentation/screens/stats/widgets/stats_filter_bar.dart
 import 'package:weeklet/presentation/screens/stats/widgets/stats_summary_cards/stats_summary_cards.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_tabs_section.dart';
 import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
+import 'package:weeklet/presentation/utils/stats_export_request_factory.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -42,59 +41,20 @@ class StatsView extends StatelessWidget {
   const StatsView({super.key});
 
   void _onExportTapped(BuildContext context, MonthlyStatsLoaded loaded) {
-    final l10n = AppLocalizations.of(context);
     final settingsState = context.read<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
         ? settingsState.currencySymbol
         : AppConstants.DEFAULT_CURRENCY;
-    final isAnnual = loaded.month == null;
-    final evolution = loaded.evolutionStats;
 
     context.read<ExportBloc>().add(
-      ExportStatsStarted(
-        stats: loaded.stats,
-        monthRows: isAnnual && evolution != null
-            ? StatsExportUtils.monthsForExport(evolution, loaded.year)
-            : const <MonthlySnapshot>[],
-        year: loaded.year,
-        month: loaded.month,
+      StatsExportRequestFactory.build(
+        l10n: AppLocalizations.of(context),
+        loaded: loaded,
         currencySymbol: currencySymbol,
         localeCode: Localizations.localeOf(context).languageCode,
-        labels: _buildPdfLabels(l10n, isAnnual: isAnnual),
-        categoryColors: {
-          for (final stat in loaded.stats.categoryStats)
-            stat.category.id: CategoryColorUtils.getColor(
-              stat.category.name,
-            ).toARGB32(),
-        },
       ),
     );
   }
-
-  static StatsPdfLabels _buildPdfLabels(
-    AppLocalizations l10n, {
-    required bool isAnnual,
-  }) => StatsPdfLabels(
-    reportTitle: l10n.statsPdfReportTitle,
-    generatedLabel: l10n.statsPdfGeneratedLabel,
-    incomeLabel: isAnnual ? l10n.statsAnnualIncome : l10n.statsMonthlyIncome,
-    expensesLabel: isAnnual
-        ? l10n.statsAnnualExpenses
-        : l10n.statsMonthlyExpenses,
-    balanceLabel: isAnnual ? l10n.statsAnnualBalance : l10n.statsMonthlyBalance,
-    vsLastMonthLabel: l10n.statsVsLastMonth,
-    categoryBreakdownTitle: l10n.statsPdfCategoryBreakdownTitle,
-    columnCategory: l10n.statsPdfColumnCategory,
-    columnAmount: l10n.statsPdfColumnAmount,
-    columnShare: l10n.statsPdfColumnShare,
-    monthBreakdownTitle: l10n.statsMonthlyBreakdownTitle,
-    columnMonth: l10n.statsPdfColumnMonth,
-    columnIncome: l10n.incomeBarLabel,
-    columnExpenses: l10n.expensesBarLabel,
-    columnBalance: l10n.statsPdfColumnBalance,
-    totalLabel: l10n.statsPdfTotal,
-    noExpensesLabel: l10n.statsPdfNoExpenses,
-  );
 
   void _onExportState(BuildContext context, ExportState exportState) {
     if (exportState is ExportSuccess) {

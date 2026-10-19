@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:weeklet/core/utils/pdf_font_loader.dart';
+import 'package:weeklet/domain/usecases/export/build_export_subject_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_stats_usecase.dart';
@@ -16,6 +15,7 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     required this.exportIncomeUseCase,
     required this.exportStatsUseCase,
     required this.fontLoader,
+    this.buildExportSubjectUseCase = const BuildExportSubjectUseCase(),
   }) : super(const ExportInitial()) {
     on<ExportExpensesStarted>(_onExportExpenses);
     on<ExportIncomeStarted>(_onExportIncome);
@@ -27,6 +27,7 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
   final ExportIncomeUseCase exportIncomeUseCase;
   final ExportStatsUseCase exportStatsUseCase;
   final PdfFontLoader fontLoader;
+  final BuildExportSubjectUseCase buildExportSubjectUseCase;
 
   Future<void> _onExportExpenses(
     ExportExpensesStarted event,
@@ -50,15 +51,18 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
           boldFont: fonts.bold,
         ),
       );
-      final period = await _periodLabel(
-        event.localeCode,
-        event.year,
-        event.month,
+      final subject = await buildExportSubjectUseCase(
+        BuildExportSubjectParams(
+          reportTitle: event.labels.reportTitleExpenses,
+          localeCode: event.localeCode,
+          year: event.year,
+          month: event.month,
+        ),
       );
       emit(
         ExportSuccess(
           filePath: filePath,
-          subject: 'Weeklet ${event.labels.reportTitleExpenses} - $period',
+          subject: subject,
           exportType: ExportType.expenses,
         ),
       );
@@ -89,15 +93,18 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
           boldFont: fonts.bold,
         ),
       );
-      final period = await _periodLabel(
-        event.localeCode,
-        event.year,
-        event.month,
+      final subject = await buildExportSubjectUseCase(
+        BuildExportSubjectParams(
+          reportTitle: event.labels.reportTitleIncome,
+          localeCode: event.localeCode,
+          year: event.year,
+          month: event.month,
+        ),
       );
       emit(
         ExportSuccess(
           filePath: filePath,
-          subject: 'Weeklet ${event.labels.reportTitleIncome} - $period',
+          subject: subject,
           exportType: ExportType.income,
         ),
       );
@@ -130,15 +137,18 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
           boldFont: fonts.bold,
         ),
       );
-      final period = await _periodLabel(
-        event.localeCode,
-        event.year,
-        event.month,
+      final subject = await buildExportSubjectUseCase(
+        BuildExportSubjectParams(
+          reportTitle: event.labels.reportTitle,
+          localeCode: event.localeCode,
+          year: event.year,
+          month: event.month,
+        ),
       );
       emit(
         ExportSuccess(
           filePath: filePath,
-          subject: 'Weeklet ${event.labels.reportTitle} - $period',
+          subject: subject,
           exportType: ExportType.stats,
         ),
       );
@@ -146,19 +156,6 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
       debugPrint('error in _onExportStats: $e');
       emit(ExportFailure(e.toString(), exportType: ExportType.stats));
     }
-  }
-
-  /// Localized period (month name + year, or year only), first letter
-  /// capitalized.
-  Future<String> _periodLabel(String localeCode, int year, int? month) async {
-    await initializeDateFormatting(localeCode);
-    final period = month == null
-        ? '$year'
-        : DateFormat.yMMMM(localeCode).format(DateTime(year, month));
-    if (period.isEmpty) {
-      return period;
-    }
-    return period[0].toUpperCase() + period.substring(1);
   }
 
   void _onResetExport(

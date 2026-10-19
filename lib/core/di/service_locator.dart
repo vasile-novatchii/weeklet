@@ -54,6 +54,7 @@ import 'package:weeklet/domain/usecases/income/get_incomes_use_case.dart';
 import 'package:weeklet/domain/usecases/income/update_income_use_case.dart';
 import 'package:weeklet/domain/usecases/export/export_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
+import 'package:weeklet/domain/usecases/export/build_export_subject_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_stats_usecase.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/income/income_bloc.dart';
@@ -301,6 +302,7 @@ Future<void> init() async {
   sl.registerLazySingleton(ExportExpensesUseCase.new);
   sl.registerLazySingleton(ExportIncomeUseCase.new);
   sl.registerLazySingleton(ExportStatsUseCase.new);
+  sl.registerLazySingleton(BuildExportSubjectUseCase.new);
 
   // Settings BLoC — registered BEFORE other BLoCs per CLAUDE.md rule
   sl.registerLazySingleton(BiometricService.new);
@@ -370,6 +372,7 @@ Future<void> init() async {
       exportIncomeUseCase: sl<ExportIncomeUseCase>(),
       exportStatsUseCase: sl<ExportStatsUseCase>(),
       fontLoader: sl<PdfFontLoader>(),
+      buildExportSubjectUseCase: sl<BuildExportSubjectUseCase>(),
     ),
   );
 }

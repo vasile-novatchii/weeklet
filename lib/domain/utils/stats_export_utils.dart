@@ -55,6 +55,17 @@ class StatsExportUtils {
       ..sort((a, b) => a.month.compareTo(b.month));
   }
 
+  /// Month rows for the export of the current selection: only the annual
+  /// (all months) export carries a month table.
+  static List<MonthlySnapshot> monthRowsForSelection({
+    required EvolutionStats? evolution,
+    required int year,
+    required int? month,
+    DateTime? now,
+  }) => month == null && evolution != null
+      ? monthsForExport(evolution, year, now: now)
+      : const <MonthlySnapshot>[];
+
   /// File name, never localized and never built from user text.
   static String fileName(int year, int? month) => month == null
       ? 'weeklet_stats_$year.pdf'

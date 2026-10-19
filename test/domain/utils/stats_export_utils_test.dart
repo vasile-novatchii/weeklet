@@ -57,6 +57,46 @@ void main() {
     });
   });
 
+  group('monthRowsForSelection', () {
+    final evo = _evolution(2025, {1: (income: 10, expenses: 5)});
+
+    test('single month selection carries no month rows', () {
+      expect(
+        StatsExportUtils.monthRowsForSelection(
+          evolution: evo,
+          year: 2025,
+          month: 3,
+          now: now,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('annual selection without evolution carries no month rows', () {
+      expect(
+        StatsExportUtils.monthRowsForSelection(
+          evolution: null,
+          year: 2025,
+          month: null,
+          now: now,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('annual selection delegates to monthsForExport', () {
+      expect(
+        StatsExportUtils.monthRowsForSelection(
+          evolution: evo,
+          year: 2025,
+          month: null,
+          now: now,
+        ),
+        hasLength(12),
+      );
+    });
+  });
+
   group('monthsForExport', () {
     test('past year returns Jan-Dec including zero rows', () {
       final evo = _evolution(2025, {2: (income: 100, expenses: 40)});
