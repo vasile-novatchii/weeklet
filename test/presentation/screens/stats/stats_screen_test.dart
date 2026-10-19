@@ -24,7 +24,14 @@ import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_tab.dart';
 import 'package:weeklet/presentation/screens/stats/stats_screen.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_item.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/annual_grouped_bar_chart.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_list.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/modern_donut_chart.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/stats_empty_view.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/stats_filter_bar.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/stats_summary_cards/stats_summary_cards.dart';
+import 'package:weeklet/presentation/screens/stats/widgets/stats_tabs_section.dart';
 import '../../../helpers/fake_share_platform.dart';
 import '../../../helpers/test_app.dart';
 import '../../../helpers/test_data.dart';
@@ -366,6 +373,57 @@ void main() {
       );
 
       expect(fakeShare.shareCalls, isEmpty);
+    });
+  });
+
+  group('StatsScreen - empty state', () {
+    testWidgets('shows only filter bar and empty view', (tester) async {
+      seed(loadedWith(income: 0, expenses: 0));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(StatsEmptyView), findsOneWidget);
+      expect(find.byType(StatsFilterBar), findsOneWidget);
+      expect(find.byType(StatsSummaryCards), findsNothing);
+      expect(find.byType(StatsTabsSection), findsNothing);
+      expect(find.byType(ModernDonutChart), findsNothing);
+      expect(find.byType(CategoryDetailsList), findsNothing);
+      expect(find.byType(AnnualGroupedBarChart), findsNothing);
+      expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
+    });
+
+    testWidgets('income-only selection renders cards and tabs', (
+      tester,
+    ) async {
+      seed(loadedWith(income: 800, expenses: 0));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(StatsSummaryCards), findsOneWidget);
+      expect(find.byType(StatsTabsSection), findsOneWidget);
+      expect(find.byType(StatsFilterBar), findsOneWidget);
+    });
+
+    testWidgets('empty to non-empty selection restores cards and tabs', (
+      tester,
+    ) async {
+      final controller = StreamController<StatsState>.broadcast();
+      addTearDown(controller.close);
+      final empty = loadedWith(income: 0, expenses: 0);
+      when(() => mockStatsBloc.state).thenReturn(empty);
+      whenListen(mockStatsBloc, controller.stream, initialState: empty);
+      await pumpStatsScreen(tester);
+      await tester.pump();
+      expect(find.byType(StatsSummaryCards), findsNothing);
+
+      final full = loadedWith();
+      when(() => mockStatsBloc.state).thenReturn(full);
+      controller.add(full);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(StatsSummaryCards), findsOneWidget);
+      expect(find.byType(StatsTabsSection), findsOneWidget);
     });
   });
 

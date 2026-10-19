@@ -150,6 +150,22 @@ class StatsView extends StatelessWidget {
                 LoadMonthlyStats(year: DateTime.now().year),
               ),
             ),
+            final MonthlyStatsLoaded loaded
+                when !StatsExportUtils.hasExportableData(loaded.stats) =>
+              CustomScrollView(
+                slivers: [
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _StickyFilterHeaderDelegate(
+                      child: const StatsFilterBar(),
+                    ),
+                  ),
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: StatsEmptyView(),
+                  ),
+                ],
+              ),
             final MonthlyStatsLoaded loaded => CustomScrollView(
               slivers: [
                 SliverPersistentHeader(
