@@ -26,8 +26,7 @@ class _FakePathProvider
       Directory.systemTemp.path;
 
   @override
-  Future<String?> getApplicationCachePath() async =>
-      Directory.systemTemp.path;
+  Future<String?> getApplicationCachePath() async => Directory.systemTemp.path;
 
   @override
   Future<String?> getDownloadsPath() async => null;
@@ -46,7 +45,6 @@ class _FakePathProvider
   @override
   Future<String?> getLibraryPath() async => null;
 }
-
 
 const _labelsRu = TransactionPdfLabels(
   reportTitleExpenses: 'Отчёт о расходах',
