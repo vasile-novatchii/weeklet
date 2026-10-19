@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
+import 'package:weeklet/core/utils/category_color_utils.dart';
 import 'package:weeklet/core/theme/theme.dart';
 import 'package:weeklet/domain/entities/settings.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
@@ -21,6 +25,7 @@ import 'package:weeklet/presentation/blocs/stats/stats_tab.dart';
 import 'package:weeklet/presentation/screens/stats/stats_screen.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_item.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart';
+import '../../../helpers/fake_share_platform.dart';
 import '../../../helpers/test_app.dart';
 import '../../../helpers/test_data.dart';
 
@@ -48,6 +53,7 @@ void main() {
   late MockStatsBloc mockStatsBloc;
   late MockSettingsBloc mockSettingsBloc;
   late MockExportBloc mockExportBloc;
+  late FakeSharePlatform fakeShare;
 
   setUpAll(() {
     // Use concrete subclasses as fallback values — sealed classes cannot be
@@ -64,6 +70,8 @@ void main() {
     mockStatsBloc = MockStatsBloc();
     mockSettingsBloc = MockSettingsBloc();
     mockExportBloc = MockExportBloc();
+    fakeShare = FakeSharePlatform();
+    SharePlatform.instance = fakeShare;
     when(() => mockExportBloc.state).thenReturn(const ExportInitial());
     whenListen(
       mockExportBloc,
@@ -182,6 +190,182 @@ void main() {
       await tester.pump();
 
       expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+    });
+  });
+
+  group('StatsScreen - export dispatch', () {
+    ExportStatsStarted tapAndCapture(WidgetTester tester) {
+      final captured = verify(() => mockExportBloc.add(captureAny())).captured;
+      expect(captured, hasLength(1));
+      return captured.single as ExportStatsStarted;
+    }
+
+    testWidgets('single month dispatches filter-driven event', (tester) async {
+      final cat = [
+        CategoryStats(
+          category: fakeCategory(id: 'cat-1', name: 'Food'),
+          totalAmount: 500,
+          percentage: 1,
+        ),
+      ];
+      final loaded = loadedWith(
+        month: 3,
+        year: 2026,
+        tab: StatsTab.annual,
+        categories: cat,
+      );
+      seed(loaded);
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.picture_as_pdf));
+      await tester.pump();
+
+      final event = tapAndCapture(tester);
+      expect(event.year, 2026);
+      expect(event.month, 3);
+      expect(event.monthRows, isEmpty);
+      expect(event.currencySymbol, Settings.defaults().currencySymbol);
+      expect(event.localeCode, 'en');
+      expect(event.labels.reportTitle, 'Statistics Report');
+      expect(event.labels.incomeLabel, 'Monthly Income');
+      expect(event.stats, loaded.stats);
+      expect(
+        event.categoryColors['cat-1'],
+        CategoryColorUtils.getColor('Food').toARGB32(),
+      );
+    });
+
+    testWidgets('all months dispatches month rows from evolution', (
+      tester,
+    ) async {
+      final year = DateTime.now().year - 1;
+      final evolution = EvolutionStats(
+        snapshots: [
+          for (var m = 1; m <= 12; m++)
+            MonthlySnapshot(
+              month: m,
+              year: year,
+              totalIncome: m == 2 ? 100 : 0,
+              totalExpenses: m == 2 ? 40 : 0,
+              balance: m == 2 ? 60 : 0,
+              categoryStats: const [],
+            ),
+        ],
+      );
+      seed(loadedWith(year: year, evolution: evolution));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.picture_as_pdf));
+      await tester.pump();
+
+      final event = tapAndCapture(tester);
+      expect(event.month, isNull);
+      expect(event.monthRows, hasLength(12));
+      expect(event.labels.incomeLabel, 'Annual Income');
+    });
+
+    testWidgets('all months without evolution stats gives empty rows', (
+      tester,
+    ) async {
+      seed(loadedWith());
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.picture_as_pdf));
+      await tester.pump();
+
+      expect(tapAndCapture(tester).monthRows, isEmpty);
+    });
+  });
+
+  group('StatsScreen - export listener', () {
+    late StreamController<ExportState> controller;
+
+    setUp(() {
+      controller = StreamController<ExportState>.broadcast();
+      addTearDown(controller.close);
+    });
+
+    Future<void> pumpWithStream(WidgetTester tester) async {
+      seed(fakeMonthlyStatsLoaded());
+      whenListen(
+        mockExportBloc,
+        controller.stream,
+        initialState: const ExportInitial(),
+      );
+      await pumpStatsScreen(tester);
+      await tester.pump();
+    }
+
+    Future<void> emit(WidgetTester tester, ExportState s) async {
+      controller.add(s);
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('stats failure shows one error snackbar and resets', (
+      tester,
+    ) async {
+      await pumpWithStream(tester);
+      await emit(tester, const ExportFailure('x', exportType: ExportType.stats));
+
+      expect(
+        find.text('Failed to generate PDF. Please try again.'),
+        findsOneWidget,
+      );
+      verify(() => mockExportBloc.add(any(that: isA<ResetExportRequested>())))
+          .called(1);
+    });
+
+    testWidgets('expenses failure is ignored', (tester) async {
+      await pumpWithStream(tester);
+      await emit(
+        tester,
+        const ExportFailure('x', exportType: ExportType.expenses),
+      );
+
+      expect(
+        find.text('Failed to generate PDF. Please try again.'),
+        findsNothing,
+      );
+      verifyNever(() => mockExportBloc.add(any()));
+    });
+
+    testWidgets('stats success shares the file then resets', (tester) async {
+      await pumpWithStream(tester);
+      await emit(
+        tester,
+        const ExportSuccess(
+          filePath: '/tmp/weeklet_stats_march_2026.pdf',
+          subject: 's',
+          exportType: ExportType.stats,
+        ),
+      );
+      await tester.pump();
+
+      expect(fakeShare.shareCalls, hasLength(1));
+      expect(
+        fakeShare.shareCalls.single.files!.first.path,
+        endsWith('weeklet_stats_march_2026.pdf'),
+      );
+      verify(() => mockExportBloc.add(any(that: isA<ResetExportRequested>())))
+          .called(1);
+    });
+
+    testWidgets('income success is ignored', (tester) async {
+      await pumpWithStream(tester);
+      await emit(
+        tester,
+        const ExportSuccess(
+          filePath: '/tmp/x.pdf',
+          subject: 's',
+          exportType: ExportType.income,
+        ),
+      );
+
+      expect(fakeShare.shareCalls, isEmpty);
     });
   });
 
