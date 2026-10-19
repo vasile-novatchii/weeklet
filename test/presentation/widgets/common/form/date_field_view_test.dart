@@ -12,6 +12,10 @@ void main() {
     LocaleManager().initialize(const Locale('en'));
   });
 
+  tearDown(() {
+    LocaleManager().setLocale(const Locale('en'));
+  });
+
   /// Pumps [DateFieldView] with the given [selectedDate].
   ///
   /// Pass [useNullDate] as true to explicitly test the null-date code path.
@@ -20,12 +24,14 @@ void main() {
     DateTime? selectedDate,
     bool useNullDate = false,
     void Function(DateTime)? onDateSelected,
+    Locale locale = const Locale('en'),
   }) async {
+    LocaleManager().setLocale(locale);
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('en'),
+        locale: locale,
         home: Scaffold(
           body: DateFieldView(
             selectedDate: useNullDate ? null : (selectedDate ?? testDate),
@@ -80,5 +86,37 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(Dialog), findsOneWidget);
     });
+
+    testWidgets('en text is dd/MM/yyyy', (tester) async {
+      await pumpDateField(tester);
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, '15/01/2025');
+    });
+
+    for (final code in ['ro', 'ru']) {
+      testWidgets('$code text is dd.MM.yyyy', (tester) async {
+        await pumpDateField(tester, locale: Locale(code));
+        final field = tester.widget<TextField>(find.byType(TextField));
+        expect(field.controller!.text, '15.01.2025');
+      });
+    }
+
+    for (final code in ['en', 'ro', 'ru']) {
+      testWidgets('$code picker opens with localized dialog', (tester) async {
+        await pumpDateField(tester, locale: Locale(code));
+        await tester.tap(find.byType(TextFormField));
+        await tester.pumpAndSettle();
+        expect(find.byType(Dialog), findsOneWidget);
+        final dialog = tester.element(find.byType(Dialog));
+        final localizations = MaterialLocalizations.of(dialog);
+        final pickerLocale = Localizations.localeOf(dialog);
+        if (code == 'en') {
+          expect(localizations.firstDayOfWeekIndex, 1);
+          expect(pickerLocale, const Locale('en', 'GB'));
+        } else {
+          expect(pickerLocale.languageCode, code);
+        }
+      });
+    }
   });
 }
