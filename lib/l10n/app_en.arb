@@ -860,5 +860,25 @@
   "legalContentPlaceholder": "Content will be added before public release.",
   "@legalContentPlaceholder": {
     "description": "Placeholder body of the privacy and terms screens"
+  },
+
+  "statsIncomeVsExpensesTitle": "Income vs Expenses",
+  "@statsIncomeVsExpensesTitle": {
+    "description": "Title of the annual income vs expenses bar chart"
+  },
+
+  "statsDonutTotalLabel": "Total",
+  "@statsDonutTotalLabel": {
+    "description": "Label above the total amount in the center of the donut chart"
+  },
+
+  "statsCategoryDetailsTitle": "Category Details",
+  "@statsCategoryDetailsTitle": {
+    "description": "Title of the category details list on the stats screen"
+  },
+
+  "statsSpendingByCategoryTitle": "Spending by Category",
+  "@statsSpendingByCategoryTitle": {
+    "description": "Title of the spending by category donut chart"
   }
 }

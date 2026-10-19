@@ -191,5 +191,9 @@
   "deleteIncomeSemanticLabel": "Удалить доход",
   "editCategorySemanticLabel": "Редактировать категорию",
   "deleteCategorySemanticLabel": "Удалить категорию",
-  "legalContentPlaceholder": "Содержимое будет добавлено до публичного релиза."
+  "legalContentPlaceholder": "Содержимое будет добавлено до публичного релиза.",
+  "statsIncomeVsExpensesTitle": "Доходы и расходы",
+  "statsDonutTotalLabel": "Итого",
+  "statsCategoryDetailsTitle": "Детали по категориям",
+  "statsSpendingByCategoryTitle": "Расходы по категориям"
 }

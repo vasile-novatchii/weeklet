@@ -7,6 +7,7 @@ import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/category_color_utils.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_bloc.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_event.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
@@ -42,7 +43,7 @@ class ModernDonutChart extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Spending by Category',
+                AppLocalizations.of(context).statsSpendingByCategoryTitle,
                 style: context.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -89,7 +90,7 @@ class ModernDonutChart extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Total',
+                            AppLocalizations.of(context).statsDonutTotalLabel,
                             style: context.labelMedium?.copyWith(
                               color: context.colorScheme.onSurfaceVariant,
                             ),

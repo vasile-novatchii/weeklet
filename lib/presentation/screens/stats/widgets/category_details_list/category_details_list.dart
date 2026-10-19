@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/category_details_list/category_details_item.dart';
 
 class CategoryDetailsList extends StatelessWidget {
@@ -25,7 +26,7 @@ class CategoryDetailsList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Category Details',
+              AppLocalizations.of(context).statsCategoryDetailsTitle,
               style: context.bodySmall?.copyWith(
                 color: context.colorScheme.onSurfaceVariant,
               ),

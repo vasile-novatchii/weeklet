@@ -5,6 +5,7 @@ import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/utils/evolution_stats_utils.dart';
 import 'package:weeklet/domain/utils/expense_filter_utils.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 class AnnualGroupedBarChart extends StatelessWidget {
   const AnnualGroupedBarChart({
@@ -18,6 +19,7 @@ class AnnualGroupedBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final snapshotsWithData = EvolutionStatsUtils.getSnapshotsWithData(
       evolutionStats,
     );
@@ -47,7 +49,7 @@ class AnnualGroupedBarChart extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
-                'Income vs Expenses',
+                l10n.statsIncomeVsExpensesTitle,
                 style: context.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -70,7 +72,7 @@ class AnnualGroupedBarChart extends StatelessWidget {
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final isIncome = rodIndex == 0;
                         return BarTooltipItem(
-                          '${isIncome ? 'Income' : 'Expenses'}\n',
+                          '${isIncome ? l10n.incomeBarLabel : l10n.expensesBarLabel}\n',
                           TextStyle(
                             color: context.colorScheme.surface,
                             fontWeight: FontWeight.bold,
@@ -199,11 +201,15 @@ class AnnualGroupedBarChart extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildLegendItem(context, 'Income', context.successColor),
+                _buildLegendItem(
+                  context,
+                  l10n.incomeBarLabel,
+                  context.successColor,
+                ),
                 const SizedBox(width: 24),
                 _buildLegendItem(
                   context,
-                  'Expenses',
+                  l10n.expensesBarLabel,
                   context.colorScheme.error,
                 ),
               ],

@@ -191,5 +191,9 @@
   "deleteIncomeSemanticLabel": "Șterge venitul",
   "editCategorySemanticLabel": "Editează categoria",
   "deleteCategorySemanticLabel": "Șterge categoria",
-  "legalContentPlaceholder": "Conținutul va fi adăugat înainte de lansarea publică."
+  "legalContentPlaceholder": "Conținutul va fi adăugat înainte de lansarea publică.",
+  "statsIncomeVsExpensesTitle": "Venituri vs Cheltuieli",
+  "statsDonutTotalLabel": "Total",
+  "statsCategoryDetailsTitle": "Detalii pe categorii",
+  "statsSpendingByCategoryTitle": "Cheltuieli pe categorii"
 }
