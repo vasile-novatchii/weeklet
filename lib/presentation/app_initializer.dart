@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _AppInitializerState extends State<AppInitializer> {
   late final AppLifecycleListener _lifecycleListener;
   bool _isLocked = false;
   bool _defaultCategoryRequested = false;
+  StreamSubscription<SettingsState>? _settingsSubscription;
 
   @override
   void initState() {
@@ -49,19 +51,54 @@ class _AppInitializerState extends State<AppInitializer> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Localizations are only reachable after initState, so the one-time
-    // default-category seeding (and categories load) happens here. The name
-    // is resolved with the locale in effect now and is never renamed later.
+    // default-category seeding (and categories load) is started here. It
+    // waits for the persisted settings so the name uses the saved in-app
+    // language rather than the device locale, and is never renamed later.
+    if (_defaultCategoryRequested || _settingsSubscription != null) return;
+    final settingsBloc = context.read<SettingsBloc>();
+    if (_isSettled(settingsBloc.state)) {
+      _requestDefaultCategory(settingsBloc.state);
+      return;
+    }
+    _settingsSubscription = settingsBloc.stream.listen((state) {
+      if (!_isSettled(state)) return;
+      unawaited(_settingsSubscription?.cancel());
+      _settingsSubscription = null;
+      if (mounted) _requestDefaultCategory(state);
+    });
+  }
+
+  /// Settings loading has finished (successfully or not).
+  static bool _isSettled(SettingsState state) =>
+      state is SettingsLoaded || state is SettingsFailure;
+
+  void _requestDefaultCategory(SettingsState settingsState) {
     if (_defaultCategoryRequested) return;
     _defaultCategoryRequested = true;
     context.read<CategoryBloc>().add(
       EnsureDefaultCategoryRequested(
-        localizedName: AppLocalizations.of(context).defaultCategoryName,
+        localizedName: _defaultCategoryName(settingsState),
       ),
     );
   }
 
+  /// Name in the saved in-app language; falls back to the language currently
+  /// in effect when the user follows the system language.
+  String _defaultCategoryName(SettingsState settingsState) {
+    final saved = settingsState is SettingsLoaded ? settingsState.locale : null;
+    if (saved != null) {
+      try {
+        return lookupAppLocalizations(saved).defaultCategoryName;
+      } on FlutterError catch (e) {
+        debugPrint('[AppInitializer] unsupported saved locale: $e');
+      }
+    }
+    return AppLocalizations.of(context).defaultCategoryName;
+  }
+
   @override
   void dispose() {
+    unawaited(_settingsSubscription?.cancel());
     _lifecycleListener.dispose();
     super.dispose();
   }
