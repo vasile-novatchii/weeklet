@@ -129,7 +129,7 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 
 ### Constraints
 
-- **Tech stack:** Flutter 3.41.1 (pinned via FVM); Dart ^3.11.0; no Flutter upgrades during this milestone
+- **Tech stack:** Flutter 3.47.7 (pinned via FVM); Dart ^3.11.0 (SDK Dart 3.13.5); upgraded to 3.47.7 on 2026-10-19
 - **Architecture:** Clean Architecture with BLoC must be maintained; layer separation is non-negotiable
 - **Storage:** Hive only; no SQLite migration, no network calls
 - **Platform:** iOS and Android primary; macOS/Linux/Windows folders present but not target platforms
@@ -140,8 +140,8 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 ## Technology Stack
 
 ## Runtime
-- **Flutter:** 3.41.1 (pinned via FVM — see `.fvmrc`)
-- **Dart SDK:** ^3.11.0 (null-safe, required by `pubspec.yaml`)
+- **Flutter:** 3.47.7 (pinned via FVM - see `.fvmrc`; upgraded 2026-10-19)
+- **Dart SDK:** ^3.11.0 constraint in `pubspec.yaml` (null-safe); the 3.47.7 SDK bundles Dart 3.13.5
 - **FVM (Flutter Version Manager):** manages the Flutter SDK installation; use `fvm flutter` instead of `flutter` commands locally
 ## Package Manager
 - **pub** (bundled with Flutter/Dart)
@@ -154,27 +154,42 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 | `get_it` | ^9.0.5 | Service locator / dependency injection via global `sl` instance in `lib/core/di/service_locator.dart` |
 | `hive` | ^2.2.3 | NoSQL local key-value storage; used for all persistent data |
 | `hive_flutter` | ^1.1.0 | Hive Flutter integration; provides `Hive.init()` and Flutter box watcher support |
-| `equatable` | ^2.0.8 | Value equality for entities, models, BLoC states and events — eliminates boilerplate `==` and `hashCode` |
-| `fl_chart` | ^1.1.1 | Chart widgets used in the stats screen (`lib/presentation/screens/stats/`) — bar charts, donut/pie charts |
+| `equatable` | ^2.0.8 | Value equality for entities, models, BLoC states and events |
+| `fl_chart` | ^1.1.1 | Chart widgets used in the stats screen (`lib/presentation/screens/stats/`) - bar charts, donut/pie charts |
 | `intl` | ^0.20.2 | Locale-aware number and date formatting via `NumberFormatter` (`lib/core/utils/number_formatter.dart`) and `LocaleManager` (`lib/core/utils/locale_manager.dart`) |
 | `flutter_localizations` | SDK | Material/Cupertino/Widgets localization delegates wired in `lib/app.dart` |
-| `path_provider` | ^2.1.5 | Resolves `getApplicationDocumentsDirectory()` for Hive initialization in `lib/core/di/service_locator.dart` |
-| `collection` | ^1.19.1 | Extended Dart collection utilities used by domain grouping utils (`lib/domain/utils/`) |
+| `path_provider` | ^2.1.5 | Resolves the application documents directory for Hive initialization and export files |
+| `collection` | ^1.19.1 | Declared; currently not imported directly in `lib/` |
 | `stream_transform` | ^2.1.1 | Stream operators (`debounce`, `switchMap`) used in `ExpenseBloc` event transformer (`lib/presentation/blocs/expense/expense_bloc.dart`) |
 | `uuid` | ^4.5.2 | UUID v4 generation for entity IDs; singleton registered in DI as `Uuid` |
-| `flutter_launcher_icons` | ^0.14.4 | Generates platform launcher icons from a single source asset |
-| `flutter_native_splash` | ^2.4.7 | Generates native splash screens for iOS and Android |
+| `pdf` | ^3.12.0 | PDF document generation for expense, income and stats exports (`lib/domain/usecases/export/`) |
+| `share_plus` | ^13.0.0 | Native share sheet hand-off for exported PDFs (`lib/presentation/utils/pdf_share_helper.dart`) |
+| `local_auth` | ^3.0.1 | Biometric / device-credential authentication via `BiometricService` (`lib/core/services/biometric_service.dart`); uses `LocalAuthException` |
+| `package_info_plus` | ^10.0.0 | App version display in the settings screen (`lib/presentation/screens/settings/settings_screen.dart`) |
 ## Dev Dependencies
 | Package | Version | Purpose |
 |---------|---------|---------|
 | `flutter_test` | SDK | Flutter testing framework (unit, widget tests) |
 | `flutter_lints` | ^6.0.0 | Base lint ruleset; extended by `analysis_options.yaml` |
-| `build_runner` | ^2.4.7 | Code generation runner — required to regenerate Hive adapters |
-| `hive_generator` | ^2.0.1 | Generates `*.g.dart` type adapter files from `@HiveType`/`@HiveField` annotations |
+| `bloc_test` | ^10.0.0 | BLoC testing helpers (`blocTest`) |
+| `mocktail` | ^1.0.5 | Mocking library for use case, repository and service tests |
+| `build_runner` | ^2.4.7 | Code generation runner (only needed if Hive adapters are regenerated) |
+| `hive_generator` | ^2.0.1 | Commented out in `pubspec.yaml` (conflicts with `bloc_test` analyzer version); re-add only when regenerating models |
+| `path_provider_platform_interface` | ^2.1.2 | Fake path provider platform in export file store tests |
+| `plugin_platform_interface` | any | Base class for fake platform implementations in tests |
+| `share_plus_platform_interface` | ^7.0.0 | Fake share platform in integration tests |
+| `flutter_launcher_icons` | ^0.14.4 | Generates platform launcher icons from a single source asset |
+| `flutter_native_splash` | ^2.4.7 | Generates native splash screens for iOS and Android |
 ## Build & Code Generation
-- `lib/data/models/category_model.g.dart` — `CategoryModelAdapter` (typeId: 0)
-- `lib/data/models/expense_model.g.dart` — `ExpenseModelAdapter` (typeId: 1)
-- `lib/data/models/income_model.g.dart` — `IncomeModelAdapter` (typeId: 2)
+- Hive adapters are checked-in generated files; `hive_generator` is currently disabled, so they are maintained by hand unless it is re-enabled and `build_runner` is run
+- `lib/data/models/category_model.g.dart` - `CategoryModelAdapter` (typeId: 0)
+- `lib/data/models/expense_model.g.dart` - `ExpenseModelAdapter` (typeId: 1)
+- `lib/data/models/income_model.g.dart` - `IncomeModelAdapter` (typeId: 2)
+- Localizations are generated by `flutter gen-l10n` (`generate: true` in `pubspec.yaml`)
+## Android Toolchain
+- Gradle wrapper 9.3.1 (`android/gradle/wrapper/gradle-wrapper.properties`), AGP 9.1.0 and Kotlin Gradle plugin 2.4.0 (`android/settings.gradle.kts`), Java 17 target - versions taken from the Flutter 3.47.7 app template
+- `android/gradle.properties` keeps `android.newDsl=false` and `android.builtInKotlin=false`: Flutter 3.47.7 still requires opting out of the AGP 9 new DSL and built-in Kotlin (its own template sets both flags). Removing them fails the build
+- `android/app/build.gradle.kts` uses the `kotlin { compilerOptions { ... } }` block instead of the deprecated `kotlinOptions`
 ## Linting & Static Analysis
 - Extends `flutter_lints/flutter.yaml`
 - Strict mode enabled: `strict-casts: true`, `strict-inference: true`, `strict-raw-types: true`
