@@ -38,18 +38,21 @@ class CategoryDetailsItem extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
+                flex: 3,
                 child: Text(
                   stat.category.name,
                   style: context.bodyMedium,
                 ),
               ),
-              Flexible(
+              Expanded(
+                flex: 2,
                 child: EllipsisTooltipText(
                   text: NumberFormatter.formatCurrency(
                     stat.totalAmount,
                     currencySymbol,
                   ),
                   style: context.bodyMedium,
+                  textAlign: TextAlign.end,
                 ),
               ),
             ],

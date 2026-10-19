@@ -105,13 +105,15 @@ class ExpenseItemView extends StatelessWidget {
             useTransparentBackground: true,
           ),
           Expanded(
+            flex: 3,
             child: ExpenseDetailsColumn(
               description: expense.description,
               categoryName: category?.name ?? 'Unknown',
               time: formattedTime,
             ),
           ),
-          Flexible(
+          Expanded(
+            flex: 2,
             child: ExpenseAmountText(
               formattedAmount: formattedAmount,
               isIncome: isIncome,

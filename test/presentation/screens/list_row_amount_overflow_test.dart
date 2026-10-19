@@ -98,4 +98,67 @@ void main() {
       },
     );
   });
+
+  group('List row amount alignment (UAT 7)', () {
+    testWidgets('ExpenseItemView amount is end-aligned and bare', (
+      tester,
+    ) async {
+      await pumpNarrow(
+        tester,
+        ExpenseItemView(
+          expense: Expense(
+            id: 'e1',
+            amount: 12.5,
+            description: 'Milk',
+            categoryId: category.id,
+            createdAt: DateTime(2026),
+          ),
+          category: category,
+        ),
+      );
+      final text = tester.widget<Text>(find.text('12.50'));
+      expect(text.textAlign, TextAlign.end);
+      expect(find.textContaining('MDL'), findsNothing);
+    });
+
+    testWidgets('IncomeItemView amount is end-aligned and bare', (
+      tester,
+    ) async {
+      await pumpNarrow(
+        tester,
+        IncomeItemView(
+          income: Income(
+            id: 'i1',
+            amount: 40,
+            description: 'Gig',
+            date: DateTime(2026),
+            createdAt: DateTime(2026),
+          ),
+        ),
+      );
+      final text = tester.widget<Text>(find.text('+40.00'));
+      expect(text.textAlign, TextAlign.end);
+    });
+
+    testWidgets('CategoryDetailsItem amount hugs the trailing edge', (
+      tester,
+    ) async {
+      await pumpNarrow(
+        tester,
+        CategoryDetailsItem(
+          stat: CategoryStats(
+            category: category,
+            totalAmount: 10,
+            percentage: 0.5,
+          ),
+          currencySymbol: 'MDL',
+        ),
+      );
+      final text = tester.widget<Text>(find.text('10.00 MDL'));
+      expect(text.textAlign, TextAlign.end);
+      final amountRight = tester.getTopRight(find.text('10.00 MDL')).dx;
+      final rowRight = tester.getTopRight(find.byType(CategoryDetailsItem)).dx;
+      expect(amountRight, closeTo(rowRight, 0.5));
+    });
+  });
 }

@@ -7,10 +7,16 @@ import 'package:flutter/material.dart';
 /// actually truncated (15-CONTEXT.md Claude's Discretion). No truncation
 /// measurement, no LayoutBuilder, no TextPainter.
 class EllipsisTooltipText extends StatelessWidget {
-  const EllipsisTooltipText({super.key, required this.text, this.style});
+  const EllipsisTooltipText({
+    super.key,
+    required this.text,
+    this.style,
+    this.textAlign,
+  });
 
   final String text;
   final TextStyle? style;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) => Tooltip(
@@ -18,6 +24,7 @@ class EllipsisTooltipText extends StatelessWidget {
     child: Text(
       text,
       style: style,
+      textAlign: textAlign,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
       softWrap: false,

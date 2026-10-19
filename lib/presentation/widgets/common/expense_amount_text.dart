@@ -19,6 +19,7 @@ class ExpenseAmountText extends StatelessWidget {
 
     return EllipsisTooltipText(
       text: formattedAmount,
+      textAlign: TextAlign.end,
       style: context.bodyLarge?.copyWith(
         fontWeight: .w600,
         color: color,

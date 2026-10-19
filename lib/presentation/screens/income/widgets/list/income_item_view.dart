@@ -104,6 +104,7 @@ class IncomeItemView extends StatelessWidget {
             ),
           ),
           Expanded(
+            flex: 3,
             child: ExpenseDetailsColumn(
               description: income.description.isNotEmpty
                   ? income.description
@@ -112,7 +113,8 @@ class IncomeItemView extends StatelessWidget {
               time: formattedTime,
             ),
           ),
-          Flexible(
+          Expanded(
+            flex: 2,
             child: ExpenseAmountText(
               formattedAmount: formattedAmount,
               isIncome: true,
