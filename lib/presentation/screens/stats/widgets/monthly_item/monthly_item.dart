@@ -23,7 +23,10 @@ class MonthlyItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final monthName = ExpenseFilterUtils.getMonthAbbreviation(snapshot.month);
+    final monthName = ExpenseFilterUtils.getMonthAbbreviation(
+      snapshot.month,
+      context.locale.languageCode,
+    );
     final balanceText = NumberFormatter.formatCurrency(
       snapshot.balance,
       currencySymbol,

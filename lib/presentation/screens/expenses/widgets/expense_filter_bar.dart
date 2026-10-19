@@ -42,7 +42,10 @@ class ExpenseFilterBar extends StatelessWidget {
               itemBuilder: (month) => Text(
                 month == null
                     ? l10n.allMonthsLabel
-                    : ExpenseFilterUtils.getMonthName(month),
+                    : ExpenseFilterUtils.getMonthName(
+                        month,
+                        context.locale.languageCode,
+                      ),
               ),
               hint: l10n.selectMonthHint,
               onChanged: (month) {

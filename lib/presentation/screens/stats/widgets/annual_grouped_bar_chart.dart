@@ -115,6 +115,7 @@ class AnnualGroupedBarChart extends StatelessWidget {
                             child: Text(
                               ExpenseFilterUtils.getMonthAbbreviation(
                                 snapshot.month,
+                                context.locale.languageCode,
                               ),
                               style: style,
                             ),

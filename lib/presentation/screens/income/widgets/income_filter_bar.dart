@@ -35,7 +35,10 @@ class IncomeFilterBar extends StatelessWidget {
               itemBuilder: (month) => Text(
                 month == null
                     ? l10n.allMonthsLabel
-                    : IncomeFilterUtils.getMonthName(month),
+                    : IncomeFilterUtils.getMonthName(
+                        month,
+                        context.locale.languageCode,
+                      ),
               ),
               hint: l10n.selectMonthHint,
               onChanged: (month) {

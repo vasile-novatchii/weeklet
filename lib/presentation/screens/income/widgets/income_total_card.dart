@@ -22,7 +22,10 @@ class IncomeTotalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final monthName = selectedMonth != null
-        ? IncomeFilterUtils.getMonthName(selectedMonth!).toLowerCase()
+        ? IncomeFilterUtils.getMonthName(
+            selectedMonth!,
+            context.locale.languageCode,
+          ).toLowerCase()
         : '';
     final formattedTotal = NumberFormatter.formatAmountWithSign(
       total,
