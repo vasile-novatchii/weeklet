@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -235,5 +237,80 @@ void main() {
         );
       },
     );
+  });
+
+  group('ExpensesScreen export listener isolation', () {
+    late StreamController<ExportState> exportController;
+
+    setUp(() {
+      exportController = StreamController<ExportState>.broadcast();
+      registerFallbackValue(const ResetExportRequested());
+      final seeded = fakeExpenseSuccess();
+      when(() => mockExpenseBloc.state).thenReturn(seeded);
+      whenListen(
+        mockExpenseBloc,
+        Stream<ExpenseState>.value(seeded),
+        initialState: seeded,
+      );
+      whenListen(
+        mockExportBloc,
+        exportController.stream,
+        initialState: const ExportInitial(),
+      );
+    });
+
+    tearDown(() async => exportController.close());
+
+    Future<void> push(WidgetTester tester, ExportState state) async {
+      exportController.add(state);
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('ignores ExportFailure(stats)', (tester) async {
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      await push(
+        tester,
+        const ExportFailure('boom', exportType: ExportType.stats),
+      );
+
+      expect(find.text('Failed to generate PDF. Please try again.'), findsNothing);
+      verifyNever(() => mockExportBloc.add(const ResetExportRequested()));
+    });
+
+    testWidgets('handles ExportFailure(expenses) once', (tester) async {
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      await push(
+        tester,
+        const ExportFailure('boom', exportType: ExportType.expenses),
+      );
+
+      expect(
+        find.text('Failed to generate PDF. Please try again.'),
+        findsOneWidget,
+      );
+      verify(() => mockExportBloc.add(const ResetExportRequested())).called(1);
+    });
+
+    testWidgets('blocks export on All months (D-08)', (tester) async {
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      await tester.tap(find.byIcon(Icons.picture_as_pdf));
+      await tester.pump();
+      await tester.pump();
+
+      expect(
+        find.text('Please select a specific month to export.'),
+        findsOneWidget,
+      );
+      verifyNever(
+        () => mockExportBloc.add(any(that: isA<ExportExpensesStarted>())),
+      );
+    });
   });
 }

@@ -139,7 +139,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
         listenWhen: (_, s) =>
             (s is ExportSuccess &&
                 s.exportType == ExportType.income) ||
-            s is ExportFailure,
+            (s is ExportFailure && s.exportType == ExportType.income),
         listener: (context, exportState) {
           if (exportState is ExportSuccess) {
             unawaited(

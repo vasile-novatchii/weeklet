@@ -137,7 +137,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           listenWhen: (_, s) =>
               (s is ExportSuccess &&
                   s.exportType == ExportType.expenses) ||
-              s is ExportFailure,
+              (s is ExportFailure && s.exportType == ExportType.expenses),
           listener: (context, exportState) {
             if (exportState is ExportSuccess) {
               unawaited(
