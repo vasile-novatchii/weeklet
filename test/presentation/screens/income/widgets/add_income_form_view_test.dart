@@ -211,6 +211,20 @@ void main() {
     ]);
   });
 
+  testWidgets('a second Save tap while submitting is ignored', (
+    tester,
+  ) async {
+    await openForm(tester);
+    await enterAmount(tester, '50');
+
+    await tapSave(tester);
+    await tapSave(tester);
+
+    verify(
+      () => mockIncomeBloc.add(any(that: isA<AddIncomeStarted>())),
+    ).called(1);
+  });
+
   testWidgets('description field shows the income hint', (tester) async {
     await openForm(tester);
 

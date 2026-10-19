@@ -36,6 +36,10 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
   bool _hasInteracted = false;
   String? _formError;
 
+  /// True from a Save tap until the bloc reports the outcome. Locks Save so a
+  /// double tap cannot dispatch a second add/update while the use case runs.
+  bool _submitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -104,11 +108,16 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
   }
 
   void _onSave() {
+    if (_submitting) return;
+
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) return;
 
-    setState(() => _formError = null);
+    setState(() {
+      _submitting = true;
+      _formError = null;
+    });
 
     // Clear first so a repeated identical failure still re-emits (Equatable
     // would otherwise swallow it).
@@ -157,7 +166,10 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
         if (state.formError == null) {
           context.pop();
         } else {
-          setState(() => _formError = state.formError);
+          setState(() {
+            _submitting = false;
+            _formError = state.formError;
+          });
         }
       },
       child: CallbackShortcuts(
@@ -214,7 +226,7 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
               bottomNavigationBar: EditIncomeFormFooter(
                 onSave: _onSave,
                 onCancel: _handleClose,
-                isEnabled: _hasInteracted,
+                isEnabled: _hasInteracted && !_submitting,
                 generalError: generalError,
               ),
             ),
