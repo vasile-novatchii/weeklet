@@ -31,9 +31,24 @@ class _DateFieldViewState extends State<DateFieldView> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // A locale change reaches this widget as a dependency change, not as a
+    // new widget, so the text must be refreshed here too.
+    _scheduleSync();
+  }
+
+  @override
   void didUpdateWidget(DateFieldView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Defer: updating the controller during build would notify the Form.
+    _scheduleSync();
+  }
+
+  /// Refreshes the controller text after the current frame.
+  ///
+  /// Deferred because updating the controller during build would notify the
+  /// Form.
+  void _scheduleSync() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final text = _formatted();

@@ -80,6 +80,34 @@ void main() {
       expect(field.controller!.text, contains('2026'));
     });
 
+    testWidgets('updates text when locale changes while mounted', (
+      tester,
+    ) async {
+      // Reuse one widget instance so only the locale changes: the field gets
+      // a dependency change, not a new widget.
+      final field = DateFieldView(
+        selectedDate: testDate,
+        onDateSelected: (_) {},
+      );
+      Widget app(Locale locale) => MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: locale,
+        home: Scaffold(body: field),
+      );
+
+      LocaleManager().setLocale(const Locale('en'));
+      await tester.pumpWidget(app(const Locale('en')));
+      await tester.pump();
+      TextField textField() => tester.widget<TextField>(find.byType(TextField));
+      expect(textField().controller!.text, '15/01/2025');
+
+      LocaleManager().setLocale(const Locale('ro'));
+      await tester.pumpWidget(app(const Locale('ro')));
+      await tester.pumpAndSettle();
+      expect(textField().controller!.text, '15.01.2025');
+    });
+
     testWidgets('opens a date picker dialog when tapped', (tester) async {
       await pumpDateField(tester);
       await tester.tap(find.byType(TextFormField));
