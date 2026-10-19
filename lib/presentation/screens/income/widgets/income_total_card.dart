@@ -24,9 +24,8 @@ class IncomeTotalCard extends StatelessWidget {
     final monthName = selectedMonth != null
         ? IncomeFilterUtils.getMonthName(selectedMonth!).toLowerCase()
         : '';
-    final formattedTotal = NumberFormatter.formatCurrencyWithSign(
+    final formattedTotal = NumberFormatter.formatAmountWithSign(
       total,
-      currencySymbol,
       isIncome: true,
     );
     final label = selectedMonth != null

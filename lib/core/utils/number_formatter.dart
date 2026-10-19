@@ -49,6 +49,42 @@ class NumberFormatter {
     return '$sign$formattedAmount $currencySymbol';
   }
 
+  /// Formats an amount without any currency symbol.
+  ///
+  /// Example:
+  /// ```dart
+  /// formatAmount(105.19) // "105.19"
+  /// formatAmount(1234.5) // "1,234.50"
+  /// ```
+  static String formatAmount(
+    double amount, {
+    int decimals = 2,
+    String locale = 'en_US',
+  }) {
+    final formatter = NumberFormat.currency(
+      symbol: '',
+      decimalDigits: decimals,
+      locale: locale,
+    );
+    return formatter.format(amount.abs()).trim();
+  }
+
+  /// Formats an amount without currency, with income '+' indicator.
+  ///
+  /// Example:
+  /// ```dart
+  /// formatAmountWithSign(39.98, isIncome: true) // "+39.98"
+  /// ```
+  static String formatAmountWithSign(
+    double amount, {
+    bool isIncome = false,
+    int decimals = 2,
+    String locale = 'en_US',
+  }) {
+    final sign = isIncome ? '+' : '';
+    return '$sign${formatAmount(amount, decimals: decimals, locale: locale)}';
+  }
+
   /// Formats a currency amount compactly — values >= 1000 are abbreviated.
   ///
   /// Example:

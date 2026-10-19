@@ -21,4 +21,28 @@ void main() {
       );
     });
   });
+
+  group('NumberFormatter amount helpers without currency', () {
+    test('formatAmount renders grouped absolute value', () {
+      expect(NumberFormatter.formatAmount(105.19), equals('105.19'));
+      expect(NumberFormatter.formatAmount(1234.5), equals('1,234.50'));
+      expect(NumberFormatter.formatAmount(-1234.5), equals('1,234.50'));
+    });
+
+    test('formatAmountWithSign prefixes + only for income', () {
+      expect(
+        NumberFormatter.formatAmountWithSign(39.98, isIncome: true),
+        equals('+39.98'),
+      );
+      expect(NumberFormatter.formatAmountWithSign(105.19), equals('105.19'));
+    });
+
+    test('currency formatters are unchanged', () {
+      expect(NumberFormatter.formatCurrency(105.19, 'lei'), '105.19 lei');
+      expect(
+        NumberFormatter.formatCurrencyWithSign(39.98, 'lei', isIncome: true),
+        '+39.98 lei',
+      );
+    });
+  });
 }
