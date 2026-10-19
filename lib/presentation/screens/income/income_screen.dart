@@ -77,7 +77,18 @@ class _IncomeScreenState extends State<IncomeScreen> {
   Future<void> _onRefresh() async {
     if (!mounted) return;
     final bloc = context.read<IncomeBloc>();
-    bloc.add(const LoadIncomesRequested());
+    final current = bloc.state;
+    // Reuse the focus path so refresh keeps the active year/month (null month
+    // keeps All months). If the year is gone, the bloc guard decides (accepted).
+    bloc.add(
+      current is IncomeSuccess
+          ? LoadIncomesRequested(
+              focusYear: current.selectedYear,
+              focusMonth: current.selectedMonth,
+              hasFocus: true,
+            )
+          : const LoadIncomesRequested(),
+    );
 
     await bloc.stream
         .firstWhere(

@@ -311,4 +311,123 @@ void main() {
       expect(event.month, isNull);
     });
   });
+
+  group('IncomeScreen refresh and snackbar', () {
+    late StreamController<IncomeState> incomeController;
+
+    setUp(() {
+      registerFallbackValue(const LoadIncomesRequested());
+      incomeController = StreamController<IncomeState>.broadcast();
+    });
+
+    tearDown(() async => incomeController.close());
+
+    IncomeSuccess successFor({int? month, String? actionError}) {
+      final year = DateTime.now().year;
+      return IncomeSuccess(
+        allIncomes: [fakeIncome()],
+        filteredIncomes: [fakeIncome()],
+        selectedYear: year,
+        selectedMonth: month,
+        availableYears: [year],
+        availableMonths: const [3, 5],
+        actionError: actionError,
+      );
+    }
+
+    void seed(IncomeState state) {
+      when(() => mockIncomeBloc.state).thenReturn(state);
+      whenListen(
+        mockIncomeBloc,
+        incomeController.stream,
+        initialState: state,
+      );
+    }
+
+    Future<LoadIncomesRequested> pullToRefresh(
+      WidgetTester tester, {
+      IncomeState? stateAtRefresh,
+    }) async {
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+      if (stateAtRefresh != null) {
+        when(() => mockIncomeBloc.state).thenReturn(stateAtRefresh);
+      }
+      // Short content cannot overscroll under clamping physics, so invoke the
+      // indicator's callback directly instead of simulating the drag.
+      final refresh = tester
+          .widget<RefreshIndicator>(find.byType(RefreshIndicator))
+          .onRefresh();
+      await tester.pump();
+      final captured = verify(
+        () => mockIncomeBloc.add(captureAny(that: isA<LoadIncomesRequested>())),
+      ).captured;
+      // Complete the awaited stream so the refresh indicator can settle.
+      incomeController.add(successFor());
+      await refresh;
+      await tester.pump();
+      return captured.single as LoadIncomesRequested;
+    }
+
+    testWidgets('refresh keeps selected year and month', (tester) async {
+      seed(successFor(month: 3));
+      final event = await pullToRefresh(tester);
+
+      expect(
+        event,
+        LoadIncomesRequested(
+          focusYear: DateTime.now().year,
+          focusMonth: 3,
+          hasFocus: true,
+        ),
+      );
+    });
+
+    testWidgets('refresh keeps All months (null focusMonth)', (tester) async {
+      seed(successFor());
+      final event = await pullToRefresh(tester);
+
+      expect(event.hasFocus, isTrue);
+      expect(event.focusMonth, isNull);
+      expect(event.focusYear, DateTime.now().year);
+    });
+
+    testWidgets('refresh falls back to plain load when not IncomeSuccess', (
+      tester,
+    ) async {
+      seed(successFor(month: 3));
+      final event = await pullToRefresh(
+        tester,
+        stateAtRefresh: const IncomeLoading(),
+      );
+
+      expect(event, const LoadIncomesRequested());
+    });
+
+    testWidgets('formError emission shows no snackbar', (tester) async {
+      seed(successFor());
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+
+      incomeController.add(
+        successFor().copyWith(formError: 'invalidAmount'),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('actionError emission shows a snackbar', (tester) async {
+      seed(successFor());
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+
+      incomeController.add(successFor(actionError: 'genericError'));
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+    });
+  });
 }
