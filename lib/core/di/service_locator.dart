@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:weeklet/core/platform/pdf_print_service.dart';
 import 'package:weeklet/core/services/biometric_service.dart';
 import 'package:weeklet/core/utils/pdf_font_loader.dart';
 import 'package:weeklet/data/datasources/local/category_local_datasource.dart';
@@ -98,6 +99,7 @@ Future<void> init() async {
     () => const Uuid(),
   );
   sl.registerLazySingleton(PdfFontLoader.new);
+  sl.registerLazySingleton(PdfPrintService.new);
 
   // DATA layer - DataSources
   sl.registerLazySingleton<CategoryLocalDataSource>(
