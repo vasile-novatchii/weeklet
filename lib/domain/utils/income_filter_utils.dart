@@ -33,11 +33,11 @@ class IncomeFilterUtils {
     return monthsInYear;
   }
 
-  /// Gets the month name for a given month number (1-12).
-  static String getMonthName(int month) =>
-      ExpenseFilterUtils.getMonthName(month);
+  /// Gets the month name for a given month number (1-12) in [localeCode].
+  static String getMonthName(int month, String localeCode) =>
+      ExpenseFilterUtils.getMonthName(month, localeCode);
 
-  /// Gets the abbreviated Romanian month name for a given month number (1-12).
-  static String getMonthAbbreviation(int month) =>
-      ExpenseFilterUtils.getMonthAbbreviation(month);
+  /// Gets the abbreviated month name for a month (1-12) in [localeCode].
+  static String getMonthAbbreviation(int month, String localeCode) =>
+      ExpenseFilterUtils.getMonthAbbreviation(month, localeCode);
 }

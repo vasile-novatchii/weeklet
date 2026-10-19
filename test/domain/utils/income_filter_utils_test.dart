@@ -1,8 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/utils/income_filter_utils.dart';
 
 void main() {
+  setUpAll(() async {
+    await initializeDateFormatting('en');
+    await initializeDateFormatting('ro');
+    await initializeDateFormatting('ru');
+  });
+
+  group('IncomeFilterUtils month names', () {
+    test('full names per locale', () {
+      expect(IncomeFilterUtils.getMonthName(1, 'en'), equals('January'));
+      expect(IncomeFilterUtils.getMonthName(1, 'ro'), equals('Ianuarie'));
+      expect(IncomeFilterUtils.getMonthName(1, 'ru'), equals('Январь'));
+    });
+
+    test('abbreviations per locale', () {
+      expect(IncomeFilterUtils.getMonthAbbreviation(1, 'en'), equals('Jan'));
+      expect(IncomeFilterUtils.getMonthAbbreviation(1, 'ro'), equals('ian.'));
+      expect(IncomeFilterUtils.getMonthAbbreviation(1, 'ru'), equals('янв.'));
+    });
+
+    test('throws RangeError for invalid month', () {
+      expect(() => IncomeFilterUtils.getMonthName(13, 'en'), throwsRangeError);
+    });
+  });
+
   group('IncomeFilterUtils.extractAvailableYears', () {
     test('returns [currentYear] for empty list', () {
       expect(

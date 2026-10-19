@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart' show DateFormat;
-import 'package:weeklet/core/utils/locale_manager.dart';
 import 'package:weeklet/domain/entities/expense.dart';
 
 /// Utility class for extracting and managing expense filter options.
@@ -8,22 +7,6 @@ import 'package:weeklet/domain/entities/expense.dart';
 /// of expenses, sorted for optimal user experience.
 class ExpenseFilterUtils {
   ExpenseFilterUtils._();
-
-  /// Month names indexed by month number (1-12)
-  static const List<String> kMonthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
 
   /// Extracts unique years from expenses, sorted descending (newest first).
   ///
@@ -59,30 +42,26 @@ class ExpenseFilterUtils {
     return monthsInYear;
   }
 
-  /// Gets the month name for a given month number (1-12).
+  /// Gets the capitalised standalone full month name for [month] (1-12).
   ///
-  /// Returns the full month name (e.g., "January", "February").
+  /// [localeCode] is the in-app language code (e.g. 'en', 'ro', 'ru').
   /// Throws [RangeError] if month is not between 1-12.
-  static String getMonthName(int month) {
+  static String getMonthName(int month, String localeCode) {
     if (month < 1 || month > 12) {
       throw RangeError.range(month, 1, 12, 'month');
     }
-    return kMonthNames[month - 1];
+    final name = DateFormat('LLLL', localeCode).format(DateTime(2000, month));
+    return name.isEmpty ? name : name[0].toUpperCase() + name.substring(1);
   }
 
-  /// Gets the locale-aware abbreviated month name for a given month number (1-12).
+  /// Gets the standalone abbreviated month name for [month] (1-12).
   ///
-  /// Returns the abbreviated month name for the current device locale
-  /// (e.g., 'Jan' for en_US, 'ian.' for ro_RO, 'янв.' for ru_RU).
-  /// Relies on [LocaleManager] having set [Intl.defaultLocale] at startup.
+  /// [localeCode] is the in-app language code (e.g. 'en', 'ro', 'ru').
   /// Throws [RangeError] if month is not between 1-12.
-  static String getMonthAbbreviation(int month) {
+  static String getMonthAbbreviation(int month, String localeCode) {
     if (month < 1 || month > 12) {
       throw RangeError.range(month, 1, 12, 'month');
     }
-    final locale = LocaleManager().currentLocaleString;
-    // Use locale as explicit argument — LocaleManager.initialize sets
-    // Intl.defaultLocale which registers the locale for intl formatting.
-    return DateFormat('MMM', locale).format(DateTime(2000, month, 1));
+    return DateFormat('LLL', localeCode).format(DateTime(2000, month));
   }
 }

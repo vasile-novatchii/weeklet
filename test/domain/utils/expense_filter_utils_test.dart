@@ -10,35 +10,42 @@ void main() {
     // intl DateFormat requires locale data to be initialized before use.
     // In production, flutter_localizations handles this; in tests we do it
     // explicitly for each locale we test.
+    await initializeDateFormatting('en');
+    await initializeDateFormatting('ro');
+    await initializeDateFormatting('ru');
     await initializeDateFormatting('en_US');
     await initializeDateFormatting('ro_RO');
     await initializeDateFormatting('ru_RU');
   });
 
-  group('ExpenseFilterUtils.getMonthAbbreviation (ARCH-04)', () {
-    test('returns English abbreviation for en_US locale', () {
+  group('ExpenseFilterUtils month names', () {
+    test('full names per locale', () {
+      expect(ExpenseFilterUtils.getMonthName(1, 'en'), equals('January'));
+      expect(ExpenseFilterUtils.getMonthName(1, 'ro'), equals('Ianuarie'));
+      expect(ExpenseFilterUtils.getMonthName(1, 'ru'), equals('Январь'));
+    });
+
+    test('abbreviations per locale', () {
+      expect(ExpenseFilterUtils.getMonthAbbreviation(1, 'en'), equals('Jan'));
+      expect(ExpenseFilterUtils.getMonthAbbreviation(1, 'ro'), equals('ian.'));
+      expect(ExpenseFilterUtils.getMonthAbbreviation(1, 'ru'), equals('янв.'));
+    });
+
+    test('depends on passed locale, not LocaleManager', () {
       LocaleManager().initialize(const Locale('en', 'US'));
-      final result = ExpenseFilterUtils.getMonthAbbreviation(1);
-      expect(result, equals('Jan'));
+      expect(ExpenseFilterUtils.getMonthName(1, 'ru'), equals('Январь'));
+      expect(ExpenseFilterUtils.getMonthAbbreviation(1, 'ru'), equals('янв.'));
     });
 
-    test('returns Romanian abbreviation for ro_RO locale', () {
-      LocaleManager().initialize(const Locale('ro', 'RO'));
-      final result = ExpenseFilterUtils.getMonthAbbreviation(1);
-      // intl DateFormat('MMM', 'ro_RO').format(DateTime(2000,1,1)) returns 'ian.'
-      expect(result.toLowerCase(), startsWith('i'));
-    });
-
-    test('throws RangeError for month 0', () {
+    test('throws RangeError for months 0 and 13', () {
+      expect(() => ExpenseFilterUtils.getMonthName(0, 'en'), throwsRangeError);
+      expect(() => ExpenseFilterUtils.getMonthName(13, 'en'), throwsRangeError);
       expect(
-        () => ExpenseFilterUtils.getMonthAbbreviation(0),
+        () => ExpenseFilterUtils.getMonthAbbreviation(0, 'en'),
         throwsRangeError,
       );
-    });
-
-    test('throws RangeError for month 13', () {
       expect(
-        () => ExpenseFilterUtils.getMonthAbbreviation(13),
+        () => ExpenseFilterUtils.getMonthAbbreviation(13, 'en'),
         throwsRangeError,
       );
     });
