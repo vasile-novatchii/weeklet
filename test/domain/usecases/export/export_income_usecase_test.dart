@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -6,6 +7,9 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
+import 'package:weeklet/domain/usecases/export/transaction_pdf_labels.dart';
+
+import '../../../helpers/pdf_unicode_text_extractor.dart';
 
 class _FakePathProvider
     with MockPlatformInterfaceMixin
@@ -43,9 +47,30 @@ class _FakePathProvider
   Future<String?> getLibraryPath() async => null;
 }
 
-void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
 
+const _labelsRu = TransactionPdfLabels(
+  reportTitleExpenses: 'Отчёт о расходах',
+  reportTitleIncome: 'Отчёт о доходах',
+  generatedLabel: 'Создано',
+  recordsLabel: 'Записей',
+  totalLabel: 'Итого',
+  columnDate: 'Дата',
+  columnCategory: 'Категория',
+  columnDescription: 'Описание',
+  columnAmount: 'Сумма',
+  noRecordsLabel: 'Нет записей за',
+  unknownCategoryLabel: 'Неизвестно',
+);
+
+ByteData _font(String name) =>
+    ByteData.sublistView(File('assets/fonts/$name').readAsBytesSync());
+
+int _pageCount(String path) => RegExp(
+  r'/Type\s*/Page\b(?!s)',
+).allMatches(latin1.decode(File(path).readAsBytesSync())).length;
+
+void _setUpPaths() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() {
     PathProviderPlatform.instance = _FakePathProvider();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -59,82 +84,91 @@ void main() {
           },
         );
   });
+}
+
+ExportIncomeParams _params({
+  required List<Income> incomes,
+  int? month = 4,
+  String localeCode = 'ru',
+}) => ExportIncomeParams(
+  incomes: incomes,
+  currencySymbol: 'MDL',
+  year: 2026,
+  month: month,
+  localeCode: localeCode,
+  labels: _labelsRu,
+  regularFont: _font('NotoSans-Regular.ttf'),
+  boldFont: _font('NotoSans-Bold.ttf'),
+);
+
+Income _inc(int i, {String description = 'Salary'}) => Income(
+  id: 'i$i',
+  amount: 100.0 + i,
+  description: description,
+  date: DateTime(2026, 1 + i % 12, 1 + i % 27),
+  createdAt: DateTime(2026, 1 + i % 12, 1 + i % 27),
+);
+
+void main() {
+  _setUpPaths();
+  const useCase = ExportIncomeUseCase();
 
   group('ExportIncomeUseCase', () {
-    late ExportIncomeUseCase useCase;
-
-    setUp(() {
-      useCase = const ExportIncomeUseCase();
+    test('renders RU labels and Cyrillic data, no EN labels', () async {
+      final path = await useCase(
+        _params(incomes: [_inc(1, description: 'Зарплата')]),
+      );
+      final text = extractPdfUnicodeText(File(path));
+      for (final s in [
+        'Отчёт о доходах',
+        'Создано',
+        'Записей',
+        'Дата',
+        'Описание',
+        'Сумма',
+        'Итого',
+        'Зарплата',
+        'Апрель 2026',
+      ]) {
+        expect(text, contains(s));
+      }
+      expect(text, isNot(contains('Категория')));
+      for (final s in [
+        'Date',
+        'Description',
+        'Amount',
+        'Records',
+        'Income Report',
+        'Generated',
+      ]) {
+        expect(text, isNot(contains(s)));
+      }
     });
 
-    test('returns a pdf file path when given a non-empty income list', () async {
-      final incomes = [
-        Income(
-          id: 'inc-1',
-          amount: 200.0,
-          description: 'Salary',
-          date: DateTime(2026, 4, 1),
-          createdAt: DateTime(2026, 4, 1),
-        ),
-        Income(
-          id: 'inc-2',
-          amount: 150.75,
-          description: 'Freelance',
-          date: DateTime(2026, 4, 15),
-          createdAt: DateTime(2026, 4, 15),
-        ),
-      ];
-
-      final result = await useCase(
-        ExportIncomeParams(
-          incomes: incomes,
-          currencySymbol: 'MDL',
-          year: 2026,
-          month: 4,
-        ),
-      );
-
-      expect(result, isA<String>());
-      expect(result.endsWith('.pdf'), isTrue);
+    test('month set gives month-named file', () async {
+      final path = await useCase(_params(incomes: [_inc(1)]));
+      expect(path.endsWith('/weeklet_income_april_2026.pdf'), isTrue);
     });
 
-    test('completes without exception for income with empty description',
-        () async {
-      final incomes = [
-        Income(
-          id: 'inc-3',
-          amount: 500.0,
-          description: '',
-          date: DateTime(2026, 4, 5),
-          createdAt: DateTime(2026, 4, 5),
-        ),
-      ];
-
-      final result = await useCase(
-        ExportIncomeParams(
-          incomes: incomes,
-          currencySymbol: 'MDL',
-          year: 2026,
-          month: 4,
-        ),
-      );
-
-      expect(result, isA<String>());
-      expect(result, isNotEmpty);
+    test('month null gives year-only file name', () async {
+      final path = await useCase(_params(incomes: [_inc(1)], month: null));
+      expect(path.endsWith('/weeklet_income_2026.pdf'), isTrue);
     });
 
-    test('handles empty income list without throwing', () async {
-      final result = await useCase(
-        const ExportIncomeParams(
-          incomes: [],
-          currencySymbol: 'MDL',
-          year: 2026,
-          month: 4,
-        ),
+    test('whole-year export with 300 rows paginates', () async {
+      final path = await useCase(
+        _params(incomes: [for (var i = 0; i < 300; i++) _inc(i)], month: null),
       );
+      expect(File(path).existsSync(), isTrue);
+      expect(_pageCount(path), greaterThan(1));
+    });
 
-      expect(result, isA<String>());
-      expect(result.endsWith('.pdf'), isTrue);
+    test('empty list with null month renders no-records with year', () async {
+      final path = await useCase(_params(incomes: [], month: null));
+      expect(
+        extractPdfUnicodeText(File(path)),
+        contains('Нет записей за 2026'),
+      );
     });
   });
 }
