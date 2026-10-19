@@ -109,7 +109,9 @@ class ExpenseItemView extends StatelessWidget {
             flex: 3,
             child: ExpenseDetailsColumn(
               description: expense.description,
-              categoryName: category?.name ?? 'Unknown',
+              categoryName:
+                  category?.name ??
+                  AppLocalizations.of(context).unknownCategoryLabel,
               time: formattedTime,
             ),
           ),

@@ -228,5 +228,11 @@
   "categoryIconPark": "Grădină",
   "categoryIconChildFriendly": "Copii",
   "categoryIconFamilyRestroom": "Familie",
-  "categoryIconMoreHoriz": "Altele"
+  "categoryIconMoreHoriz": "Altele",
+  "pickIconLabel": "Alege o pictogramă *",
+  "selectedIconLabel": "Pictogramă selectată",
+  "noIconsFoundForSearch": "Nu s-au găsit pictograme pentru „{searchTerm}”",
+  "unsavedChangesDialogContent": "Ai modificări nesalvate. Ești sigur că vrei să ieși fără a salva?",
+  "dropdownLoadingLabel": "Se încarcă...",
+  "unknownCategoryLabel": "Necunoscută"
 }

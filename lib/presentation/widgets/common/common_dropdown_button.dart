@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/theme/colors.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 /// Generic dropdown button component with clean UX
 ///
@@ -153,7 +154,9 @@ class _CommonDropdownButtonState<T extends Object?>
                         Expanded(
                           child: widget.isLoading
                               ? Text(
-                                  'Loading...',
+                                  AppLocalizations.of(
+                                    context,
+                                  ).dropdownLoadingLabel,
                                   style: context.bodyLarge?.copyWith(
                                     color: context.colorScheme.onSurfaceVariant,
                                   ),

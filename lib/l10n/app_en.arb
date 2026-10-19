@@ -1045,5 +1045,40 @@
   "categoryIconMoreHoriz": "Other",
   "@categoryIconMoreHoriz": {
     "description": "Label of the Other category icon"
+  },
+
+  "pickIconLabel": "Pick an icon *",
+  "@pickIconLabel": {
+    "description": "Label above the icon picker in category form"
+  },
+
+  "selectedIconLabel": "Selected Icon",
+  "@selectedIconLabel": {
+    "description": "Label above the selected icon preview in category form"
+  },
+
+  "noIconsFoundForSearch": "No icons found for \"{searchTerm}\"",
+  "@noIconsFoundForSearch": {
+    "description": "Empty state shown when the icon search has no results",
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+
+  "unsavedChangesDialogContent": "You have unsaved changes. Are you sure you want to leave without saving?",
+  "@unsavedChangesDialogContent": {
+    "description": "Body text of the discard unsaved changes confirmation dialog"
+  },
+
+  "dropdownLoadingLabel": "Loading...",
+  "@dropdownLoadingLabel": {
+    "description": "Placeholder text shown in a dropdown while its items are loading"
+  },
+
+  "unknownCategoryLabel": "Unknown",
+  "@unknownCategoryLabel": {
+    "description": "Fallback category name shown on an expense whose category no longer exists"
   }
 }

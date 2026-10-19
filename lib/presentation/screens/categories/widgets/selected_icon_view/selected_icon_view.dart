@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/constants/category_icons.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/screens/categories/widgets/selected_icon_view/selected_icon.dart';
 import 'package:weeklet/presentation/screens/categories/widgets/selected_icon_view/selected_icon_meta.dart';
 import 'package:weeklet/presentation/widgets/label_view.dart';
@@ -20,8 +21,8 @@ class SelectedIconView extends StatelessWidget {
     crossAxisAlignment: .start,
     spacing: 8,
     children: [
-      const LabelView(
-        text: 'Selected Icon',
+      LabelView(
+        text: AppLocalizations.of(context).selectedIconLabel,
       ),
       Card(
         margin: EdgeInsets.zero,

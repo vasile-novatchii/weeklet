@@ -228,5 +228,11 @@
   "categoryIconPark": "Сад",
   "categoryIconChildFriendly": "Дети",
   "categoryIconFamilyRestroom": "Семья",
-  "categoryIconMoreHoriz": "Другое"
+  "categoryIconMoreHoriz": "Другое",
+  "pickIconLabel": "Выберите иконку *",
+  "selectedIconLabel": "Выбранная иконка",
+  "noIconsFoundForSearch": "Иконки по запросу «{searchTerm}» не найдены",
+  "unsavedChangesDialogContent": "У вас есть несохранённые изменения. Вы уверены, что хотите выйти без сохранения?",
+  "dropdownLoadingLabel": "Загрузка...",
+  "unknownCategoryLabel": "Неизвестно"
 }

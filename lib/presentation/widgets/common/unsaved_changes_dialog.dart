@@ -14,9 +14,7 @@ class UnsavedChangesDialog extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l10n.discardChangesDialogTitle),
-      content: const Text(
-        'You have unsaved changes. Are you sure you want to leave without saving?',
-      ),
+      content: Text(l10n.unsavedChangesDialogContent),
       actions: [
         TextButton(
           onPressed: () => context.pop(false),

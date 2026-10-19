@@ -39,7 +39,7 @@ class _CategoryIconsViewState extends State<CategoryIconsView>
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,
       children: [
-        const LabelView(text: 'Pick an icon *'),
+        LabelView(text: l10n.pickIconLabel),
         InputView(
           controller: searchController,
           hintText: l10n.iconSearchHint,
@@ -83,34 +83,33 @@ class _CategoryIconsViewState extends State<CategoryIconsView>
                         ),
                         child: ValueListenableBuilder<CategoryIcon?>(
                           valueListenable: widget.selectedIconNotifier,
-                          builder: (context, selectedIcon, ___) =>
-                              GridView.builder(
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 6,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10,
-                                    ),
-                                itemCount: filteredIcons.length,
-                                itemBuilder: (_, index) {
-                                  final categoryIcon = filteredIcons[index];
-                                  final isSelected =
-                                      categoryIcon.name == selectedIcon?.name;
-                                  return CategoryIconView(
-                                    icon: categoryIcon,
-                                    isSelected: isSelected,
-                                    onSelected: () {
-                                      setState(() {
-                                        selectedIcon = categoryIcon;
-                                        widget.onIconSelected(categoryIcon);
-                                      });
-                                      widget.selectedIconNotifier.value =
-                                          categoryIcon;
-                                    },
-                                  );
+                          builder: (context, selectedIcon, ___) => GridView.builder(
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 6,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
+                            itemCount: filteredIcons.length,
+                            itemBuilder: (_, index) {
+                              final categoryIcon = filteredIcons[index];
+                              final isSelected =
+                                  categoryIcon.name == selectedIcon?.name;
+                              return CategoryIconView(
+                                icon: categoryIcon,
+                                isSelected: isSelected,
+                                onSelected: () {
+                                  setState(() {
+                                    selectedIcon = categoryIcon;
+                                    widget.onIconSelected(categoryIcon);
+                                  });
+                                  widget.selectedIconNotifier.value =
+                                      categoryIcon;
                                 },
-                              ),
+                              );
+                            },
+                          ),
                         ),
                       ),
               ),

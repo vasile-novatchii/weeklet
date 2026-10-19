@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
 
 class NoIconsFoundView extends StatelessWidget {
   const NoIconsFoundView({
@@ -12,7 +13,7 @@ class NoIconsFoundView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Center(
     child: Text(
-      'No icons found for "$searchTerm"',
+      AppLocalizations.of(context).noIconsFoundForSearch(searchTerm),
       style: context.textTheme.bodyLarge,
     ),
   );
