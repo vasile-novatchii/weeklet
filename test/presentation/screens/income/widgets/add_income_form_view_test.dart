@@ -125,8 +125,15 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('pops on Loading -> Success without formError', (tester) async {
+  /// Fills a valid amount and taps Save, so the form is waiting on the bloc.
+  Future<void> submit(WidgetTester tester) async {
+    await enterAmount(tester, '50');
+    await tapSave(tester);
+  }
+
+  testWidgets('pops on Loading -> Success after Save', (tester) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, const IncomeLoading());
     await emit(tester, _success());
     await tester.pumpAndSettle();
@@ -134,10 +141,32 @@ void main() {
     expect(find.byType(AddIncomeFormView), findsNothing);
   });
 
+  testWidgets('does not pop on Loading -> Success without a Save', (
+    tester,
+  ) async {
+    await openForm(tester);
+    await enterAmount(tester, '50');
+    await emit(tester, const IncomeLoading());
+    await emit(tester, _success());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddIncomeFormView), findsOneWidget);
+  });
+
+  testWidgets('ignores a formError when the form did not submit', (
+    tester,
+  ) async {
+    await openForm(tester);
+    await emit(tester, _success(formError: 'invalidAmount'));
+
+    expect(find.text(l10n(tester).errorInvalidAmount), findsNothing);
+  });
+
   testWidgets('does not pop when an error is cleared (prev not Loading)', (
     tester,
   ) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, _success(formError: 'invalidAmount'));
     await emit(tester, _success());
     await tester.pumpAndSettle();
@@ -147,6 +176,7 @@ void main() {
 
   testWidgets('invalidAmount shows under the amount field', (tester) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, _success(formError: 'invalidAmount'));
 
     expect(find.byType(AddIncomeFormView), findsOneWidget);
@@ -158,6 +188,7 @@ void main() {
     tester,
   ) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, _success(formError: 'emptyDescription'));
 
     expect(find.text(l10n(tester).errorEmptyDescription), findsOneWidget);
@@ -168,6 +199,7 @@ void main() {
     tester,
   ) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, _success(formError: 'genericError'));
 
     expect(
@@ -186,6 +218,7 @@ void main() {
     tester,
   ) async {
     await openForm(tester);
+    await submit(tester);
     await emit(tester, _success(formError: 'invalidAmount'));
     expect(find.text(l10n(tester).errorInvalidAmount), findsOneWidget);
 
@@ -198,7 +231,7 @@ void main() {
     tester,
   ) async {
     await openForm(tester);
-    await enterAmount(tester, '50');
+    await submit(tester);
     await emit(tester, _success(formError: 'genericError'));
     expect(find.text(l10n(tester).errorGeneric), findsOneWidget);
 

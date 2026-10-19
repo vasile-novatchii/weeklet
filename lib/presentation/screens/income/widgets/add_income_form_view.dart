@@ -118,11 +118,15 @@ class _AddIncomeFormViewState extends State<AddIncomeFormView> {
         : null;
 
     return BlocListener<IncomeBloc, IncomeState>(
+      // Only react to the outcome of this form's own save: a reload started
+      // elsewhere (initial load, pull-to-refresh, reset, retry) must not close
+      // the sheet or surface an error here.
       listenWhen: (prev, curr) =>
-          (prev is IncomeLoading &&
-              curr is IncomeSuccess &&
-              curr.formError == null) ||
-          (curr is IncomeSuccess && curr.formError != null),
+          _submitting &&
+          ((prev is IncomeLoading &&
+                  curr is IncomeSuccess &&
+                  curr.formError == null) ||
+              (curr is IncomeSuccess && curr.formError != null)),
       listener: (context, state) {
         if (!mounted || state is! IncomeSuccess) return;
         if (state.formError == null) {
