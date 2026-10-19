@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/router/app_routes.dart';
@@ -23,6 +22,7 @@ import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar
 import 'package:weeklet/presentation/screens/expenses/widgets/list/expense_list_view.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
+import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -139,20 +139,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           listener: (context, exportState) {
             if (exportState is ExportSuccess) {
               unawaited(
-                SharePlus.instance
-                    .share(
-                      ShareParams(
-                        files: [XFile(exportState.filePath)],
-                        subject: exportState.subject,
-                        sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
-                      ),
-                    )
-                    .then((_) {
-                      if (!mounted) return;
-                      context.read<ExportBloc>().add(
-                        const ResetExportRequested(),
-                      );
-                    }),
+                PdfShareHelper.share(
+                  filePath: exportState.filePath,
+                  subject: exportState.subject,
+                ).then((_) {
+                  if (!mounted) return;
+                  context.read<ExportBloc>().add(
+                    const ResetExportRequested(),
+                  );
+                }),
               );
             } else if (exportState is ExportFailure) {
               context.showErrorSnackBar(l10n.pdfExportError);

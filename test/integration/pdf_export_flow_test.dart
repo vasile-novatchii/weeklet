@@ -188,6 +188,11 @@ void main() {
     // throwing (per D-04).
     expect(fakeShare.shareCalls.length, 1);
     expect(fakeShare.shareCalls.first.files!.single.path, filePath);
+    final shared = fakeShare.shareCalls.first;
+    final baseName = filePath.split('/').last;
+    expect(shared.files!.single.mimeType, 'application/pdf');
+    expect(shared.fileNameOverrides, [baseName]);
+    expect(shared.subject, isNotEmpty);
 
     // --- Content ---------------------------------------------------------
     // Byte-level verification (not just "a file exists"): recover the

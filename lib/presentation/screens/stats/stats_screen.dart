@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/utils/category_color_utils.dart';
@@ -29,6 +28,7 @@ import 'package:weeklet/presentation/screens/stats/widgets/stats_error_view.dart
 import 'package:weeklet/presentation/screens/stats/widgets/stats_filter_bar.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_summary_cards/stats_summary_cards.dart';
 import 'package:weeklet/presentation/screens/stats/widgets/stats_tabs_section.dart';
+import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
@@ -80,9 +80,7 @@ class StatsView extends StatelessWidget {
     expensesLabel: isAnnual
         ? l10n.statsAnnualExpenses
         : l10n.statsMonthlyExpenses,
-    balanceLabel: isAnnual
-        ? l10n.statsAnnualBalance
-        : l10n.statsMonthlyBalance,
+    balanceLabel: isAnnual ? l10n.statsAnnualBalance : l10n.statsMonthlyBalance,
     vsLastMonthLabel: l10n.statsVsLastMonth,
     categoryBreakdownTitle: l10n.statsPdfCategoryBreakdownTitle,
     columnCategory: l10n.statsPdfColumnCategory,
@@ -100,18 +98,13 @@ class StatsView extends StatelessWidget {
   void _onExportState(BuildContext context, ExportState exportState) {
     if (exportState is ExportSuccess) {
       unawaited(
-        SharePlus.instance
-            .share(
-              ShareParams(
-                files: [XFile(exportState.filePath)],
-                subject: exportState.subject,
-                sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
-              ),
-            )
-            .then((_) {
-              if (!context.mounted) return;
-              context.read<ExportBloc>().add(const ResetExportRequested());
-            }),
+        PdfShareHelper.share(
+          filePath: exportState.filePath,
+          subject: exportState.subject,
+        ).then((_) {
+          if (!context.mounted) return;
+          context.read<ExportBloc>().add(const ResetExportRequested());
+        }),
       );
     } else if (exportState is ExportFailure) {
       context.showErrorSnackBar(AppLocalizations.of(context).pdfExportError);
@@ -134,91 +127,91 @@ class StatsView extends StatelessWidget {
           (s is ExportFailure && s.exportType == ExportType.stats),
       listener: _onExportState,
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.statsScreenTitle),
-        actions: [
-          if (statsState case final MonthlyStatsLoaded loaded)
-            if (StatsExportUtils.hasExportableData(loaded.stats))
-              IconButton(
-                icon: const Icon(Icons.picture_as_pdf),
-                tooltip: l10n.exportPdfTooltip,
-                onPressed: () => _onExportTapped(context, loaded),
-              ),
-        ],
-      ),
-      body: BlocBuilder<StatsBloc, StatsState>(
-      builder: (context, state) => switch (state) {
-        StatsLoading _ || StatsInitial _ => const Center(
-          child: CircularProgressIndicator.adaptive(),
-        ),
-        final StatsFailure error => StatsErrorView(
-          message: error.message,
-          onRetry: () => context.read<StatsBloc>().add(
-            LoadMonthlyStats(year: DateTime.now().year),
-          ),
-        ),
-        final MonthlyStatsLoaded loaded => CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _StickyFilterHeaderDelegate(
-                child: const StatsFilterBar(),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  spacing: 16,
-                  children: [
-                    StatsSummaryCards(
-                      stats: loaded.stats,
-                      isAnnual: loaded.month == null,
-                      currencySymbol: currencySymbol,
-                    ),
-                    StatsTabsSection(currentTab: loaded.currentTab),
-                    if (loaded.currentTab == StatsTab.monthly) ...[
-                      if (loaded.stats.categoryStats.isEmpty)
-                        const StatsEmptyView()
-                      else ...[
-                        ModernDonutChart(
-                          categoryStats: loaded.stats.categoryStats,
-                          totalExpenses: loaded.stats.totalExpenses,
-                          currencySymbol: currencySymbol,
-                        ),
-                        CategoryDetailsList(
-                          categoryStats: loaded.stats.categoryStats,
-                          currencySymbol: currencySymbol,
-                        ),
-                      ],
-                    ] else if (loaded.evolutionStats
-                        case final EvolutionStats es) ...[
-                      if (EvolutionStatsUtils.getSnapshotsWithData(
-                        es,
-                      ).isNotEmpty) ...[
-                        AnnualGroupedBarChart(
-                          evolutionStats: es,
-                          currencySymbol: currencySymbol,
-                        ),
-                        MonthlyExpensesList(
-                          evolutionStats: es,
-                          currencySymbol: currencySymbol,
-                        ),
-                      ] else
-                        const StatsEmptyView(),
-                    ] else
-                      const Center(
-                        child: CircularProgressIndicator.adaptive(),
-                      ),
-                  ],
+        appBar: AppBar(
+          title: Text(l10n.statsScreenTitle),
+          actions: [
+            if (statsState case final MonthlyStatsLoaded loaded)
+              if (StatsExportUtils.hasExportableData(loaded.stats))
+                IconButton(
+                  icon: const Icon(Icons.picture_as_pdf),
+                  tooltip: l10n.exportPdfTooltip,
+                  onPressed: () => _onExportTapped(context, loaded),
                 ),
-              ),
-            ),
           ],
         ),
-      },
-    ),
-  ),
+        body: BlocBuilder<StatsBloc, StatsState>(
+          builder: (context, state) => switch (state) {
+            StatsLoading _ || StatsInitial _ => const Center(
+              child: CircularProgressIndicator.adaptive(),
+            ),
+            final StatsFailure error => StatsErrorView(
+              message: error.message,
+              onRetry: () => context.read<StatsBloc>().add(
+                LoadMonthlyStats(year: DateTime.now().year),
+              ),
+            ),
+            final MonthlyStatsLoaded loaded => CustomScrollView(
+              slivers: [
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _StickyFilterHeaderDelegate(
+                    child: const StatsFilterBar(),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      spacing: 16,
+                      children: [
+                        StatsSummaryCards(
+                          stats: loaded.stats,
+                          isAnnual: loaded.month == null,
+                          currencySymbol: currencySymbol,
+                        ),
+                        StatsTabsSection(currentTab: loaded.currentTab),
+                        if (loaded.currentTab == StatsTab.monthly) ...[
+                          if (loaded.stats.categoryStats.isEmpty)
+                            const StatsEmptyView()
+                          else ...[
+                            ModernDonutChart(
+                              categoryStats: loaded.stats.categoryStats,
+                              totalExpenses: loaded.stats.totalExpenses,
+                              currencySymbol: currencySymbol,
+                            ),
+                            CategoryDetailsList(
+                              categoryStats: loaded.stats.categoryStats,
+                              currencySymbol: currencySymbol,
+                            ),
+                          ],
+                        ] else if (loaded.evolutionStats
+                            case final EvolutionStats es) ...[
+                          if (EvolutionStatsUtils.getSnapshotsWithData(
+                            es,
+                          ).isNotEmpty) ...[
+                            AnnualGroupedBarChart(
+                              evolutionStats: es,
+                              currencySymbol: currencySymbol,
+                            ),
+                            MonthlyExpensesList(
+                              evolutionStats: es,
+                              currencySymbol: currencySymbol,
+                            ),
+                          ] else
+                            const StatsEmptyView(),
+                        ] else
+                          const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          },
+        ),
+      ),
     );
   }
 }

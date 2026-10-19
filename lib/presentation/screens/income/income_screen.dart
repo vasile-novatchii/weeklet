@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/domain/utils/income_grouping.dart';
@@ -20,6 +19,7 @@ import 'package:weeklet/presentation/screens/income/widgets/income_filter_bar.da
 import 'package:weeklet/presentation/screens/income/widgets/income_total_card.dart';
 import 'package:weeklet/presentation/screens/income/widgets/list/income_list_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
+import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
 
 class IncomeScreen extends StatefulWidget {
   const IncomeScreen({super.key});
@@ -144,20 +144,15 @@ class _IncomeScreenState extends State<IncomeScreen> {
         listener: (context, exportState) {
           if (exportState is ExportSuccess) {
             unawaited(
-              SharePlus.instance
-                  .share(
-                    ShareParams(
-                      files: [XFile(exportState.filePath)],
-                      subject: exportState.subject,
-                      sharePositionOrigin: const Rect.fromLTWH(0, 0, 1, 1),
-                    ),
-                  )
-                  .then((_) {
-                    if (!mounted) return;
-                    context.read<ExportBloc>().add(
-                      const ResetExportRequested(),
-                    );
-                  }),
+              PdfShareHelper.share(
+                filePath: exportState.filePath,
+                subject: exportState.subject,
+              ).then((_) {
+                if (!mounted) return;
+                context.read<ExportBloc>().add(
+                  const ResetExportRequested(),
+                );
+              }),
             );
           } else if (exportState is ExportFailure) {
             context.showErrorSnackBar(l10n.pdfExportError);
