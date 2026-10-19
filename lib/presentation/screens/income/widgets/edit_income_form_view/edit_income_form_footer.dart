@@ -13,11 +13,13 @@ class EditIncomeFormFooter extends StatelessWidget {
     required this.onSave,
     required this.onCancel,
     required this.isEnabled,
+    this.generalError,
   });
 
   final VoidCallback onSave;
   final VoidCallback onCancel;
   final bool isEnabled;
+  final String? generalError;
 
   @override
   Widget build(BuildContext context) => BlocBuilder<IncomeBloc, IncomeState>(
@@ -26,61 +28,94 @@ class EditIncomeFormFooter extends StatelessWidget {
       final isLoading = state is IncomeLoading;
       final canSubmit = isEnabled && !isLoading;
 
+      final buttons = Row(
+        spacing: 12,
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: isLoading ? null : onCancel,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(kButtonHeight),
+                backgroundColor: context.colorScheme.outline,
+                shadowColor: Colors.transparent,
+                elevation: 0,
+              ),
+              child: Text(
+                l10n.cancelButtonLabel,
+                style: TextStyle(
+                  color: context.colorScheme.onSurface,
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: canSubmit ? onSave : null,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+                elevation: 0,
+                shadowColor: Colors.transparent,
+              ),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Visibility(
+                  visible: isLoading,
+                  replacement: Text(
+                    l10n.saveIncomeButtonLabel,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  child: const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+
       return AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: isLoading ? 0.6 : 1.0,
         child: SheetFooterPadding(
-          child: Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : onCancel,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(kButtonHeight),
-                    backgroundColor: context.colorScheme.outline,
-                    shadowColor: Colors.transparent,
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    l10n.cancelButtonLabel,
-                    style: TextStyle(
-                      color: context.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: canSubmit ? onSave : null,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                    elevation: 0,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Visibility(
-                      visible: isLoading,
-                      replacement: Text(
-                        l10n.saveIncomeButtonLabel,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      child: const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator.adaptive(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
+          child: generalError == null
+              ? buttons
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 8,
+                  children: [
+                    Semantics(
+                      liveRegion: true,
+                      child: Row(
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: 16,
+                            color: context.colorScheme.error,
                           ),
-                        ),
+                          Expanded(
+                            child: Text(
+                              generalError!,
+                              style: context.bodyMedium?.copyWith(
+                                color: context.colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                    buttons,
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
       );
     },

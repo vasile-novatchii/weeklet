@@ -9,10 +9,12 @@ class AmountFieldView extends StatelessWidget {
     super.key,
     required this.controller,
     required this.currencySymbol,
+    this.errorText,
   });
 
   final TextEditingController controller;
   final String currencySymbol;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class AmountFieldView extends StatelessWidget {
         InputView(
           controller: controller,
           hintText: l10n.amountFieldHint,
+          errorText: errorText,
           keyboardType: const TextInputType.numberWithOptions(
             decimal: true,
           ),

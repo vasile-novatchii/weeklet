@@ -8,10 +8,12 @@ class DescriptionFieldView extends StatelessWidget {
     super.key,
     required this.controller,
     required this.hintText,
+    this.errorText,
   });
 
   final TextEditingController controller;
   final String hintText;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class DescriptionFieldView extends StatelessWidget {
         InputView(
           controller: controller,
           hintText: hintText,
+          errorText: errorText,
           textInputAction: TextInputAction.next,
         ),
       ],
