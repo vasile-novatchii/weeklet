@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:weeklet/core/platform/export_file_store.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
@@ -85,12 +84,10 @@ class ExportStatsUseCase implements UseCase<String, ExportStatsParams> {
     );
 
     final bytes = await doc.save();
-    final dir = await getTemporaryDirectory();
-    await Directory(dir.path).create(recursive: true);
-    final filePath =
-        '${dir.path}/${StatsExportUtils.fileName(params.year, params.month)}';
-    await File(filePath).writeAsBytes(bytes);
-    return filePath;
+    return ExportFileStore.write(
+      StatsExportUtils.fileName(params.year, params.month),
+      bytes,
+    );
   }
 
   static String _cap(String s) =>

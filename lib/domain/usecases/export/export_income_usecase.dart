@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:weeklet/core/platform/export_file_store.dart';
 import 'package:weeklet/core/utils/number_formatter.dart';
 import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/usecases/base/use_case.dart';
@@ -228,24 +227,21 @@ class ExportIncomeUseCase implements UseCase<String, ExportIncomeParams> {
                     String text, {
                     bool right = false,
                     PdfColor color = bodyText,
-                  }) =>
-                      pw.Padding(
-                        padding: const pw.EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 4,
-                        ),
-                        child: pw.Text(
-                          text,
-                          textAlign: right
-                              ? pw.TextAlign.right
-                              : pw.TextAlign.left,
-                          style: pw.TextStyle(
-                            font: regularFont,
-                            fontSize: 10,
-                            color: color,
-                          ),
-                        ),
-                      );
+                  }) => pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(
+                      vertical: 5,
+                      horizontal: 4,
+                    ),
+                    child: pw.Text(
+                      text,
+                      textAlign: right ? pw.TextAlign.right : pw.TextAlign.left,
+                      style: pw.TextStyle(
+                        font: regularFont,
+                        fontSize: 10,
+                        color: color,
+                      ),
+                    ),
+                  );
 
                   return pw.TableRow(
                     decoration: pw.BoxDecoration(
@@ -302,16 +298,11 @@ class ExportIncomeUseCase implements UseCase<String, ExportIncomeParams> {
     );
 
     final bytes = await doc.save();
-    final dir = await getTemporaryDirectory();
-    await Directory(dir.path).create(recursive: true);
     final fileName = ExportFileNaming.reportFileName(
       prefix: 'weeklet_income',
       year: year,
       month: month,
     );
-    final filePath = '${dir.path}/$fileName';
-    await File(filePath).writeAsBytes(bytes);
-
-    return filePath;
+    return ExportFileStore.write(fileName, bytes);
   }
 }
