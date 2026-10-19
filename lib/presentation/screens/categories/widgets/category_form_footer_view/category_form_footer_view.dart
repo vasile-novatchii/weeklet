@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:weeklet/core/constants/category_icons.dart';
 import 'package:weeklet/presentation/screens/categories/widgets/category_form_footer_view/category_form_cancel_button.dart';
 import 'package:weeklet/presentation/screens/categories/widgets/category_form_footer_view/category_form_save_button.dart';
+import 'package:weeklet/presentation/widgets/common/form/sheet_footer_padding.dart';
 
 class CategoryFormFooterView extends StatelessWidget {
   const CategoryFormFooterView({
@@ -32,8 +33,7 @@ class CategoryFormFooterView extends StatelessWidget {
   Widget build(BuildContext context) => AnimatedOpacity(
     duration: const Duration(milliseconds: 300),
     opacity: isLoading ? 0.6 : 1.0,
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    child: SheetFooterPadding(
       child: Row(
         spacing: 16,
         children: [
