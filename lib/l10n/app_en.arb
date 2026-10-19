@@ -136,6 +136,19 @@
     "description": "Tooltip for the PDF export icon button"
   },
 
+  "exportActionShare": "Share",
+  "@exportActionShare": {
+    "description": "Action in the post-export sheet (Android) that opens the share sheet"
+  },
+  "exportActionPrint": "Print / Save as PDF",
+  "@exportActionPrint": {
+    "description": "Action in the post-export sheet (Android) that opens the print dialog to save the PDF with its file name"
+  },
+  "exportPrintFailed": "Could not open print dialog",
+  "@exportPrintFailed": {
+    "description": "Error snackbar shown when the native print dialog cannot be opened"
+  },
+
   "addExpenseTooltip": "Add new expense",
   "@addExpenseTooltip": {
     "description": "Tooltip for the add expense FAB"

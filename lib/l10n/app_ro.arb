@@ -234,5 +234,8 @@
   "noIconsFoundForSearch": "Nu s-au găsit pictograme pentru „{searchTerm}”",
   "unsavedChangesDialogContent": "Ai modificări nesalvate. Ești sigur că vrei să ieși fără a salva?",
   "dropdownLoadingLabel": "Se încarcă...",
-  "unknownCategoryLabel": "Necunoscută"
+  "unknownCategoryLabel": "Necunoscută",
+  "exportActionShare": "Distribuie",
+  "exportActionPrint": "Tipărește / Salvează ca PDF",
+  "exportPrintFailed": "Nu s-a putut deschide dialogul de tipărire"
 }
