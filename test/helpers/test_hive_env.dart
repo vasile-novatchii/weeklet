@@ -6,6 +6,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:uuid/uuid.dart';
 import 'package:weeklet/core/services/biometric_service.dart';
+import 'package:weeklet/core/utils/pdf_font_loader.dart';
 import 'package:weeklet/data/datasources/local/category_local_datasource.dart';
 import 'package:weeklet/data/datasources/local/expense_local_datasource.dart';
 import 'package:weeklet/data/datasources/local/income_local_data_source.dart';
@@ -35,6 +36,7 @@ import 'package:weeklet/domain/usecases/expense/get_all_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/expense/update_expense_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
+import 'package:weeklet/domain/usecases/export/export_stats_usecase.dart';
 import 'package:weeklet/domain/usecases/income/add_income_use_case.dart';
 import 'package:weeklet/domain/usecases/income/delete_income_use_case.dart';
 import 'package:weeklet/domain/usecases/income/get_incomes_use_case.dart';
@@ -157,6 +159,7 @@ Future<void> initTestDi() async {
   GetIt.instance.registerSingleton<Box<dynamic>>(settingsBox);
 
   GetIt.instance.registerLazySingleton(() => const Uuid());
+  GetIt.instance.registerLazySingleton(PdfFontLoader.new);
 
   // DATA layer - DataSources
   GetIt.instance.registerLazySingleton<CategoryLocalDataSource>(
@@ -341,6 +344,7 @@ Future<void> initTestDi() async {
   // DOMAIN layer - UseCases (Export)
   GetIt.instance.registerLazySingleton(ExportExpensesUseCase.new);
   GetIt.instance.registerLazySingleton(ExportIncomeUseCase.new);
+  GetIt.instance.registerLazySingleton(ExportStatsUseCase.new);
 
   // Settings BLoC — registered BEFORE other BLoCs per CLAUDE.md rule
   GetIt.instance.registerLazySingleton(BiometricService.new);
@@ -403,6 +407,8 @@ Future<void> initTestDi() async {
     () => ExportBloc(
       exportExpensesUseCase: GetIt.instance<ExportExpensesUseCase>(),
       exportIncomeUseCase: GetIt.instance<ExportIncomeUseCase>(),
+      exportStatsUseCase: GetIt.instance<ExportStatsUseCase>(),
+      fontLoader: GetIt.instance<PdfFontLoader>(),
     ),
   );
 }

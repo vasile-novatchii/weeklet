@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:weeklet/core/services/biometric_service.dart';
+import 'package:weeklet/core/utils/pdf_font_loader.dart';
 import 'package:weeklet/data/datasources/local/category_local_datasource.dart';
 import 'package:weeklet/data/datasources/local/expense_local_datasource.dart';
 import 'package:weeklet/data/datasources/local/settings_local_data_source.dart';
@@ -50,6 +51,7 @@ import 'package:weeklet/domain/usecases/income/get_incomes_use_case.dart';
 import 'package:weeklet/domain/usecases/income/update_income_use_case.dart';
 import 'package:weeklet/domain/usecases/export/export_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
+import 'package:weeklet/domain/usecases/export/export_stats_usecase.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/income/income_bloc.dart';
 
@@ -93,6 +95,7 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => const Uuid(),
   );
+  sl.registerLazySingleton(PdfFontLoader.new);
 
   // DATA layer - DataSources
   sl.registerLazySingleton<CategoryLocalDataSource>(
@@ -281,6 +284,7 @@ Future<void> init() async {
   // DOMAIN layer - UseCases (Export)
   sl.registerLazySingleton(ExportExpensesUseCase.new);
   sl.registerLazySingleton(ExportIncomeUseCase.new);
+  sl.registerLazySingleton(ExportStatsUseCase.new);
 
   // Settings BLoC — registered BEFORE other BLoCs per CLAUDE.md rule
   sl.registerLazySingleton(BiometricService.new);
@@ -346,6 +350,8 @@ Future<void> init() async {
     () => ExportBloc(
       exportExpensesUseCase: sl<ExportExpensesUseCase>(),
       exportIncomeUseCase: sl<ExportIncomeUseCase>(),
+      exportStatsUseCase: sl<ExportStatsUseCase>(),
+      fontLoader: sl<PdfFontLoader>(),
     ),
   );
 }
