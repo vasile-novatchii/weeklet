@@ -82,8 +82,11 @@ class GetOrCreateDefaultCategoryUseCase
       icon: defaultIcon,
       createdAt: DateTime.now(),
     );
-    await repository.addCategory(created);
+    // The marker is written BEFORE the category so a crash between the two
+    // writes leaves a dangling marker (repaired by step 1 on the next run)
+    // instead of categories with no marker, which would never be repaired.
     await repository.setDefaultCategoryId(created.id);
+    await repository.addCategory(created);
     return created;
   }
 }

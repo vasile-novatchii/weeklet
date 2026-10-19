@@ -42,6 +42,16 @@ class _StubRepo implements CategoryRepository {
   Future<void> setDefaultCategoryId(String id) async => marker = id;
 }
 
+class _FailingAddRepo extends _StubRepo {
+  bool failAdd = true;
+
+  @override
+  Future<void> addCategory(Category category) async {
+    if (failAdd) throw Exception('add failed');
+    await super.addCategory(category);
+  }
+}
+
 Category _cat(String id, String name) =>
     Category(id: id, name: name, icon: 'home', createdAt: DateTime(2024));
 
@@ -68,6 +78,31 @@ void main() {
       expect(result!.name, 'Daily');
       expect(repo.marker, result.id);
       expect(repo.stored, hasLength(1));
+    });
+
+    test('crash after marker write is repaired on the next run', () async {
+      final failing = _FailingAddRepo();
+      final failingEnsure = EnsureDefaultCategoryUseCase(
+        failing,
+        GetOrCreateDefaultCategoryUseCase(failing, const Uuid()),
+      );
+      await expectLater(
+        failingEnsure(
+          const EnsureDefaultCategoryParams(localizedName: 'Daily'),
+        ),
+        throwsException,
+      );
+      // Marker was written first; no category exists, so seeding retries.
+      expect(failing.marker, isNotNull);
+      expect(failing.stored, isEmpty);
+
+      failing.failAdd = false;
+      final result = await failingEnsure(
+        const EnsureDefaultCategoryParams(localizedName: 'Daily'),
+      );
+      expect(result, isNotNull);
+      expect(failing.marker, result!.id);
+      expect(failing.stored, hasLength(1));
     });
 
     test('creates nothing when categories exist and no marker', () async {

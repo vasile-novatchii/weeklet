@@ -13,6 +13,13 @@ import 'package:weeklet/domain/usecases/category/update_category_usecase.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
 import 'package:weeklet/presentation/blocs/category/category_state.dart';
 
+/// Processes events strictly one at a time, in arrival order, so a startup
+/// load can never emit a stale list after the default-category seeding.
+/// Bloc applies transformers per registered event type, so [CategoryBloc]
+/// registers a single handler for all events to share one queue.
+EventTransformer<E> _sequential<E>() =>
+    (events, mapper) => events.asyncExpand(mapper);
+
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   CategoryBloc({
     required this.addCategoryUseCase,
@@ -23,13 +30,9 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     required this.ensureDefaultCategoryUseCase,
     required this.getDefaultCategoryIdUseCase,
   }) : super(const CategoryLoading()) {
-    on<AddCategoryEvent>(_onAddCategory);
-    on<UpdateCategoryEvent>(_onUpdateCategory);
-    on<DeleteCategoryEvent>(_onDeleteCategory);
-    on<GetAllCategoriesEvent>(_onGetAllCategories);
-    on<GetCategoryByIdEvent>(_onGetCategoryById);
-    on<EnsureDefaultCategoryRequested>(_onEnsureDefaultCategory);
-    on<ClearLastCreatedCategoryRequested>(_onClearLastCreatedCategory);
+    // One handler for every event: bloc applies transformers per event type,
+    // so a single sequential queue is the only way to serialize across types.
+    on<CategoryEvent>(_onEvent, transformer: _sequential());
   }
 
   final AddCategoryUseCase addCategoryUseCase;
@@ -45,6 +48,28 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   /// fired by `_onAddCategory` and by the add-expense form's `initState`.
   /// The bloc is a lazy singleton, so this resets naturally on app restart.
   String? _lastCreatedCategoryId;
+
+  Future<void> _onEvent(
+    CategoryEvent event,
+    Emitter<CategoryState> emit,
+  ) async {
+    switch (event) {
+      case final AddCategoryEvent e:
+        await _onAddCategory(e, emit);
+      case final UpdateCategoryEvent e:
+        await _onUpdateCategory(e, emit);
+      case final DeleteCategoryEvent e:
+        await _onDeleteCategory(e, emit);
+      case final GetAllCategoriesEvent e:
+        await _onGetAllCategories(e, emit);
+      case final GetCategoryByIdEvent e:
+        await _onGetCategoryById(e, emit);
+      case final EnsureDefaultCategoryRequested e:
+        await _onEnsureDefaultCategory(e, emit);
+      case final ClearLastCreatedCategoryRequested e:
+        _onClearLastCreatedCategory(e, emit);
+    }
+  }
 
   Future<void> _onAddCategory(
     AddCategoryEvent event,

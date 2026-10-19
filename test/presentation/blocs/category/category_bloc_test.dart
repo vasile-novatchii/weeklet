@@ -25,6 +25,9 @@ class _StubCategoryRepository implements CategoryRepository {
   });
 
   bool shouldThrow;
+
+  /// Delays only the first [getAllCategories] call, after it snapshots data.
+  Duration? firstGetAllDelay;
   final List<Category> returnedCategories;
   final Category? returnedCategory;
 
@@ -56,7 +59,13 @@ class _StubCategoryRepository implements CategoryRepository {
   @override
   Future<List<Category>> getAllCategories() async {
     if (shouldThrow) throw Exception('get all failed');
-    return [...returnedCategories, ..._added];
+    final snapshot = [...returnedCategories, ..._added];
+    final delay = firstGetAllDelay;
+    if (delay != null) {
+      firstGetAllDelay = null;
+      await Future<void>.delayed(delay);
+    }
+    return snapshot;
   }
 
   @override
@@ -493,5 +502,27 @@ void main() {
         ),
       ],
     );
+  });
+
+  group('CategoryBloc sequential processing', () {
+    test('slow startup load cannot emit a stale list after seeding', () async {
+      final repo = _StubCategoryRepository()
+        ..firstGetAllDelay = const Duration(milliseconds: 50);
+      final bloc = _makeBloc(repo);
+      final states = <CategoryState>[];
+      final sub = bloc.stream.listen(states.add);
+
+      bloc
+        ..add(const GetAllCategoriesEvent())
+        ..add(const EnsureDefaultCategoryRequested(localizedName: 'Daily'));
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+
+      final last = states.last;
+      expect(last, isA<CategoriesLoaded>());
+      expect((last as CategoriesLoaded).categories, hasLength(1));
+      expect(last.defaultCategoryId, isNotNull);
+      await sub.cancel();
+      await bloc.close();
+    });
   });
 }
