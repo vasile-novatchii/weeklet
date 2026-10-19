@@ -41,6 +41,7 @@
   "amountFieldHint": "0.00",
   "descriptionFieldLabel": "Описание",
   "descriptionFieldHint": "Напр.: Покупки в магазине",
+  "incomeDescriptionFieldHint": "Напр.: Зарплата",
   "dateFieldLabel": "Дата",
   "dateFieldHint": "Выберите дату",
   "categoryFieldLabel": "Категория",
@@ -141,6 +142,7 @@
 
   "incomeTotalForMonth": "Доходы за {month}",
   "incomeTotalAllMonths": "Общий доход",
+  "homeIncomeSubtitle": "Доход: {amount}",
 
   "biometricGateTitle": "Аутентификация для продолжения",
   "biometricGateSubtitle": "Используйте Face ID или отпечаток пальца для входа в Weeklet.",

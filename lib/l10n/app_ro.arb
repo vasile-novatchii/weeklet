@@ -41,6 +41,7 @@
   "amountFieldHint": "0.00",
   "descriptionFieldLabel": "Descriere",
   "descriptionFieldHint": "Ex.: Cumpărături alimentare",
+  "incomeDescriptionFieldHint": "Ex.: Salariu",
   "dateFieldLabel": "Data",
   "dateFieldHint": "Selectează data",
   "categoryFieldLabel": "Categorie",
@@ -141,6 +142,7 @@
 
   "incomeTotalForMonth": "Venituri totale pentru {month}",
   "incomeTotalAllMonths": "Total venituri",
+  "homeIncomeSubtitle": "Venituri: {amount}",
 
   "biometricGateTitle": "Autentifică-te pentru a continua",
   "biometricGateSubtitle": "Folosește Face ID sau amprenta pentru a accesa Weeklet.",

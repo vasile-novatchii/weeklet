@@ -194,6 +194,11 @@
     "description": "Hint text for the description input field"
   },
 
+  "incomeDescriptionFieldHint": "For ex.: Salary",
+  "@incomeDescriptionFieldHint": {
+    "description": "Hint text for the description input field on income forms"
+  },
+
   "dateFieldLabel": "Date",
   "@dateFieldLabel": {
     "description": "Label for the date input field"
@@ -648,6 +653,16 @@
   "expensesBarLabel": "Expenses",
   "@expensesBarLabel": {
     "description": "Label for the expenses bar in bar charts"
+  },
+
+  "homeIncomeSubtitle": "Income: {amount}",
+  "@homeIncomeSubtitle": {
+    "description": "Subtitle under the Expenses title showing total income for the selected period",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   },
 
   "incomeTotalForMonth": "Total income for {month}",
