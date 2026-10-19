@@ -25,6 +25,7 @@ final class IncomeSuccess extends IncomeState {
     required this.availableMonths,
     this.selectedMonth,
     this.actionError,
+    this.formError,
   });
 
   final List<Income> allIncomes;
@@ -34,6 +35,7 @@ final class IncomeSuccess extends IncomeState {
   final List<int> availableYears;
   final List<int> availableMonths;
   final String? actionError;
+  final String? formError;
 
   @override
   List<Object?> get props => [
@@ -44,6 +46,7 @@ final class IncomeSuccess extends IncomeState {
     availableYears,
     availableMonths,
     actionError,
+    formError,
   ];
 
   IncomeSuccess copyWith({
@@ -54,6 +57,7 @@ final class IncomeSuccess extends IncomeState {
     List<int>? availableYears,
     List<int>? availableMonths,
     String? actionError,
+    String? formError,
   }) => IncomeSuccess(
     allIncomes: allIncomes ?? this.allIncomes,
     filteredIncomes: filteredIncomes ?? this.filteredIncomes,
@@ -62,6 +66,7 @@ final class IncomeSuccess extends IncomeState {
     availableYears: availableYears ?? this.availableYears,
     availableMonths: availableMonths ?? this.availableMonths,
     actionError: actionError, // allow null to reset error
+    formError: formError, // allow null to reset error
   );
 }
 

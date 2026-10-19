@@ -26,6 +26,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
     on<DeleteIncomeStarted>(_onDeleteIncome);
     on<IncomeFilterDateChanged>(_onFilterDateChanged);
     on<ClearIncomeActionErrorRequested>(_onClearActionError);
+    on<ClearIncomeFormErrorRequested>(_onClearFormError);
   }
 
   final AddIncomeUseCase addIncomeUseCase;
@@ -42,6 +43,20 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         st.copyWith(
           selectedMonth: st.selectedMonth,
           actionError: null,
+        ),
+      );
+    }
+  }
+
+  void _onClearFormError(
+    ClearIncomeFormErrorRequested event,
+    Emitter<IncomeState> emit,
+  ) {
+    if (state case final IncomeSuccess st) {
+      emit(
+        st.copyWith(
+          selectedMonth: st.selectedMonth,
+          formError: null,
         ),
       );
     }
@@ -151,7 +166,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         emit(
           st.copyWith(
             selectedMonth: st.selectedMonth,
-            actionError: e.error.name,
+            formError: e.error.name,
           ),
         );
       } catch (e) {
@@ -159,7 +174,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         emit(
           st.copyWith(
             selectedMonth: st.selectedMonth,
-            actionError: 'genericError',
+            formError: 'genericError',
           ),
         );
       }
@@ -189,7 +204,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         emit(
           st.copyWith(
             selectedMonth: st.selectedMonth,
-            actionError: e.error.name,
+            formError: e.error.name,
           ),
         );
       } catch (e) {
@@ -197,7 +212,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         emit(
           st.copyWith(
             selectedMonth: st.selectedMonth,
-            actionError: 'genericError',
+            formError: 'genericError',
           ),
         );
       }

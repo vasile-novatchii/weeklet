@@ -91,3 +91,8 @@ final class IncomeFilterDateChanged extends IncomeEvent {
 final class ClearIncomeActionErrorRequested extends IncomeEvent {
   const ClearIncomeActionErrorRequested();
 }
+
+/// Resets any add/update form error from the success state.
+final class ClearIncomeFormErrorRequested extends IncomeEvent {
+  const ClearIncomeFormErrorRequested();
+}
