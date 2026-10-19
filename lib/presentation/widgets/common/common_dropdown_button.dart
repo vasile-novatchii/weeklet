@@ -14,7 +14,7 @@ class CommonDropdownButton<T extends Object?> extends StatefulWidget {
     this.selectedItem,
     required this.onChanged,
     this.label,
-    this.hint = 'Select',
+    required this.hint,
     this.isLoading = false,
     this.errorText,
   });

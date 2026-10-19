@@ -15,7 +15,7 @@ import 'package:intl/intl.dart' as intl;
 /// LocaleManager().initialize(deviceLocale);
 ///
 /// // In widgets
-/// String currentLocale = LocaleManager().currentLocaleString; // "en_US"
+/// String currentLocale = LocaleManager().currentLocaleString; // "en"
 /// Locale locale = LocaleManager().currentLocale;
 /// ```
 class LocaleManager {
