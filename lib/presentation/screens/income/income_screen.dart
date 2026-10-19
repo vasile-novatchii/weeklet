@@ -120,6 +120,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
         ? settingsState.currencySymbol
         : AppConstants.DEFAULT_CURRENCY;
 
+    // Hide the filter bar only when there is no income at all; keep it
+    // while loading/failed or when other periods hold data.
+    final hasAnyIncome =
+        incomeState is! IncomeSuccess || incomeState.allIncomes.isNotEmpty;
+
     return BlocListener<IncomeBloc, IncomeState>(
       listenWhen: (_, s) => s is IncomeSuccess && s.actionError != null,
       listener: (context, state) {
@@ -173,10 +178,12 @@ class _IncomeScreenState extends State<IncomeScreen> {
                     onPressed: _onExportTapped,
                   ),
             ],
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(60),
-              child: IncomeFilterBar(),
-            ),
+            bottom: hasAnyIncome
+                ? const PreferredSize(
+                    preferredSize: Size.fromHeight(60),
+                    child: IncomeFilterBar(),
+                  )
+                : null,
           ),
           body: switch (incomeState) {
             IncomeLoading _ => const Center(
@@ -212,14 +219,16 @@ class _IncomeScreenState extends State<IncomeScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    IncomeTotalCard(
-                      total: IncomeGrouping.calculateTotal(
-                        success.filteredIncomes,
+                    if (success.filteredIncomes.isNotEmpty) ...[
+                      IncomeTotalCard(
+                        total: IncomeGrouping.calculateTotal(
+                          success.filteredIncomes,
+                        ),
+                        selectedMonth: success.selectedMonth,
+                        currencySymbol: currencySymbol,
                       ),
-                      selectedMonth: success.selectedMonth,
-                      currencySymbol: currencySymbol,
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
+                    ],
                     IncomeListView(
                       incomes: success.filteredIncomes,
                       currencySymbol: currencySymbol,

@@ -18,6 +18,8 @@ import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
 import 'package:weeklet/core/utils/locale_manager.dart';
 import 'package:weeklet/presentation/screens/income/income_screen.dart';
+import 'package:weeklet/presentation/screens/income/widgets/income_filter_bar.dart';
+import 'package:weeklet/presentation/screens/income/widgets/income_total_card.dart';
 import 'package:weeklet/presentation/screens/income/widgets/list/income_list_view.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import '../../../helpers/test_app.dart';
@@ -166,6 +168,63 @@ void main() {
         ).called(1);
       },
     );
+  });
+
+  group('IncomeScreen empty state', () {
+    void seedState(IncomeState state) {
+      when(() => mockIncomeBloc.state).thenReturn(state);
+      whenListen(
+        mockIncomeBloc,
+        Stream.value(state),
+        initialState: state,
+      );
+    }
+
+    testWidgets('no income at all hides filter bar and total card', (
+      tester,
+    ) async {
+      seedState(fakeIncomeSuccess(incomes: []));
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(EmptyStateView), findsOneWidget);
+      expect(find.byType(IncomeFilterBar), findsNothing);
+      expect(find.byType(IncomeTotalCard), findsNothing);
+      expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
+    });
+
+    testWidgets('empty period with other data keeps filter bar only', (
+      tester,
+    ) async {
+      final year = DateTime.now().year;
+      seedState(
+        IncomeSuccess(
+          allIncomes: [fakeIncome()],
+          filteredIncomes: const [],
+          selectedYear: year,
+          availableYears: [year],
+          availableMonths: const [5],
+        ),
+      );
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(EmptyStateView), findsOneWidget);
+      expect(find.byType(IncomeFilterBar), findsOneWidget);
+      expect(find.byType(IncomeTotalCard), findsNothing);
+    });
+
+    testWidgets('filtered items show filter bar, total card and PDF icon', (
+      tester,
+    ) async {
+      seedState(fakeIncomeSuccess(incomes: [fakeIncome()]));
+      await pumpIncomeScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(IncomeFilterBar), findsOneWidget);
+      expect(find.byType(IncomeTotalCard), findsOneWidget);
+      expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+    });
   });
 
   group('IncomeScreen export listener isolation', () {
