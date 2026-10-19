@@ -21,6 +21,7 @@ import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
 import 'package:weeklet/presentation/screens/expenses/expenses_screen.dart';
+import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar.dart';
 import 'package:weeklet/presentation/widgets/common/common_dropdown_button.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import '../../../helpers/test_app.dart';
@@ -238,6 +239,63 @@ void main() {
         );
       },
     );
+  });
+
+  group('ExpensesScreen filter bar visibility', () {
+    void seedStates(ExpenseState expenseState) {
+      when(() => mockExpenseBloc.state).thenReturn(expenseState);
+      whenListen(
+        mockExpenseBloc,
+        const Stream<ExpenseState>.empty(),
+        initialState: expenseState,
+      );
+      final cats = CategoriesLoaded(categories: [fakeCategory()]);
+      when(() => mockCategoryBloc.state).thenReturn(cats);
+      whenListen(
+        mockCategoryBloc,
+        const Stream<CategoryState>.empty(),
+        initialState: cats,
+      );
+    }
+
+    testWidgets('kept while loading', (tester) async {
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+      expect(find.byType(ExpenseFilterBar), findsOneWidget);
+    });
+
+    testWidgets('kept on failure', (tester) async {
+      seedStates(const ExpenseFailure('x'));
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+      expect(find.byType(ExpenseFilterBar), findsOneWidget);
+    });
+
+    testWidgets('hidden when no expense exists in any period', (tester) async {
+      seedStates(fakeExpenseSuccess(expenses: []));
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+      expect(find.byType(ExpenseFilterBar), findsNothing);
+      expect(find.byType(EmptyStateView), findsOneWidget);
+    });
+
+    testWidgets('kept when selected period is empty but others have data', (
+      tester,
+    ) async {
+      seedStates(
+        ExpenseSuccess(
+          allExpenses: [fakeExpense()],
+          filteredExpenses: const [],
+          selectedYear: DateTime.now().year,
+          availableYears: [DateTime.now().year],
+          availableMonths: const [5],
+        ),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+      expect(find.byType(ExpenseFilterBar), findsOneWidget);
+      expect(find.byType(EmptyStateView), findsOneWidget);
+    });
   });
 
   group('ExpensesScreen export listener isolation', () {

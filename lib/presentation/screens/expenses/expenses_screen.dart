@@ -6,6 +6,7 @@ import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/router/app_routes.dart';
 import 'package:weeklet/domain/entities/category.dart';
+import 'package:weeklet/domain/utils/filter_visibility_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_state.dart';
@@ -124,6 +125,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final expenseState = context.watch<ExpenseBloc>().state;
+    // Hide the filter bar only when no expense exists in any period; keep it
+    // while loading/failed or when other periods hold data.
+    final showFilter =
+        expenseState is! ExpenseSuccess ||
+        FilterVisibilityUtils.showExpenseFilter(expenseState.allExpenses);
     final categoryState = context.watch<CategoryBloc>().state;
     final settingsState = context.watch<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
@@ -196,10 +202,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   onPressed: _onExportTapped,
                 ),
           ],
-          bottom: const PreferredSize(
-            preferredSize: Size.fromHeight(60),
-            child: ExpenseFilterBar(),
-          ),
+          bottom: showFilter
+              ? const PreferredSize(
+                  preferredSize: Size.fromHeight(60),
+                  child: ExpenseFilterBar(),
+                )
+              : null,
         ),
         body: switch ((expenseState, categoryState)) {
           (ExpenseLoading _, _) || (_, CategoryLoading _) => const Center(

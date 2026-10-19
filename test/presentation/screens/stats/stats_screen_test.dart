@@ -94,8 +94,9 @@ void main() {
       initialState: const StatsInitial(),
     );
 
-    when(() => mockSettingsBloc.state)
-        .thenReturn(SettingsLoaded(settings: Settings.defaults()));
+    when(
+      () => mockSettingsBloc.state,
+    ).thenReturn(SettingsLoaded(settings: Settings.defaults()));
     whenListen(
       mockSettingsBloc,
       const Stream<SettingsState>.empty(),
@@ -126,6 +127,7 @@ void main() {
     EvolutionStats? evolution,
     List<CategoryStats> categories = const [],
     int? year,
+    Map<int, List<int>> availablePeriods = const {},
   }) => MonthlyStatsLoaded(
     stats: MonthlyStats(
       totalIncome: income,
@@ -139,6 +141,7 @@ void main() {
     year: year ?? DateTime.now().year,
     currentTab: tab,
     evolutionStats: evolution,
+    availablePeriods: availablePeriods,
   );
 
   void seed(StatsState state) {
@@ -317,14 +320,18 @@ void main() {
       tester,
     ) async {
       await pumpWithStream(tester);
-      await emit(tester, const ExportFailure('x', exportType: ExportType.stats));
+      await emit(
+        tester,
+        const ExportFailure('x', exportType: ExportType.stats),
+      );
 
       expect(
         find.text('Failed to generate PDF. Please try again.'),
         findsOneWidget,
       );
-      verify(() => mockExportBloc.add(any(that: isA<ResetExportRequested>())))
-          .called(1);
+      verify(
+        () => mockExportBloc.add(any(that: isA<ResetExportRequested>())),
+      ).called(1);
     });
 
     testWidgets('expenses failure is ignored', (tester) async {
@@ -359,8 +366,9 @@ void main() {
         fakeShare.shareCalls.single.files!.first.path,
         endsWith('weeklet_stats_march_2026.pdf'),
       );
-      verify(() => mockExportBloc.add(any(that: isA<ResetExportRequested>())))
-          .called(1);
+      verify(
+        () => mockExportBloc.add(any(that: isA<ResetExportRequested>())),
+      ).called(1);
       debugDefaultTargetPlatformOverride = null;
     });
 
@@ -401,8 +409,35 @@ void main() {
   });
 
   group('StatsScreen - empty state', () {
-    testWidgets('shows only filter bar and empty view', (tester) async {
+    testWidgets('no data in any period hides filter bar, shows empty view', (
+      tester,
+    ) async {
       seed(loadedWith(income: 0, expenses: 0));
+      await pumpStatsScreen(tester);
+      await tester.pump();
+
+      expect(find.byType(StatsEmptyView), findsOneWidget);
+      expect(find.byType(StatsFilterBar), findsNothing);
+      expect(find.byType(StatsSummaryCards), findsNothing);
+      expect(find.byType(StatsTabsSection), findsNothing);
+      expect(find.byType(ModernDonutChart), findsNothing);
+      expect(find.byType(CategoryDetailsList), findsNothing);
+      expect(find.byType(AnnualGroupedBarChart), findsNothing);
+      expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
+    });
+
+    testWidgets('empty period with data elsewhere keeps filter bar only', (
+      tester,
+    ) async {
+      seed(
+        loadedWith(
+          income: 0,
+          expenses: 0,
+          availablePeriods: const {
+            2020: [3],
+          },
+        ),
+      );
       await pumpStatsScreen(tester);
       await tester.pump();
 
@@ -410,10 +445,6 @@ void main() {
       expect(find.byType(StatsFilterBar), findsOneWidget);
       expect(find.byType(StatsSummaryCards), findsNothing);
       expect(find.byType(StatsTabsSection), findsNothing);
-      expect(find.byType(ModernDonutChart), findsNothing);
-      expect(find.byType(CategoryDetailsList), findsNothing);
-      expect(find.byType(AnnualGroupedBarChart), findsNothing);
-      expect(find.byIcon(Icons.picture_as_pdf), findsNothing);
     });
 
     testWidgets('income-only selection renders cards and tabs', (
@@ -501,8 +532,9 @@ void main() {
       'shows error content when state is StatsFailure',
       (tester) async {
         const errorMessage = 'Failed to load stats';
-        when(() => mockStatsBloc.state)
-            .thenReturn(const StatsFailure(errorMessage));
+        when(
+          () => mockStatsBloc.state,
+        ).thenReturn(const StatsFailure(errorMessage));
         whenListen(
           mockStatsBloc,
           const Stream<StatsState>.empty(),

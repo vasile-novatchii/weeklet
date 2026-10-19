@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weeklet/core/constants/app_constants.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/domain/utils/filter_visibility_utils.dart';
 import 'package:weeklet/domain/utils/income_grouping.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
@@ -123,7 +124,8 @@ class _IncomeScreenState extends State<IncomeScreen> {
     // Hide the filter bar only when there is no income at all; keep it
     // while loading/failed or when other periods hold data.
     final hasAnyIncome =
-        incomeState is! IncomeSuccess || incomeState.allIncomes.isNotEmpty;
+        incomeState is! IncomeSuccess ||
+        FilterVisibilityUtils.showIncomeFilter(incomeState.allIncomes);
 
     return BlocListener<IncomeBloc, IncomeState>(
       listenWhen: (_, s) => s is IncomeSuccess && s.actionError != null,

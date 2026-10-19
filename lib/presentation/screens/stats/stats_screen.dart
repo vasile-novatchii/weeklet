@@ -8,6 +8,7 @@ import 'package:weeklet/core/utils/category_color_utils.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/usecases/export/stats_pdf_labels.dart';
 import 'package:weeklet/domain/utils/evolution_stats_utils.dart';
+import 'package:weeklet/domain/utils/filter_visibility_utils.dart';
 import 'package:weeklet/domain/utils/stats_export_utils.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
@@ -155,12 +156,15 @@ class StatsView extends StatelessWidget {
                 when !StatsExportUtils.hasExportableData(loaded.stats) =>
               CustomScrollView(
                 slivers: [
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _StickyFilterHeaderDelegate(
-                      child: const StatsFilterBar(),
+                  if (FilterVisibilityUtils.showStatsFilter(
+                    loaded.availablePeriods,
+                  ))
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _StickyFilterHeaderDelegate(
+                        child: const StatsFilterBar(),
+                      ),
                     ),
-                  ),
                   const SliverFillRemaining(
                     hasScrollBody: false,
                     child: StatsEmptyView(),
