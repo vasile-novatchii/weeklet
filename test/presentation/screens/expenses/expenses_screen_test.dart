@@ -7,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:weeklet/core/utils/locale_manager.dart';
+import 'package:weeklet/core/utils/number_formatter.dart';
+import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/entities/settings.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
@@ -17,6 +19,9 @@ import 'package:weeklet/presentation/blocs/expense/expense_state.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/export/export_event.dart';
 import 'package:weeklet/presentation/blocs/export/export_state.dart';
+import 'package:weeklet/presentation/blocs/income/income_bloc.dart';
+import 'package:weeklet/presentation/blocs/income/income_event.dart';
+import 'package:weeklet/presentation/blocs/income/income_state.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
@@ -45,6 +50,9 @@ class MockCategoryBloc extends MockBloc<CategoryEvent, CategoryState>
 class MockSettingsBloc extends MockBloc<SettingsEvent, SettingsState>
     implements SettingsBloc {}
 
+class MockIncomeBloc extends MockBloc<IncomeEvent, IncomeState>
+    implements IncomeBloc {}
+
 class MockExportBloc extends MockBloc<ExportEvent, ExportState>
     implements ExportBloc {}
 
@@ -57,6 +65,7 @@ void main() {
   late MockCategoryBloc mockCategoryBloc;
   late MockSettingsBloc mockSettingsBloc;
   late MockExportBloc mockExportBloc;
+  late MockIncomeBloc mockIncomeBloc;
 
   setUpAll(() {
     // Initialize LocaleManager so that date/locale formatting in sub-widgets
@@ -81,6 +90,15 @@ void main() {
     mockCategoryBloc = MockCategoryBloc();
     mockSettingsBloc = MockSettingsBloc();
     mockExportBloc = MockExportBloc();
+    mockIncomeBloc = MockIncomeBloc();
+
+    final defaultIncome = fakeIncomeSuccess(incomes: []);
+    when(() => mockIncomeBloc.state).thenReturn(defaultIncome);
+    whenListen(
+      mockIncomeBloc,
+      const Stream<IncomeState>.empty(),
+      initialState: defaultIncome,
+    );
 
     // Wire default states and streams
     when(() => mockExpenseBloc.state).thenReturn(const ExpenseLoading());
@@ -131,6 +149,7 @@ void main() {
       BlocProvider<CategoryBloc>.value(value: mockCategoryBloc),
       BlocProvider<SettingsBloc>.value(value: mockSettingsBloc),
       BlocProvider<ExportBloc>.value(value: mockExportBloc),
+      BlocProvider<IncomeBloc>.value(value: mockIncomeBloc),
     ],
   );
 
@@ -380,6 +399,110 @@ void main() {
               ).captured.single
               as ExportExpensesStarted;
       expect(event.month, isNull);
+    });
+  });
+
+  group('ExpensesScreen income subtitle', () {
+    final year = DateTime.now().year;
+    final symbol = SettingsLoaded(settings: Settings.defaults()).currencySymbol;
+    final march = Income(
+      id: 'i-mar',
+      amount: 100.50,
+      description: 'March',
+      date: DateTime(year, 3, 10),
+      createdAt: DateTime(year, 3, 10),
+    );
+    final april = Income(
+      id: 'i-apr',
+      amount: 40,
+      description: 'April',
+      date: DateTime(year, 4, 10),
+      createdAt: DateTime(year, 4, 10),
+    );
+
+    ExpenseSuccess expenseSuccess({int? month}) => ExpenseSuccess(
+      allExpenses: const [],
+      filteredExpenses: const [],
+      selectedYear: year,
+      selectedMonth: month,
+      availableYears: [year],
+      availableMonths: const [3, 4],
+    );
+
+    void seed({required ExpenseState expense, required IncomeState income}) {
+      when(() => mockExpenseBloc.state).thenReturn(expense);
+      whenListen(
+        mockExpenseBloc,
+        const Stream<ExpenseState>.empty(),
+        initialState: expense,
+      );
+      when(() => mockIncomeBloc.state).thenReturn(income);
+      whenListen(
+        mockIncomeBloc,
+        const Stream<IncomeState>.empty(),
+        initialState: income,
+      );
+    }
+
+    IncomeSuccess incomeSuccess(List<Income> list) =>
+        fakeIncomeSuccess(incomes: list);
+
+    testWidgets('shows selected month total', (tester) async {
+      seed(
+        expense: expenseSuccess(month: 3),
+        income: incomeSuccess([march, april]),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      final amount = NumberFormatter.formatCurrency(100.50, symbol);
+      expect(find.text('Income: $amount'), findsOneWidget);
+      expect(find.text('My Expenses'), findsOneWidget);
+    });
+
+    testWidgets('shows whole-year total when month is null', (tester) async {
+      seed(
+        expense: expenseSuccess(),
+        income: incomeSuccess([march, april]),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      final amount = NumberFormatter.formatCurrency(140.50, symbol);
+      expect(find.text('Income: $amount'), findsOneWidget);
+    });
+
+    testWidgets('hidden when period has no income', (tester) async {
+      seed(
+        expense: expenseSuccess(month: 3),
+        income: incomeSuccess([april]),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      expect(find.textContaining('Income:'), findsNothing);
+    });
+
+    testWidgets('hidden when IncomeState is loading', (tester) async {
+      seed(
+        expense: expenseSuccess(month: 3),
+        income: const IncomeLoading(),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      expect(find.textContaining('Income:'), findsNothing);
+    });
+
+    testWidgets('hidden when ExpenseState is not success', (tester) async {
+      seed(
+        expense: const ExpenseLoading(),
+        income: incomeSuccess([march]),
+      );
+      await pumpExpensesScreen(tester);
+      await tester.pump();
+
+      expect(find.textContaining('Income:'), findsNothing);
     });
   });
 }
