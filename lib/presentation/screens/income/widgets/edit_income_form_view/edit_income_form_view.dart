@@ -23,6 +23,9 @@ class EditIncomeFormView extends StatefulWidget {
   State<EditIncomeFormView> createState() => _EditIncomeFormViewState();
 }
 
+const _invalidAmountKey = 'invalidAmount';
+const _emptyDescriptionKey = 'emptyDescription';
+
 class _EditIncomeFormViewState extends State<EditIncomeFormView> {
   final _formKey = GlobalKey<FormState>();
 
@@ -31,6 +34,7 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
 
   DateTime? _selectedDate;
   bool _hasInteracted = false;
+  String? _formError;
 
   @override
   void initState() {
@@ -46,12 +50,16 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
 
     _amountController.addListener(_onFormInteraction);
     _descriptionController.addListener(_onFormInteraction);
+    _amountController.addListener(_clearAmountError);
+    _descriptionController.addListener(_clearDescriptionError);
   }
 
   @override
   void dispose() {
     _amountController.removeListener(_onFormInteraction);
     _descriptionController.removeListener(_onFormInteraction);
+    _amountController.removeListener(_clearAmountError);
+    _descriptionController.removeListener(_clearDescriptionError);
     _amountController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -60,6 +68,18 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
   void _onFormInteraction() {
     if (!_hasInteracted) {
       setState(() => _hasInteracted = true);
+    }
+  }
+
+  void _clearAmountError() {
+    if (_formError == _invalidAmountKey) {
+      setState(() => _formError = null);
+    }
+  }
+
+  void _clearDescriptionError() {
+    if (_formError == _emptyDescriptionKey) {
+      setState(() => _formError = null);
     }
   }
 
@@ -88,7 +108,13 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
 
     if (!isValid) return;
 
-    context.read<IncomeBloc>().add(
+    setState(() => _formError = null);
+
+    // Clear first so a repeated identical failure still re-emits (Equatable
+    // would otherwise swallow it).
+    final bloc = context.read<IncomeBloc>();
+    bloc.add(const ClearIncomeFormErrorRequested());
+    bloc.add(
       UpdateIncomeStarted(
         Income(
           id: widget.income.id,
@@ -109,10 +135,29 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
         ? settingsState.currencySymbol
         : AppConstants.DEFAULT_CURRENCY;
 
+    final amountError = _formError == _invalidAmountKey
+        ? l10n.errorInvalidAmount
+        : null;
+    final descriptionError = _formError == _emptyDescriptionKey
+        ? l10n.errorEmptyDescription
+        : null;
+    final generalError =
+        _formError != null && amountError == null && descriptionError == null
+        ? l10n.errorGeneric
+        : null;
+
     return BlocListener<IncomeBloc, IncomeState>(
+      listenWhen: (prev, curr) =>
+          (prev is IncomeLoading &&
+              curr is IncomeSuccess &&
+              curr.formError == null) ||
+          (curr is IncomeSuccess && curr.formError != null),
       listener: (context, state) {
-        if (state is IncomeSuccess && state.actionError == null) {
+        if (!mounted || state is! IncomeSuccess) return;
+        if (state.formError == null) {
           context.pop();
+        } else {
+          setState(() => _formError = state.formError);
         }
       },
       child: CallbackShortcuts(
@@ -146,10 +191,12 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
                       AmountFieldView(
                         controller: _amountController,
                         currencySymbol: currencySymbol,
+                        errorText: amountError,
                       ),
                       DescriptionFieldView(
                         controller: _descriptionController,
                         hintText: l10n.incomeDescriptionFieldHint,
+                        errorText: descriptionError,
                       ),
                       DateFieldView(
                         selectedDate: _selectedDate,
@@ -168,6 +215,7 @@ class _EditIncomeFormViewState extends State<EditIncomeFormView> {
                 onSave: _onSave,
                 onCancel: _handleClose,
                 isEnabled: _hasInteracted,
+                generalError: generalError,
               ),
             ),
           ),
