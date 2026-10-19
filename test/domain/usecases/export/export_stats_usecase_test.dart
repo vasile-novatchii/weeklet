@@ -358,4 +358,76 @@ void main() {
       expect(text, contains('Январь'));
     });
   });
+
+  group('ExportStatsUseCase localization audit', () {
+    const useCase = ExportStatsUseCase();
+
+    // 'Total' is also the correct Romanian word, so it is only asserted
+    // absent for Russian.
+    const enStrings = [
+      'Statistics Report',
+      'Generated',
+      'Expenses by Category',
+      'Category',
+      'Amount',
+      'Share',
+      'Balance',
+      'Income',
+      'Expenses',
+      'Monthly Breakdown',
+      'Month',
+      'vs last month',
+      'No expenses for this period',
+      'March',
+      'January',
+    ];
+
+    final rows = [
+      _snap(1, 1000, 400),
+      for (var m = 2; m <= 12; m++) _snap(m, 0, 0),
+    ];
+
+    for (final entry in {
+      'ro': (_labelsRo(), 'Raport statistic', 'Martie', 'Ianuarie'),
+      'ru': (_labelsRu(), 'Статистический отчёт', 'Март', 'Январь'),
+    }.entries) {
+      final (labels, title, singleMonth, allMonth) = entry.value;
+      final extra = entry.key == 'ru' ? ['Total'] : <String>[];
+
+      test('${entry.key} single-month PDF has no English labels', () async {
+        final path = await useCase(
+          _params(
+            stats: _monthStats(food: 'Produse', transport: 'Transp'),
+            labels: labels,
+            localeCode: entry.key,
+          ),
+        );
+        final text = extractPdfUnicodeText(File(path));
+        expect(text, contains(title));
+        expect(text, contains(singleMonth));
+        for (final en in [...enStrings, ...extra]) {
+          expect(text, isNot(contains(en)), reason: en);
+        }
+      });
+
+      test('${entry.key} all-months PDF has no English labels', () async {
+        final path = await useCase(
+          _params(
+            stats: _monthStats(food: 'Produse', transport: 'Transp'),
+            labels: labels,
+            monthRows: rows,
+            year: 2025,
+            month: null,
+            localeCode: entry.key,
+          ),
+        );
+        final text = extractPdfUnicodeText(File(path));
+        expect(text, contains(title));
+        expect(text, contains(allMonth));
+        for (final en in [...enStrings, ...extra]) {
+          expect(text, isNot(contains(en)), reason: en);
+        }
+      });
+    }
+  });
 }
