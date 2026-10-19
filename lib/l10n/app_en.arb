@@ -803,5 +803,62 @@
   "pdfUnknownCategory": "Unknown",
   "@pdfUnknownCategory": {
     "description": "Category name shown in the PDF when the category no longer exists"
+  },
+  "weekHeaderLabel": "Week {number}",
+  "@weekHeaderLabel": {
+    "description": "Header of a week group in lists",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "weekTotalLabel": "Total week",
+  "@weekTotalLabel": {
+    "description": "Label of the weekly total row"
+  },
+  "incomeItemFallbackTitle": "Income",
+  "@incomeItemFallbackTitle": {
+    "description": "Fallback title and category name for an income list row"
+  },
+  "editCategorySheetTitle": "Edit Category",
+  "@editCategorySheetTitle": {
+    "description": "Title of the edit category sheet"
+  },
+  "categoryNameNotSetLabel": "Category name not set",
+  "@categoryNameNotSetLabel": {
+    "description": "Shown when the category name is empty"
+  },
+  "selectedIconPreviewSemanticLabel": "Selected icon preview",
+  "@selectedIconPreviewSemanticLabel": {
+    "description": "Semantic label of the selected icon preview"
+  },
+  "editExpenseSemanticLabel": "Edit expense",
+  "@editExpenseSemanticLabel": {
+    "description": "Semantic label of the edit expense action"
+  },
+  "deleteExpenseSemanticLabel": "Delete expense",
+  "@deleteExpenseSemanticLabel": {
+    "description": "Semantic label of the delete expense action"
+  },
+  "editIncomeSemanticLabel": "Edit income",
+  "@editIncomeSemanticLabel": {
+    "description": "Semantic label of the edit income action"
+  },
+  "deleteIncomeSemanticLabel": "Delete income",
+  "@deleteIncomeSemanticLabel": {
+    "description": "Semantic label of the delete income action"
+  },
+  "editCategorySemanticLabel": "Edit category",
+  "@editCategorySemanticLabel": {
+    "description": "Semantic label of the edit category action"
+  },
+  "deleteCategorySemanticLabel": "Delete category",
+  "@deleteCategorySemanticLabel": {
+    "description": "Semantic label of the delete category action"
+  },
+  "legalContentPlaceholder": "Content will be added before public release.",
+  "@legalContentPlaceholder": {
+    "description": "Placeholder body of the privacy and terms screens"
   }
 }

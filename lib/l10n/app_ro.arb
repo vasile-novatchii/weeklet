@@ -178,5 +178,18 @@
   "pdfColumnDate": "Data",
   "pdfColumnDescription": "Descriere",
   "pdfNoRecords": "Nicio înregistrare pentru",
-  "pdfUnknownCategory": "Necunoscută"
+  "pdfUnknownCategory": "Necunoscută",
+  "weekHeaderLabel": "Săptămâna {number}",
+  "weekTotalLabel": "Total săptămână",
+  "incomeItemFallbackTitle": "Venit",
+  "editCategorySheetTitle": "Editează categoria",
+  "categoryNameNotSetLabel": "Numele categoriei nu este setat",
+  "selectedIconPreviewSemanticLabel": "Previzualizare pictogramă selectată",
+  "editExpenseSemanticLabel": "Editează cheltuiala",
+  "deleteExpenseSemanticLabel": "Șterge cheltuiala",
+  "editIncomeSemanticLabel": "Editează venitul",
+  "deleteIncomeSemanticLabel": "Șterge venitul",
+  "editCategorySemanticLabel": "Editează categoria",
+  "deleteCategorySemanticLabel": "Șterge categoria",
+  "legalContentPlaceholder": "Conținutul va fi adăugat înainte de lansarea publică."
 }

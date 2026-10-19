@@ -178,5 +178,18 @@
   "pdfColumnDate": "Дата",
   "pdfColumnDescription": "Описание",
   "pdfNoRecords": "Нет записей за",
-  "pdfUnknownCategory": "Неизвестно"
+  "pdfUnknownCategory": "Неизвестно",
+  "weekHeaderLabel": "Неделя {number}",
+  "weekTotalLabel": "Итого за неделю",
+  "incomeItemFallbackTitle": "Доход",
+  "editCategorySheetTitle": "Редактировать категорию",
+  "categoryNameNotSetLabel": "Название категории не задано",
+  "selectedIconPreviewSemanticLabel": "Предпросмотр выбранной иконки",
+  "editExpenseSemanticLabel": "Редактировать расход",
+  "deleteExpenseSemanticLabel": "Удалить расход",
+  "editIncomeSemanticLabel": "Редактировать доход",
+  "deleteIncomeSemanticLabel": "Удалить доход",
+  "editCategorySemanticLabel": "Редактировать категорию",
+  "deleteCategorySemanticLabel": "Удалить категорию",
+  "legalContentPlaceholder": "Содержимое будет добавлено до публичного релиза."
 }
