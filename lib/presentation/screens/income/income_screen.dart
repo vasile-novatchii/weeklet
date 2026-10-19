@@ -116,6 +116,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final incomeState = context.watch<IncomeBloc>().state;
+    final isExporting = context.watch<ExportBloc>().state is ExportInProgress;
     final settingsState = context.watch<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
         ? settingsState.currencySymbol
@@ -176,7 +177,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   IconButton(
                     icon: const Icon(Icons.picture_as_pdf),
                     tooltip: l10n.exportPdfTooltip,
-                    onPressed: _onExportTapped,
+                    onPressed: isExporting ? null : _onExportTapped,
                   ),
             ],
             bottom: hasAnyIncome

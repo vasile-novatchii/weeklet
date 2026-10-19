@@ -32,6 +32,8 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     ExportExpensesStarted event,
     Emitter<ExportState> emit,
   ) async {
+    // Ignore repeated taps while an export is already running.
+    if (state is ExportInProgress) return;
     emit(const ExportInProgress());
     try {
       final fonts = await fontLoader.load();
@@ -70,6 +72,8 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     ExportIncomeStarted event,
     Emitter<ExportState> emit,
   ) async {
+    // Ignore repeated taps while an export is already running.
+    if (state is ExportInProgress) return;
     emit(const ExportInProgress());
     try {
       final fonts = await fontLoader.load();
@@ -107,6 +111,8 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     ExportStatsStarted event,
     Emitter<ExportState> emit,
   ) async {
+    // Ignore repeated taps while an export is already running.
+    if (state is ExportInProgress) return;
     emit(const ExportInProgress());
     try {
       final fonts = await fontLoader.load();

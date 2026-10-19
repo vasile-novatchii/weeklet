@@ -52,10 +52,12 @@ class _StubExportStatsUseCase extends ExportStatsUseCase {
 
   final bool shouldThrow;
   ExportStatsParams? lastParams;
+  int callCount = 0;
 
   @override
   Future<String> call(ExportStatsParams params) async {
     lastParams = params;
+    callCount++;
     if (shouldThrow) throw Exception('export failed');
     return params.month == null
         ? '/tmp/weeklet_stats_2025.pdf'
@@ -433,5 +435,25 @@ void main() {
       act: (bloc) => bloc.add(const ResetExportRequested()),
       expect: () => [const ExportInitial()],
     );
+  });
+
+  group('ExportBloc in-progress guard', () {
+    test('second export while one is running is ignored', () async {
+      final stub = _StubExportStatsUseCase();
+      final bloc = _makeBloc(statsStub: stub);
+      final states = <ExportState>[];
+      final sub = bloc.stream.listen(states.add);
+
+      bloc
+        ..add(_statsEvent(month: 3))
+        ..add(_statsEvent(month: 3));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+
+      expect(stub.callCount, 1);
+      expect(states.whereType<ExportInProgress>(), hasLength(1));
+      expect(states.whereType<ExportSuccess>(), hasLength(1));
+      await sub.cancel();
+      await bloc.close();
+    });
   });
 }

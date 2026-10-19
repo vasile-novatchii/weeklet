@@ -116,6 +116,7 @@ class StatsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final statsState = context.watch<StatsBloc>().state;
+    final isExporting = context.watch<ExportBloc>().state is ExportInProgress;
     final settingsState = context.watch<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
         ? settingsState.currencySymbol
@@ -135,7 +136,9 @@ class StatsView extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.picture_as_pdf),
                   tooltip: l10n.exportPdfTooltip,
-                  onPressed: () => _onExportTapped(context, loaded),
+                  onPressed: isExporting
+                      ? null
+                      : () => _onExportTapped(context, loaded),
                 ),
           ],
         ),

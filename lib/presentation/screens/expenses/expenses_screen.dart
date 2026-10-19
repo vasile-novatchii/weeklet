@@ -125,6 +125,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final expenseState = context.watch<ExpenseBloc>().state;
+    final isExporting = context.watch<ExportBloc>().state is ExportInProgress;
     // Hide the filter bar only when no expense exists in any period; keep it
     // while loading/failed or when other periods hold data.
     final showFilter =
@@ -197,7 +198,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 IconButton(
                   icon: const Icon(Icons.picture_as_pdf),
                   tooltip: l10n.exportPdfTooltip,
-                  onPressed: _onExportTapped,
+                  onPressed: isExporting ? null : _onExportTapped,
                 ),
           ],
           bottom: showFilter
