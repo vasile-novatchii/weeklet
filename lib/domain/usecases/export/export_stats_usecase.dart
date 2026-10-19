@@ -336,5 +336,66 @@ class ExportStatsUseCase implements UseCase<String, ExportStatsParams> {
         ),
       );
 
-  List<pw.Widget> _buildMonthSection(ExportStatsParams params) => [];
+  List<pw.Widget> _buildMonthSection(ExportStatsParams params) {
+    final labels = params.labels;
+    final sym = params.currencySymbol;
+    final rows = params.monthRows;
+    var income = 0.0;
+    var expenses = 0.0;
+    var balance = 0.0;
+    for (final r in rows) {
+      income += r.totalIncome;
+      expenses += r.totalExpenses;
+      balance += r.balance;
+    }
+    final monthFormat = DateFormat('LLLL', params.localeCode);
+
+    return [
+      _sectionTitle(labels.monthBreakdownTitle),
+      pw.Table(
+        columnWidths: const {
+          0: pw.FlexColumnWidth(2),
+          1: pw.FlexColumnWidth(1),
+          2: pw.FlexColumnWidth(1),
+          3: pw.FlexColumnWidth(1),
+        },
+        children: [
+          pw.TableRow(
+            decoration: const pw.BoxDecoration(color: _tableHeaderFill),
+            children: [
+              _cell(labels.columnMonth, header: true),
+              _cell(labels.columnIncome, header: true, right: true),
+              _cell(labels.columnExpenses, header: true, right: true),
+              _cell(labels.columnBalance, header: true, right: true),
+            ],
+          ),
+          for (var i = 0; i < rows.length; i++)
+            _bodyRow(i, [
+              _cell(
+                _cap(monthFormat.format(DateTime(params.year, rows[i].month))),
+              ),
+              _cell(
+                NumberFormatter.formatCurrency(rows[i].totalIncome, sym),
+                right: true,
+              ),
+              _cell(
+                NumberFormatter.formatCurrency(rows[i].totalExpenses, sym),
+                right: true,
+              ),
+              _cell(
+                StatsExportUtils.formatBalance(rows[i].balance, sym),
+                right: true,
+              ),
+            ]),
+        ],
+      ),
+      pw.SizedBox(height: 4),
+      _totalsBar([
+        labels.totalLabel,
+        NumberFormatter.formatCurrency(income, sym),
+        NumberFormatter.formatCurrency(expenses, sym),
+        StatsExportUtils.formatBalance(balance, sym),
+      ]),
+    ];
+  }
 }
