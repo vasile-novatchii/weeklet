@@ -61,7 +61,6 @@
   "allMonthsLabel": "Toate lunile",
   "selectMonthHint": "Selectează luna",
   "selectYearHint": "Selectează anul",
-  "exportMonthRequiredMessage": "Te rugăm să selectezi o lună specifică pentru export.",
 
   "navExpenses": "Cheltuieli",
   "navStats": "Statistici",
@@ -172,5 +171,12 @@
   "statsPdfColumnMonth": "Luna",
   "statsPdfColumnBalance": "Sold",
   "statsPdfTotal": "Total",
-  "statsPdfNoExpenses": "Nicio cheltuială în această perioadă"
+  "statsPdfNoExpenses": "Nicio cheltuială în această perioadă",
+  "pdfReportTitleExpenses": "Raport cheltuieli",
+  "pdfReportTitleIncome": "Raport venituri",
+  "pdfRecordsLabel": "Înregistrări",
+  "pdfColumnDate": "Data",
+  "pdfColumnDescription": "Descriere",
+  "pdfNoRecords": "Nicio înregistrare pentru",
+  "pdfUnknownCategory": "Necunoscută"
 }

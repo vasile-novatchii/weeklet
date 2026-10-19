@@ -4,6 +4,7 @@ import 'package:weeklet/domain/entities/expense.dart';
 import 'package:weeklet/domain/entities/income.dart';
 import 'package:weeklet/domain/entities/statistics.dart';
 import 'package:weeklet/domain/usecases/export/stats_pdf_labels.dart';
+import 'package:weeklet/domain/usecases/export/transaction_pdf_labels.dart';
 
 sealed class ExportEvent extends Equatable {
   const ExportEvent();
@@ -19,14 +20,20 @@ final class ExportExpensesStarted extends ExportEvent {
     required this.categories,
     required this.currencySymbol,
     required this.year,
-    required this.month,
+    required this.localeCode,
+    required this.labels,
+    this.month,
   });
 
   final List<Expense> expenses;
   final List<Category> categories;
   final String currencySymbol;
   final int year;
-  final int month;
+
+  /// Null means the whole year (all months).
+  final int? month;
+  final String localeCode;
+  final TransactionPdfLabels labels;
 
   @override
   List<Object?> get props => [
@@ -35,6 +42,8 @@ final class ExportExpensesStarted extends ExportEvent {
     currencySymbol,
     year,
     month,
+    localeCode,
+    labels,
   ];
 }
 
@@ -44,16 +53,29 @@ final class ExportIncomeStarted extends ExportEvent {
     required this.incomes,
     required this.currencySymbol,
     required this.year,
-    required this.month,
+    required this.localeCode,
+    required this.labels,
+    this.month,
   });
 
   final List<Income> incomes;
   final String currencySymbol;
   final int year;
-  final int month;
+
+  /// Null means the whole year (all months).
+  final int? month;
+  final String localeCode;
+  final TransactionPdfLabels labels;
 
   @override
-  List<Object?> get props => [incomes, currencySymbol, year, month];
+  List<Object?> get props => [
+    incomes,
+    currencySymbol,
+    year,
+    month,
+    localeCode,
+    labels,
+  ];
 }
 
 /// Dispatched when user taps export on the Stats screen.

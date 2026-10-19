@@ -12,6 +12,7 @@ import 'package:weeklet/domain/usecases/export/export_expenses_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_income_usecase.dart';
 import 'package:weeklet/domain/usecases/export/export_stats_usecase.dart';
 import 'package:weeklet/domain/usecases/export/stats_pdf_labels.dart';
+import 'package:weeklet/domain/usecases/export/transaction_pdf_labels.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/export/export_event.dart';
 import 'package:weeklet/presentation/blocs/export/export_state.dart';
@@ -22,9 +23,11 @@ class _StubExportExpensesUseCase extends ExportExpensesUseCase {
   _StubExportExpensesUseCase({this.shouldThrow = false});
 
   final bool shouldThrow;
+  ExportExpensesParams? lastParams;
 
   @override
   Future<String> call(ExportExpensesParams params) async {
+    lastParams = params;
     if (shouldThrow) throw Exception('export failed');
     return '/tmp/weeklet_expenses_january_2024.pdf';
   }
@@ -34,9 +37,11 @@ class _StubExportIncomeUseCase extends ExportIncomeUseCase {
   _StubExportIncomeUseCase({this.shouldThrow = false});
 
   final bool shouldThrow;
+  ExportIncomeParams? lastParams;
 
   @override
   Future<String> call(ExportIncomeParams params) async {
+    lastParams = params;
     if (shouldThrow) throw Exception('export failed');
     return '/tmp/weeklet_income_january_2024.pdf';
   }
@@ -90,6 +95,20 @@ StatsPdfLabels _labelsEn() => const StatsPdfLabels(
   columnBalance: 'Balance',
   totalLabel: 'Total',
   noExpensesLabel: 'No expenses',
+);
+
+const _txLabels = TransactionPdfLabels(
+  reportTitleExpenses: 'Expense Report',
+  reportTitleIncome: 'Income Report',
+  generatedLabel: 'Generated',
+  recordsLabel: 'Records',
+  totalLabel: 'Total',
+  columnDate: 'Date',
+  columnCategory: 'Category',
+  columnDescription: 'Description',
+  columnAmount: 'Amount',
+  noRecordsLabel: 'No records for',
+  unknownCategoryLabel: 'Unknown',
 );
 
 const _fakeStats = MonthlyStats(
@@ -149,12 +168,14 @@ ExportBloc _makeBloc({
   bool statsThrows = false,
   bool fontsThrow = false,
   _StubExportStatsUseCase? statsStub,
+  _StubExportExpensesUseCase? expensesStub,
+  _StubExportIncomeUseCase? incomeStub,
   _StubPdfFontLoader? loader,
 }) => ExportBloc(
-  exportExpensesUseCase: _StubExportExpensesUseCase(
-    shouldThrow: expensesThrows,
-  ),
-  exportIncomeUseCase: _StubExportIncomeUseCase(shouldThrow: incomeThrows),
+  exportExpensesUseCase:
+      expensesStub ?? _StubExportExpensesUseCase(shouldThrow: expensesThrows),
+  exportIncomeUseCase:
+      incomeStub ?? _StubExportIncomeUseCase(shouldThrow: incomeThrows),
   exportStatsUseCase:
       statsStub ?? _StubExportStatsUseCase(shouldThrow: statsThrows),
   fontLoader: loader ?? _StubPdfFontLoader(shouldThrow: fontsThrow),
@@ -185,6 +206,8 @@ void main() {
           currencySymbol: r'$',
           year: 2024,
           month: 1,
+          localeCode: 'en',
+          labels: _txLabels,
         ),
       ),
       expect: () => [
@@ -218,6 +241,8 @@ void main() {
           currencySymbol: r'$',
           year: 2024,
           month: 1,
+          localeCode: 'en',
+          labels: _txLabels,
         ),
       ),
       expect: () => [
@@ -240,6 +265,8 @@ void main() {
           currencySymbol: r'$',
           year: 2024,
           month: 1,
+          localeCode: 'en',
+          labels: _txLabels,
         ),
       ),
       expect: () => [
@@ -267,6 +294,8 @@ void main() {
           currencySymbol: r'$',
           year: 2024,
           month: 1,
+          localeCode: 'en',
+          labels: _txLabels,
         ),
       ),
       expect: () => [
@@ -338,12 +367,67 @@ void main() {
       },
     );
 
+    test(
+      'ExportExpensesStarted null month: year-only subject, fonts forwarded',
+      () async {
+        final stub = _StubExportExpensesUseCase();
+        final loader = _StubPdfFontLoader();
+        final bloc = _makeBloc(expensesStub: stub, loader: loader);
+        bloc.add(
+          ExportExpensesStarted(
+            expenses: _fakeExpenses,
+            categories: _fakeCategories,
+            currencySymbol: r'$',
+            year: 2024,
+            localeCode: 'en',
+            labels: _txLabels,
+          ),
+        );
+        final s = await bloc.stream.firstWhere((s) => s is ExportSuccess);
+        expect(
+          (s as ExportSuccess).subject,
+          'Weeklet Expense Report - 2024',
+        );
+        expect(s.exportType, ExportType.expenses);
+        expect(stub.lastParams!.month, isNull);
+        expect(stub.lastParams!.labels, _txLabels);
+        expect(identical(stub.lastParams!.regularFont, loader.regular), isTrue);
+        expect(identical(stub.lastParams!.boldFont, loader.bold), isTrue);
+        await bloc.close();
+      },
+    );
+
+    test(
+      'ExportIncomeStarted null month: year-only subject, fonts forwarded',
+      () async {
+        final stub = _StubExportIncomeUseCase();
+        final loader = _StubPdfFontLoader();
+        final bloc = _makeBloc(incomeStub: stub, loader: loader);
+        bloc.add(
+          ExportIncomeStarted(
+            incomes: _fakeIncomes,
+            currencySymbol: r'$',
+            year: 2024,
+            localeCode: 'en',
+            labels: _txLabels,
+          ),
+        );
+        final s = await bloc.stream.firstWhere((s) => s is ExportSuccess);
+        expect((s as ExportSuccess).subject, 'Weeklet Income Report - 2024');
+        expect(s.exportType, ExportType.income);
+        expect(stub.lastParams!.month, isNull);
+        expect(identical(stub.lastParams!.regularFont, loader.regular), isTrue);
+        expect(identical(stub.lastParams!.boldFont, loader.bold), isTrue);
+        await bloc.close();
+      },
+    );
+
     blocTest<ExportBloc, ExportState>(
       'ResetExportRequested from ExportSuccess seed emits [ExportInitial]',
       build: _makeBloc,
       seed: () => const ExportSuccess(
         filePath: '/tmp/test.pdf',
-        subject: 'Weeklet Expense Report — January 2024',
+        subject: 'Weeklet Expense Report - January 2024',
         exportType: ExportType.expenses,
       ),
       act: (bloc) => bloc.add(const ResetExportRequested()),

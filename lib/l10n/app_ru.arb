@@ -61,7 +61,6 @@
   "allMonthsLabel": "Все месяцы",
   "selectMonthHint": "Выберите месяц",
   "selectYearHint": "Выберите год",
-  "exportMonthRequiredMessage": "Пожалуйста, выберите конкретный месяц для экспорта.",
 
   "navExpenses": "Расходы",
   "navStats": "Статистика",
@@ -172,5 +171,12 @@
   "statsPdfColumnMonth": "Месяц",
   "statsPdfColumnBalance": "Баланс",
   "statsPdfTotal": "Итого",
-  "statsPdfNoExpenses": "Нет расходов за этот период"
+  "statsPdfNoExpenses": "Нет расходов за этот период",
+  "pdfReportTitleExpenses": "Отчёт о расходах",
+  "pdfReportTitleIncome": "Отчёт о доходах",
+  "pdfRecordsLabel": "Записей",
+  "pdfColumnDate": "Дата",
+  "pdfColumnDescription": "Описание",
+  "pdfNoRecords": "Нет записей за",
+  "pdfUnknownCategory": "Неизвестно"
 }

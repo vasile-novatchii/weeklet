@@ -276,10 +276,6 @@
     "description": "Hint text for the year selector dropdown"
   },
 
-  "exportMonthRequiredMessage": "Please select a specific month to export.",
-  "@exportMonthRequiredMessage": {
-    "description": "Message shown when user tries to export without selecting a specific month"
-  },
 
   "navExpenses": "Expenses",
   "@navExpenses": {
@@ -779,5 +775,33 @@
   "statsPdfNoExpenses": "No expenses for this period",
   "@statsPdfNoExpenses": {
     "description": "Message shown in the PDF when there are no expenses"
+  },
+  "pdfReportTitleExpenses": "Expense Report",
+  "@pdfReportTitleExpenses": {
+    "description": "Title of the expenses PDF report"
+  },
+  "pdfReportTitleIncome": "Income Report",
+  "@pdfReportTitleIncome": {
+    "description": "Title of the income PDF report"
+  },
+  "pdfRecordsLabel": "Records",
+  "@pdfRecordsLabel": {
+    "description": "Label before the record count in the PDF"
+  },
+  "pdfColumnDate": "Date",
+  "@pdfColumnDate": {
+    "description": "Date column header in the PDF"
+  },
+  "pdfColumnDescription": "Description",
+  "@pdfColumnDescription": {
+    "description": "Description column header in the PDF"
+  },
+  "pdfNoRecords": "No records for",
+  "@pdfNoRecords": {
+    "description": "Message prefix in the PDF when there are no records; the period is appended"
+  },
+  "pdfUnknownCategory": "Unknown",
+  "@pdfUnknownCategory": {
+    "description": "Category name shown in the PDF when the category no longer exists"
   }
 }

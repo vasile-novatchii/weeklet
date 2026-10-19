@@ -58,8 +58,9 @@ void main() {
       initialState: const IncomeLoading(),
     );
 
-    when(() => mockSettingsBloc.state)
-        .thenReturn(SettingsLoaded(settings: Settings.defaults()));
+    when(
+      () => mockSettingsBloc.state,
+    ).thenReturn(SettingsLoaded(settings: Settings.defaults()));
     whenListen(
       mockSettingsBloc,
       const Stream<SettingsState>.empty(),
@@ -204,7 +205,10 @@ void main() {
         const ExportFailure('boom', exportType: ExportType.stats),
       );
 
-      expect(find.text('Failed to generate PDF. Please try again.'), findsNothing);
+      expect(
+        find.text('Failed to generate PDF. Please try again.'),
+        findsNothing,
+      );
       verifyNever(() => mockExportBloc.add(const ResetExportRequested()));
     });
 
@@ -224,7 +228,9 @@ void main() {
       verify(() => mockExportBloc.add(const ResetExportRequested())).called(1);
     });
 
-    testWidgets('blocks export on All months (D-08)', (tester) async {
+    testWidgets('exports whole year on All months, no snackbar', (
+      tester,
+    ) async {
       await pumpIncomeScreen(tester);
       await tester.pump();
 
@@ -234,11 +240,16 @@ void main() {
 
       expect(
         find.text('Please select a specific month to export.'),
-        findsOneWidget,
+        findsNothing,
       );
-      verifyNever(
-        () => mockExportBloc.add(any(that: isA<ExportIncomeStarted>())),
-      );
+      final event =
+          verify(
+                () => mockExportBloc.add(
+                  captureAny(that: isA<ExportIncomeStarted>()),
+                ),
+              ).captured.single
+              as ExportIncomeStarted;
+      expect(event.month, isNull);
     });
   });
 }

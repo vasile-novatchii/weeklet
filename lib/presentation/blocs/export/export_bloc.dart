@@ -34,6 +34,7 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
   ) async {
     emit(const ExportInProgress());
     try {
+      final fonts = await fontLoader.load();
       final filePath = await exportExpensesUseCase(
         ExportExpensesParams(
           expenses: event.expenses,
@@ -41,15 +42,21 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
           currencySymbol: event.currencySymbol,
           year: event.year,
           month: event.month,
+          localeCode: event.localeCode,
+          labels: event.labels,
+          regularFont: fonts.regular,
+          boldFont: fonts.bold,
         ),
       );
-      final monthName = DateFormat.yMMMM(
-        'en',
-      ).format(DateTime(event.year, event.month));
+      final period = await _periodLabel(
+        event.localeCode,
+        event.year,
+        event.month,
+      );
       emit(
         ExportSuccess(
           filePath: filePath,
-          subject: 'Weeklet Expense Report \u2014 $monthName',
+          subject: 'Weeklet ${event.labels.reportTitleExpenses} - $period',
           exportType: ExportType.expenses,
         ),
       );
@@ -65,21 +72,28 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
   ) async {
     emit(const ExportInProgress());
     try {
+      final fonts = await fontLoader.load();
       final filePath = await exportIncomeUseCase(
         ExportIncomeParams(
           incomes: event.incomes,
           currencySymbol: event.currencySymbol,
           year: event.year,
           month: event.month,
+          localeCode: event.localeCode,
+          labels: event.labels,
+          regularFont: fonts.regular,
+          boldFont: fonts.bold,
         ),
       );
-      final monthName = DateFormat.yMMMM(
-        'en',
-      ).format(DateTime(event.year, event.month));
+      final period = await _periodLabel(
+        event.localeCode,
+        event.year,
+        event.month,
+      );
       emit(
         ExportSuccess(
           filePath: filePath,
-          subject: 'Weeklet Income Report \u2014 $monthName',
+          subject: 'Weeklet ${event.labels.reportTitleIncome} - $period',
           exportType: ExportType.income,
         ),
       );
@@ -110,16 +124,11 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
           boldFont: fonts.bold,
         ),
       );
-      await initializeDateFormatting(event.localeCode);
-      final month = event.month;
-      var period = month == null
-          ? '${event.year}'
-          : DateFormat.yMMMM(
-              event.localeCode,
-            ).format(DateTime(event.year, month));
-      if (period.isNotEmpty) {
-        period = period[0].toUpperCase() + period.substring(1);
-      }
+      final period = await _periodLabel(
+        event.localeCode,
+        event.year,
+        event.month,
+      );
       emit(
         ExportSuccess(
           filePath: filePath,
@@ -131,6 +140,19 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
       debugPrint('error in _onExportStats: $e');
       emit(ExportFailure(e.toString(), exportType: ExportType.stats));
     }
+  }
+
+  /// Localized period (month name + year, or year only), first letter
+  /// capitalized.
+  Future<String> _periodLabel(String localeCode, int year, int? month) async {
+    await initializeDateFormatting(localeCode);
+    final period = month == null
+        ? '$year'
+        : DateFormat.yMMMM(localeCode).format(DateTime(year, month));
+    if (period.isEmpty) {
+      return period;
+    }
+    return period[0].toUpperCase() + period.substring(1);
   }
 
   void _onResetExport(

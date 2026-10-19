@@ -22,6 +22,7 @@ import 'package:weeklet/presentation/screens/expenses/widgets/add_expense_form_v
 import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/list/expense_list_view.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
+import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
 
 class ExpensesScreen extends StatefulWidget {
   const ExpensesScreen({super.key});
@@ -94,12 +95,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final expenseState = context.read<ExpenseBloc>().state;
     if (expenseState is! ExpenseSuccess) return;
 
-    if (expenseState.selectedMonth == null) {
-      final l10n = AppLocalizations.of(context);
-      context.showSnackBar(l10n.exportMonthRequiredMessage);
-      return;
-    }
-
     final categoryState = context.read<CategoryBloc>().state;
     final categories = categoryState is CategoriesLoaded
         ? categoryState.categories
@@ -116,7 +111,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         categories: categories,
         currencySymbol: currencySymbol,
         year: expenseState.selectedYear,
-        month: expenseState.selectedMonth!,
+        month: expenseState.selectedMonth,
+        localeCode: Localizations.localeOf(context).languageCode,
+        labels: TransactionPdfLabelsFactory.fromL10n(
+          AppLocalizations.of(context),
+        ),
       ),
     );
   }
@@ -135,8 +134,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       listeners: [
         BlocListener<ExportBloc, ExportState>(
           listenWhen: (_, s) =>
-              (s is ExportSuccess &&
-                  s.exportType == ExportType.expenses) ||
+              (s is ExportSuccess && s.exportType == ExportType.expenses) ||
               (s is ExportFailure && s.exportType == ExportType.expenses),
           listener: (context, exportState) {
             if (exportState is ExportSuccess) {
@@ -151,7 +149,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     )
                     .then((_) {
                       if (!mounted) return;
-                      context.read<ExportBloc>().add(const ResetExportRequested());
+                      context.read<ExportBloc>().add(
+                        const ResetExportRequested(),
+                      );
                     }),
               );
             } else if (exportState is ExportFailure) {
@@ -164,8 +164,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           listenWhen: (_, s) =>
               s is ExpenseSuccess && (s.actionError?.isNotEmpty ?? false),
           listener: (context, state) {
-            if (state case ExpenseSuccess(actionError: final err?)
-                when err.isNotEmpty) {
+            if (state case ExpenseSuccess(
+              actionError: final err?,
+            ) when err.isNotEmpty) {
               final message = switch (err) {
                 'invalidAmount' => l10n.errorInvalidAmount,
                 'emptyDescription' => l10n.errorEmptyDescription,
@@ -173,7 +174,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 _ => l10n.errorGeneric,
               };
               context.showErrorSnackBar(message);
-              context.read<ExpenseBloc>().add(const ClearActionErrorRequested());
+              context.read<ExpenseBloc>().add(
+                const ClearActionErrorRequested(),
+              );
             }
           },
         ),

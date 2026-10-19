@@ -25,14 +25,62 @@ import 'package:weeklet/app.dart';
 import 'package:weeklet/core/utils/locale_manager.dart';
 import 'package:weeklet/domain/entities/category.dart';
 import 'package:weeklet/domain/repositories/category_repository.dart';
+import 'package:weeklet/presentation/blocs/expense/expense_bloc.dart';
+import 'package:weeklet/presentation/blocs/expense/expense_event.dart';
 import 'package:weeklet/presentation/blocs/export/export_bloc.dart';
 import 'package:weeklet/presentation/blocs/export/export_state.dart';
+import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
+import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/widgets/common/common_dropdown_button.dart';
 
 import '../helpers/fake_share_platform.dart';
-import '../helpers/pdf_text_extractor.dart';
+import '../helpers/pdf_unicode_text_extractor.dart';
 import '../helpers/test_data.dart';
 import '../helpers/test_hive_env.dart';
+
+/// Adds one expense through the real Add sheet (Food category, today).
+Future<void> _addExpense(WidgetTester tester) async {
+  // --- Add -----------------------------------------------------------
+  await tester.tap(find.byType(FloatingActionButton));
+  await tester.pumpAndSettle();
+
+  await tester.enterText(find.byType(TextFormField).first, '120.75');
+  await tester.pump();
+
+  await tester.enterText(
+    find.byType(TextFormField).at(1),
+    'Groceries at market',
+  );
+  await tester.pump();
+
+  await tester.tap(find.byType(CommonDropdownButton<Category>));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('Food').last);
+  await tester.pumpAndSettle();
+
+  // Confirming today's date via the picker's default-to-today 'OK' tap
+  // guarantees ExpenseBloc.selectedMonth is non-null once the expense is
+  // saved, which is required for the export icon to actually dispatch
+  // (ExpensesScreen._onExportTapped early-returns otherwise).
+  await tester.ensureVisible(find.byIcon(Icons.calendar_today_outlined));
+  await tester.pump();
+  await tester.tap(find.byIcon(Icons.calendar_today_outlined));
+  await tester.pump();
+  await tester.pump(const Duration(seconds: 1));
+  // Confirm button is the last TextButton in the (localized) date dialog.
+  await tester.tap(
+    find
+        .descendant(
+          of: find.byType(DatePickerDialog),
+          matching: find.byType(TextButton),
+        )
+        .last,
+  );
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byType(ElevatedButton));
+  await tester.pumpAndSettle();
+}
 
 void main() {
   // A LIVE binding (not the default AutomatedTestWidgetsFlutterBinding via
@@ -55,6 +103,7 @@ void main() {
   setUp(() async {
     await initTestDi();
     await GetIt.instance<CategoryRepository>().addCategory(fakeCategory());
+    fakeShare.shareCalls.clear();
   });
 
   tearDown(() async {
@@ -97,38 +146,7 @@ void main() {
     await tester.pumpWidget(const WeekletApp());
     await tester.pumpAndSettle();
 
-    // --- Add -----------------------------------------------------------
-    await tester.tap(find.byType(FloatingActionButton));
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byType(TextFormField).first, '120.75');
-    await tester.pump();
-
-    await tester.enterText(
-      find.byType(TextFormField).at(1),
-      'Groceries at market',
-    );
-    await tester.pump();
-
-    await tester.tap(find.byType(CommonDropdownButton<Category>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Food').last);
-    await tester.pumpAndSettle();
-
-    // Confirming today's date via the picker's default-to-today 'OK' tap
-    // guarantees ExpenseBloc.selectedMonth is non-null once the expense is
-    // saved, which is required for the export icon to actually dispatch
-    // (ExpensesScreen._onExportTapped early-returns otherwise).
-    await tester.ensureVisible(find.byIcon(Icons.calendar_today_outlined));
-    await tester.pump();
-    await tester.tap(find.byIcon(Icons.calendar_today_outlined));
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byType(ElevatedButton));
-    await tester.pumpAndSettle();
+    await _addExpense(tester);
 
     // The export icon is only rendered once filteredExpenses is non-empty.
     expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
@@ -175,7 +193,7 @@ void main() {
     // Byte-level verification (not just "a file exists"): recover the
     // PDF's actual rendered text and confirm the exported expense's real
     // data made it into the document.
-    final text = extractPdfText(file);
+    final text = extractPdfUnicodeText(file);
     expect(text, contains('120.75'));
     expect(text, contains('Groceries at market'));
     expect(text, contains('Food'));
@@ -186,5 +204,73 @@ void main() {
     if (file.existsSync()) {
       file.deleteSync();
     }
+  });
+
+  Future<ExportSuccess> exportAllMonths(
+    WidgetTester tester, {
+    Locale? locale,
+  }) async {
+    await tester.binding.setSurfaceSize(const Size(600, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(const WeekletApp());
+    await tester.pumpAndSettle();
+    if (locale != null) {
+      GetIt.instance<SettingsBloc>().add(LocaleChanged(locale));
+      await tester.pumpAndSettle();
+    }
+    await _addExpense(tester);
+
+    // Select "All Months" (month == null).
+    GetIt.instance<ExpenseBloc>().add(const FilterDateChanged());
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.picture_as_pdf), findsOneWidget);
+
+    ExportSuccess? captured;
+    final sub = GetIt.instance<ExportBloc>().stream.listen((state) {
+      if (state is ExportSuccess) captured = state;
+    });
+    await tester.tap(find.byIcon(Icons.picture_as_pdf));
+    await tester.pumpAndSettle();
+    await sub.cancel();
+    expect(captured, isNotNull);
+    return captured!;
+  }
+
+  testWidgets('All Months exports a whole-year PDF without a snackbar', (
+    tester,
+  ) async {
+    final success = await exportAllMonths(tester);
+
+    final year = DateTime.now().year;
+    expect(success.filePath.endsWith('/weeklet_expenses_$year.pdf'), isTrue);
+    expect(
+      find.text('Please select a specific month to export.'),
+      findsNothing,
+    );
+    expect(fakeShare.shareCalls.length, 1);
+
+    final file = File(success.filePath);
+    final text = extractPdfUnicodeText(file);
+    expect(text, contains('Groceries at market'));
+    expect(text, contains('$year'));
+    if (file.existsSync()) file.deleteSync();
+  });
+
+  testWidgets('Russian locale renders RU column labels in the PDF', (
+    tester,
+  ) async {
+    addTearDown(() => LocaleManager().initialize(const Locale('en')));
+
+    final success = await exportAllMonths(tester, locale: const Locale('ru'));
+
+    final file = File(success.filePath);
+    final text = extractPdfUnicodeText(file);
+    expect(text, contains('Дата'));
+    expect(text, contains('Категория'));
+    expect(text, contains('Описание'));
+    expect(text, contains('Сумма'));
+    expect(text, isNot(contains('Description')));
+    if (file.existsSync()) file.deleteSync();
   });
 }

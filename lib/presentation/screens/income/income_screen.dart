@@ -19,6 +19,7 @@ import 'package:weeklet/presentation/screens/income/widgets/add_income_form_view
 import 'package:weeklet/presentation/screens/income/widgets/income_filter_bar.dart';
 import 'package:weeklet/presentation/screens/income/widgets/income_total_card.dart';
 import 'package:weeklet/presentation/screens/income/widgets/list/income_list_view.dart';
+import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
 
 class IncomeScreen extends StatefulWidget {
   const IncomeScreen({super.key});
@@ -91,12 +92,6 @@ class _IncomeScreenState extends State<IncomeScreen> {
     final incomeState = context.read<IncomeBloc>().state;
     if (incomeState is! IncomeSuccess) return;
 
-    if (incomeState.selectedMonth == null) {
-      final l10n = AppLocalizations.of(context);
-      context.showSnackBar(l10n.exportMonthRequiredMessage);
-      return;
-    }
-
     final settingsState = context.read<SettingsBloc>().state;
     final currencySymbol = settingsState is SettingsLoaded
         ? settingsState.currencySymbol
@@ -107,7 +102,11 @@ class _IncomeScreenState extends State<IncomeScreen> {
         incomes: incomeState.filteredIncomes,
         currencySymbol: currencySymbol,
         year: incomeState.selectedYear,
-        month: incomeState.selectedMonth!,
+        month: incomeState.selectedMonth,
+        localeCode: Localizations.localeOf(context).languageCode,
+        labels: TransactionPdfLabelsFactory.fromL10n(
+          AppLocalizations.of(context),
+        ),
       ),
     );
   }
@@ -122,23 +121,25 @@ class _IncomeScreenState extends State<IncomeScreen> {
         : AppConstants.DEFAULT_CURRENCY;
 
     return BlocListener<IncomeBloc, IncomeState>(
-      listenWhen: (_, s) =>
-          s is IncomeSuccess && s.actionError != null,
+      listenWhen: (_, s) => s is IncomeSuccess && s.actionError != null,
       listener: (context, state) {
-        if (state case IncomeSuccess(actionError: final err?) when err.isNotEmpty) {
+        if (state case IncomeSuccess(
+          actionError: final err?,
+        ) when err.isNotEmpty) {
           final message = switch (err) {
             'invalidAmount' => l10n.errorInvalidAmount,
             'emptyDescription' => l10n.errorEmptyDescription,
             _ => l10n.errorGeneric,
           };
           context.showErrorSnackBar(message);
-          context.read<IncomeBloc>().add(const ClearIncomeActionErrorRequested());
+          context.read<IncomeBloc>().add(
+            const ClearIncomeActionErrorRequested(),
+          );
         }
       },
       child: BlocListener<ExportBloc, ExportState>(
         listenWhen: (_, s) =>
-            (s is ExportSuccess &&
-                s.exportType == ExportType.income) ||
+            (s is ExportSuccess && s.exportType == ExportType.income) ||
             (s is ExportFailure && s.exportType == ExportType.income),
         listener: (context, exportState) {
           if (exportState is ExportSuccess) {
@@ -153,7 +154,9 @@ class _IncomeScreenState extends State<IncomeScreen> {
                   )
                   .then((_) {
                     if (!mounted) return;
-                    context.read<ExportBloc>().add(const ResetExportRequested());
+                    context.read<ExportBloc>().add(
+                      const ResetExportRequested(),
+                    );
                   }),
             );
           } else if (exportState is ExportFailure) {
