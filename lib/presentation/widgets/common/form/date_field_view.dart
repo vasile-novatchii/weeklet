@@ -49,13 +49,13 @@ class _DateFieldViewState extends State<DateFieldView> {
     super.dispose();
   }
 
-  String _formatted() => widget.selectedDate?.format(style: .long) ?? '';
+  String _formatted() => widget.selectedDate?.format(style: .input) ?? '';
 
   Future<void> _selectDate(BuildContext context) async {
     final pickedDate = await DatePickerConfig.showExpenseDatePicker(
       context,
       initialDate: widget.selectedDate,
-      locale: LocaleManager().currentLocale,
+      locale: DatePickerConfig.pickerLocale(LocaleManager().currentLocale),
     );
 
     if (pickedDate != null) {
