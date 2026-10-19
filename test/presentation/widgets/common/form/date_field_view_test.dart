@@ -53,6 +53,27 @@ void main() {
       expect(inputView.hintText, 'Select date');
     });
 
+    testWidgets('renders the date as field text, not hint', (tester) async {
+      await pumpDateField(tester);
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, contains('2025'));
+    });
+
+    testWidgets('null date gives empty text and visible hint', (tester) async {
+      await pumpDateField(tester, useNullDate: true);
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, isEmpty);
+      expect(find.text('Select date'), findsOneWidget);
+    });
+
+    testWidgets('updates text when selectedDate changes', (tester) async {
+      await pumpDateField(tester);
+      await pumpDateField(tester, selectedDate: DateTime(2026, 3, 4));
+      await tester.pump();
+      final field = tester.widget<TextField>(find.byType(TextField));
+      expect(field.controller!.text, contains('2026'));
+    });
+
     testWidgets('opens a date picker dialog when tapped', (tester) async {
       await pumpDateField(tester);
       await tester.tap(find.byType(TextFormField));

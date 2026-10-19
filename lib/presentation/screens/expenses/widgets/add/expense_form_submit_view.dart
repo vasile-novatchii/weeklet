@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weeklet/core/theme/sizes.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/widgets/common/form/sheet_footer_padding.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_bloc.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_state.dart';
 
@@ -26,8 +27,7 @@ class ExpenseFormSubmitView extends StatelessWidget {
         return AnimatedOpacity(
           duration: const Duration(milliseconds: 300),
           opacity: isLoading ? 0.6 : 1.0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: SheetFooterPadding(
             child: ElevatedButton(
               onPressed: canSubmit ? onPressed : null,
               style: ElevatedButton.styleFrom(

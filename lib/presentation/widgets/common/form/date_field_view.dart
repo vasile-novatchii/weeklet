@@ -6,7 +6,7 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/widgets/input_view.dart';
 import 'package:weeklet/presentation/widgets/label_view.dart';
 
-class DateFieldView extends StatelessWidget {
+class DateFieldView extends StatefulWidget {
   const DateFieldView({
     super.key,
     required this.selectedDate,
@@ -17,15 +17,49 @@ class DateFieldView extends StatelessWidget {
   final ValueChanged<DateTime> onDateSelected;
   final String? errorText;
 
+  @override
+  State<DateFieldView> createState() => _DateFieldViewState();
+}
+
+class _DateFieldViewState extends State<DateFieldView> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _formatted());
+  }
+
+  @override
+  void didUpdateWidget(DateFieldView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Defer: updating the controller during build would notify the Form.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final text = _formatted();
+      if (_controller.text != text) {
+        _controller.text = text;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String _formatted() => widget.selectedDate?.format(style: .long) ?? '';
+
   Future<void> _selectDate(BuildContext context) async {
     final pickedDate = await DatePickerConfig.showExpenseDatePicker(
       context,
-      initialDate: selectedDate,
+      initialDate: widget.selectedDate,
       locale: LocaleManager().currentLocale,
     );
 
     if (pickedDate != null) {
-      onDateSelected(pickedDate.toDateOnly());
+      widget.onDateSelected(pickedDate.toDateOnly());
     }
   }
 
@@ -38,12 +72,11 @@ class DateFieldView extends StatelessWidget {
       children: [
         LabelView(text: l10n.dateFieldLabel),
         InputView(
-          hintText: selectedDate != null
-              ? selectedDate!.format(style: .long)
-              : l10n.dateFieldHint,
+          controller: _controller,
+          hintText: l10n.dateFieldHint,
           readOnly: true,
           onTap: () => _selectDate(context),
-          errorText: errorText,
+          errorText: widget.errorText,
           suffixIcon: const Icon(Icons.calendar_today_outlined, size: 20),
         ),
       ],
