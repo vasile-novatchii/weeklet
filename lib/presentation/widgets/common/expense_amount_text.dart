@@ -7,10 +7,12 @@ class ExpenseAmountText extends StatelessWidget {
   const ExpenseAmountText({
     super.key,
     required this.formattedAmount,
+    this.tooltipMessage,
     this.isIncome = false,
   });
 
   final String formattedAmount;
+  final String? tooltipMessage;
   final bool isIncome;
 
   @override
@@ -19,6 +21,7 @@ class ExpenseAmountText extends StatelessWidget {
 
     return EllipsisTooltipText(
       text: formattedAmount,
+      tooltipMessage: tooltipMessage,
       textAlign: TextAlign.end,
       style: context.bodyLarge?.copyWith(
         fontWeight: .w600,

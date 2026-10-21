@@ -106,7 +106,6 @@ class ExpenseItemView extends StatelessWidget {
             useTransparentBackground: true,
           ),
           Expanded(
-            flex: 3,
             child: ExpenseDetailsColumn(
               description: expense.description,
               categoryName:
@@ -115,10 +114,11 @@ class ExpenseItemView extends StatelessWidget {
               time: formattedTime,
             ),
           ),
-          Expanded(
-            flex: 2,
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.screenWidth * 0.5),
             child: ExpenseAmountText(
-              formattedAmount: formattedAmount,
+              formattedAmount: NumberFormatter.trimDigits(formattedAmount),
+              tooltipMessage: formattedAmount,
               isIncome: isIncome,
             ),
           ),

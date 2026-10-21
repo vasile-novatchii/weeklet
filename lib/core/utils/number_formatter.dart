@@ -85,6 +85,30 @@ class NumberFormatter {
     return '$sign${formatAmount(amount, decimals: decimals, locale: locale)}';
   }
 
+  /// Trims a formatted amount to [maxDigits] digits, appending an ellipsis.
+  ///
+  /// Separators and sign are kept as-is; only the digits past [maxDigits]
+  /// (including decimals) are dropped.
+  ///
+  /// Example:
+  /// ```dart
+  /// trimDigits('+1,234.50') // "+1,234.50"
+  /// trimDigits('1,234,567,890,123.45') // "1,234,567,890,12…"
+  /// ```
+  static String trimDigits(String formatted, {int maxDigits = 12}) {
+    var digits = 0;
+    for (var i = 0; i < formatted.length; i++) {
+      final code = formatted.codeUnitAt(i);
+      if (code < 0x30 || code > 0x39) continue;
+      digits++;
+      if (digits > maxDigits) {
+        final kept = formatted.substring(0, i);
+        return '${kept.replaceFirst(RegExp(r'[,.\s]+$'), '')}…';
+      }
+    }
+    return formatted;
+  }
+
   /// Formats a currency amount compactly — values >= 1000 are abbreviated.
   ///
   /// Example:
@@ -129,5 +153,6 @@ class NumberFormatter {
   /// ```dart
   /// formatTime(DateTime(2026, 1, 27, 15, 34)) // "15:34"
   /// ```
-  static String formatTime(DateTime dateTime) => DateFormat('HH:mm').format(dateTime);
+  static String formatTime(DateTime dateTime) =>
+      DateFormat('HH:mm').format(dateTime);
 }

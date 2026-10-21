@@ -12,15 +12,19 @@ class EllipsisTooltipText extends StatelessWidget {
     required this.text,
     this.style,
     this.textAlign,
+    this.tooltipMessage,
   });
 
   final String text;
   final TextStyle? style;
   final TextAlign? textAlign;
 
+  /// Overrides the tooltip text, e.g. to show the untrimmed value.
+  final String? tooltipMessage;
+
   @override
   Widget build(BuildContext context) => Tooltip(
-    message: text,
+    message: tooltipMessage ?? text,
     child: Text(
       text,
       style: style,
