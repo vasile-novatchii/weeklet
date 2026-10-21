@@ -27,8 +27,9 @@ class IncomeTotalCard extends StatelessWidget {
             context.locale.languageCode,
           ).toLowerCase()
         : '';
-    final formattedTotal = NumberFormatter.formatAmountWithSign(
+    final formattedTotal = NumberFormatter.formatCurrencyWithSign(
       total,
+      currencySymbol,
       isIncome: true,
     );
     final label = selectedMonth != null
