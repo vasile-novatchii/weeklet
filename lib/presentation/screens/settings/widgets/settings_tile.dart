@@ -20,7 +20,6 @@ class SettingsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ListTile(
     contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-    minVerticalPadding: 0.0,
     leading: leading,
     title: Text(
       title,
