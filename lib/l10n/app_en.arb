@@ -885,10 +885,6 @@
   "@deleteCategorySemanticLabel": {
     "description": "Semantic label of the delete category action"
   },
-  "legalContentPlaceholder": "Content will be added before public release.",
-  "@legalContentPlaceholder": {
-    "description": "Placeholder body of the privacy and terms screens"
-  },
 
   "statsIncomeVsExpensesTitle": "Income vs Expenses",
   "@statsIncomeVsExpensesTitle": {
