@@ -19,6 +19,7 @@ import 'package:weeklet/presentation/screens/income/widgets/add_income_form_view
 import 'package:weeklet/presentation/screens/income/widgets/income_filter_bar.dart';
 import 'package:weeklet/presentation/screens/income/widgets/income_total_card.dart';
 import 'package:weeklet/presentation/screens/income/widgets/list/income_list_view.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
 import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
 
@@ -59,12 +60,10 @@ class _IncomeScreenState extends State<IncomeScreen> {
     }
   }
 
-  void _showAddIncomeSheet() => showModalBottomSheet<void>(
+  void _showAddIncomeSheet() => showAppBottomSheet<void>(
     context: context,
     useRootNavigator: true,
-    useSafeArea: true,
     isScrollControlled: true,
-    showDragHandle: true,
     builder: (_) => ScrollConfiguration(
       behavior: const ScrollBehavior(),
       child: SizedBox(

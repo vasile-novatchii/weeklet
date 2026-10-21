@@ -6,6 +6,7 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/category/category_bloc.dart';
 import 'package:weeklet/presentation/blocs/category/category_event.dart';
 import 'package:weeklet/presentation/screens/categories/widgets/edit_category_form_view/edit_category_form_view.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/widgets/common/category_icon_circle.dart';
 import 'package:weeklet/presentation/widgets/common/category_name_text.dart';
 import 'package:weeklet/presentation/widgets/common/common_menu_button.dart';
@@ -24,12 +25,10 @@ class CategoryItemView extends StatelessWidget {
   }
 
   void _editCategory(BuildContext context) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
       useRootNavigator: true,
-      useSafeArea: true,
       isScrollControlled: true,
-      showDragHandle: true,
       builder: (_) => ScrollConfiguration(
         behavior: const ScrollBehavior(),
         child: SizedBox(

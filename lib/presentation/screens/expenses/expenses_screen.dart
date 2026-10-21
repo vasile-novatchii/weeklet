@@ -25,6 +25,7 @@ import 'package:weeklet/presentation/screens/expenses/widgets/add_expense_form_v
 import 'package:weeklet/presentation/screens/expenses/widgets/expense_filter_bar.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/expenses_app_bar_title.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/list/expense_list_view.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/widgets/common/empty_state_view.dart';
 import 'package:weeklet/presentation/utils/transaction_pdf_labels_factory.dart';
 import 'package:weeklet/presentation/utils/pdf_export_actions.dart';
@@ -66,12 +67,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     }
   }
 
-  void _showAddExpenseSheet() => showModalBottomSheet<void>(
+  void _showAddExpenseSheet() => showAppBottomSheet<void>(
     context: context,
     useRootNavigator: true,
-    useSafeArea: true,
     isScrollControlled: true,
-    showDragHandle: true,
     builder: (_) => ScrollConfiguration(
       behavior: const ScrollBehavior(),
       child: SizedBox(

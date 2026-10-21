@@ -4,6 +4,7 @@ import 'package:weeklet/core/di/service_locator.dart';
 import 'package:weeklet/core/extensions/context_extensions.dart';
 import 'package:weeklet/core/platform/pdf_print_service.dart';
 import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
 
 enum _ExportAction { share, print }
@@ -38,10 +39,9 @@ class PdfExportActions {
       return;
     }
 
-    final action = await showModalBottomSheet<_ExportAction>(
+    final action = await showAppBottomSheet<_ExportAction>(
       context: context,
       useRootNavigator: true,
-      showDragHandle: true,
       builder: (sheetContext) {
         final l10n = AppLocalizations.of(sheetContext);
         return SafeArea(

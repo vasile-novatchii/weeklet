@@ -4,13 +4,14 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 
 /// Bottom sheet for selecting the app theme.
 /// Options: System default, Light, Dark.
 class ThemeSelectionSheet extends StatelessWidget {
   const ThemeSelectionSheet({super.key});
 
-  static Future<void> show(BuildContext context) => showModalBottomSheet<void>(
+  static Future<void> show(BuildContext context) => showAppBottomSheet<void>(
     context: context,
     builder: (context) => const ScrollConfiguration(
       behavior: ScrollBehavior(),
@@ -21,8 +22,9 @@ class ThemeSelectionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<SettingsBloc>().state;
-    final currentTheme =
-        state is SettingsLoaded ? state.themeMode : ThemeMode.system;
+    final currentTheme = state is SettingsLoaded
+        ? state.themeMode
+        : ThemeMode.system;
 
     final l10n = AppLocalizations.of(context);
     return SafeArea(

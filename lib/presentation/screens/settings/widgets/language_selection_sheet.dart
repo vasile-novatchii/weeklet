@@ -4,13 +4,14 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 
 /// Bottom sheet for selecting the display language.
 /// Options (per D-06): System default, English, Romanian, Russian.
 class LanguageSelectionSheet extends StatelessWidget {
   const LanguageSelectionSheet({super.key});
 
-  static Future<void> show(BuildContext context) => showModalBottomSheet<void>(
+  static Future<void> show(BuildContext context) => showAppBottomSheet<void>(
     context: context,
     builder: (context) => const ScrollConfiguration(
       behavior: ScrollBehavior(),

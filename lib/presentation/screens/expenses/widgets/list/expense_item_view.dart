@@ -9,6 +9,7 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_bloc.dart';
 import 'package:weeklet/presentation/blocs/expense/expense_event.dart';
 import 'package:weeklet/presentation/screens/expenses/widgets/edit_expense_form_view/edit_expense_form_view.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/widgets/common/category_icon_circle.dart';
 import 'package:weeklet/presentation/widgets/common/common_menu_button.dart';
 import 'package:weeklet/presentation/widgets/common/deletion_dialog/deletion_dialog.dart';
@@ -34,12 +35,10 @@ class ExpenseItemView extends StatelessWidget {
   }
 
   void _editExpense(BuildContext context) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
       useRootNavigator: true,
-      useSafeArea: true,
       isScrollControlled: true,
-      showDragHandle: true,
       builder: (_) => ScrollConfiguration(
         behavior: const ScrollBehavior(),
         child: SizedBox(

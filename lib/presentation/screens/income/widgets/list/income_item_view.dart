@@ -8,6 +8,7 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/income/income_bloc.dart';
 import 'package:weeklet/presentation/blocs/income/income_event.dart';
 import 'package:weeklet/presentation/screens/income/widgets/edit_income_form_view/edit_income_form_view.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 import 'package:weeklet/presentation/widgets/common/common_menu_button.dart';
 import 'package:weeklet/presentation/widgets/common/deletion_dialog/deletion_dialog.dart';
 import 'package:weeklet/presentation/widgets/common/expense_amount_text.dart';
@@ -28,12 +29,10 @@ class IncomeItemView extends StatelessWidget {
   }
 
   void _editIncome(BuildContext context) {
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
       useRootNavigator: true,
-      useSafeArea: true,
       isScrollControlled: true,
-      showDragHandle: true,
       builder: (_) => ScrollConfiguration(
         behavior: const ScrollBehavior(),
         child: SizedBox(

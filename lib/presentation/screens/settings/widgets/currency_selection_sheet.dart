@@ -4,14 +4,16 @@ import 'package:weeklet/l10n/app_localizations.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_bloc.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_event.dart';
 import 'package:weeklet/presentation/blocs/settings/settings_state.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
 
 /// Bottom sheet for selecting the display currency.
 /// Options (per D-03): MDL, RON, EUR, USD, RUB.
 class CurrencySelectionSheet extends StatelessWidget {
   const CurrencySelectionSheet({super.key});
 
-  static Future<void> show(BuildContext context) => showModalBottomSheet<void>(
+  static Future<void> show(BuildContext context) => showAppBottomSheet<void>(
     context: context,
+    isScrollControlled: true,
     builder: (context) => const ScrollConfiguration(
       behavior: ScrollBehavior(),
       child: CurrencySelectionSheet(),
@@ -30,8 +32,9 @@ class CurrencySelectionSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = context.watch<SettingsBloc>().state;
-    final currentSymbol =
-        state is SettingsLoaded ? state.currencySymbol : 'MDL';
+    final currentSymbol = state is SettingsLoaded
+        ? state.currencySymbol
+        : 'MDL';
 
     return SafeArea(
       child: Column(
