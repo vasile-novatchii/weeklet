@@ -166,7 +166,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           };
 
           return ListView(
-            padding: const EdgeInsets.only(bottom: 32.0),
+            padding: EdgeInsets.only(
+              bottom: 48.0 + MediaQuery.paddingOf(context).bottom,
+            ),
             children: [
               // ─── Security ───────────────────────────────────────────────
               SettingsSectionHeader(title: l10n.settingsSectionSecurity),
@@ -221,6 +223,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: l10n.settingsClearPreferencesSubtitle,
                   onTap: _showClearPreferencesDialog,
                 ),
+              ]),
+              const SizedBox(height: 12.0),
+              _buildCard([
                 SettingsTile(
                   leading: Icon(
                     Icons.delete_forever,
