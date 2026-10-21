@@ -263,11 +263,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsTile(
                   leading: const Icon(Icons.info_outline),
                   title: l10n.settingsAppVersionTitle,
-                  trailing: Text(
-                    _version.isEmpty ? '...' : _version,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  subtitle: _version.isEmpty ? '...' : _version,
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => showLicensePage(
+                    context: context,
+                    applicationVersion: _version,
                   ),
                 ),
               ]),

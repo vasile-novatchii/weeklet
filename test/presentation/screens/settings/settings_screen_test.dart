@@ -192,5 +192,53 @@ void main() {
         ).called(1);
       },
     );
+
+    testWidgets(
+      'version tile shows version subtitle and a chevron',
+      (tester) async {
+        await pumpSettingsScreen(tester);
+        await tester.pump();
+        await tester.pump();
+
+        await tester.scrollUntilVisible(
+          find.byIcon(Icons.info_outline),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        final tile = find.ancestor(
+          of: find.byIcon(Icons.info_outline),
+          matching: find.byType(ListTile),
+        );
+
+        expect(
+          find.descendant(of: tile, matching: find.text('1.0.0')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: tile,
+            matching: find.byIcon(Icons.chevron_right),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('tapping version tile opens LicensePage', (tester) async {
+      await pumpSettingsScreen(tester);
+      await tester.pump();
+      await tester.pump();
+
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.info_outline),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byIcon(Icons.info_outline));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(find.byType(LicensePage), findsOneWidget);
+    });
   });
 }
