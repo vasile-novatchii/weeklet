@@ -1108,5 +1108,117 @@
   "unknownCategoryLabel": "Unknown",
   "@unknownCategoryLabel": {
     "description": "Fallback category name shown on an expense whose category no longer exists"
+  },
+  "legalLastUpdated": "Last updated: October 2026",
+  "@legalLastUpdated": {
+    "description": "Legal screen text: legalLastUpdated"
+  },
+  "legalRepoLinkLabel": "Source code on GitHub",
+  "@legalRepoLinkLabel": {
+    "description": "Legal screen text: legalRepoLinkLabel"
+  },
+  "privacySection1Title": "1. Overview",
+  "@privacySection1Title": {
+    "description": "Legal screen text: privacySection1Title"
+  },
+  "privacySection1Body": "Weeklet is a local-first app. Everything you enter is stored only on your device.",
+  "@privacySection1Body": {
+    "description": "Legal screen text: privacySection1Body"
+  },
+  "privacySection2Title": "2. Data we collect",
+  "@privacySection2Title": {
+    "description": "Legal screen text: privacySection2Title"
+  },
+  "privacySection2Body": "None. Weeklet has no accounts and no analytics, and it does not collect or send any personal data.",
+  "@privacySection2Body": {
+    "description": "Legal screen text: privacySection2Body"
+  },
+  "privacySection3Title": "3. Network and cloud",
+  "@privacySection3Title": {
+    "description": "Legal screen text: privacySection3Title"
+  },
+  "privacySection3Body": "Weeklet does not use the network or any cloud service. Your data never leaves your device unless you choose to share an export.",
+  "@privacySection3Body": {
+    "description": "Legal screen text: privacySection3Body"
+  },
+  "privacySection4Title": "4. Biometric authentication",
+  "@privacySection4Title": {
+    "description": "Legal screen text: privacySection4Title"
+  },
+  "privacySection4Body": "If you enable app lock, authentication is handled on your device by the operating system. Weeklet does not store or transmit biometric data.",
+  "@privacySection4Body": {
+    "description": "Legal screen text: privacySection4Body"
+  },
+  "privacySection5Title": "5. Exports and sharing",
+  "@privacySection5Title": {
+    "description": "Legal screen text: privacySection5Title"
+  },
+  "privacySection5Body": "PDF exports are created only when you ask for them and are shared through the system share sheet. You decide where they go.",
+  "@privacySection5Body": {
+    "description": "Legal screen text: privacySection5Body"
+  },
+  "privacySection6Title": "6. Your control",
+  "@privacySection6Title": {
+    "description": "Legal screen text: privacySection6Title"
+  },
+  "privacySection6Body": "You can erase all data with \"Reset all data\" in Settings. Uninstalling the app also removes its data from your device.",
+  "@privacySection6Body": {
+    "description": "Legal screen text: privacySection6Body"
+  },
+  "privacySection7Title": "7. Contact",
+  "@privacySection7Title": {
+    "description": "Legal screen text: privacySection7Title"
+  },
+  "privacySection7Body": "Questions can be raised in the project repository on GitHub.",
+  "@privacySection7Body": {
+    "description": "Legal screen text: privacySection7Body"
+  },
+  "termsSection1Title": "1. Acceptance",
+  "@termsSection1Title": {
+    "description": "Legal screen text: termsSection1Title"
+  },
+  "termsSection1Body": "By using Weeklet you agree to these terms. If you do not agree, please do not use the app.",
+  "@termsSection1Body": {
+    "description": "Legal screen text: termsSection1Body"
+  },
+  "termsSection2Title": "2. Use of the app",
+  "@termsSection2Title": {
+    "description": "Legal screen text: termsSection2Title"
+  },
+  "termsSection2Body": "Weeklet is provided for personal use, as is.",
+  "@termsSection2Body": {
+    "description": "Legal screen text: termsSection2Body"
+  },
+  "termsSection3Title": "3. Your data and backups",
+  "@termsSection3Title": {
+    "description": "Legal screen text: termsSection3Title"
+  },
+  "termsSection3Body": "Your data is stored only on your device. It can be lost if you uninstall the app or reset your data, so export what you want to keep.",
+  "@termsSection3Body": {
+    "description": "Legal screen text: termsSection3Body"
+  },
+  "termsSection4Title": "4. No warranty",
+  "@termsSection4Title": {
+    "description": "Legal screen text: termsSection4Title"
+  },
+  "termsSection4Body": "Weeklet is provided without warranties of any kind. The authors are not liable for any loss or damage arising from its use.",
+  "@termsSection4Body": {
+    "description": "Legal screen text: termsSection4Body"
+  },
+  "termsSection5Title": "5. Changes",
+  "@termsSection5Title": {
+    "description": "Legal screen text: termsSection5Title"
+  },
+  "termsSection5Body": "These terms may be updated in future versions of the app. Continued use means you accept the updated terms.",
+  "@termsSection5Body": {
+    "description": "Legal screen text: termsSection5Body"
+  },
+  "termsSection6Title": "6. Contact",
+  "@termsSection6Title": {
+    "description": "Legal screen text: termsSection6Title"
+  },
+  "termsSection6Body": "Questions can be raised in the project repository on GitHub.",
+  "@termsSection6Body": {
+    "description": "Legal screen text: termsSection6Body"
   }
 }
