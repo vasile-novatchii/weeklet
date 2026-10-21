@@ -140,9 +140,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 16.0),
                   TextButton(
-                    onPressed: () => context
-                        .read<SettingsBloc>()
-                        .add(const LoadSettingsRequested()),
+                    onPressed: () => context.read<SettingsBloc>().add(
+                      const LoadSettingsRequested(),
+                    ),
                     child: Text(l10n.retryButtonLabel),
                   ),
                 ],
@@ -181,9 +181,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : l10n.settingsBiometricDisabledSubtitle,
                   trailing: Switch.adaptive(
                     value: state.biometricEnabled,
-                    onChanged: (value) => context
-                        .read<SettingsBloc>()
-                        .add(BiometricToggled(enabled: value)),
+                    onChanged: (value) => context.read<SettingsBloc>().add(
+                      BiometricToggled(enabled: value),
+                    ),
                   ),
                 ),
               ]),
