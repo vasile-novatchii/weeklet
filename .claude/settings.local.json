@@ -14,24 +14,9 @@
       "Bash(*)",
       "Bash(flutter pub get:*)",
       "Bash(git add:*)",
-      "Skill(gsd:ui-phase)",
-      "Skill(gsd:code-review)",
       "WebSearch",
-      "Skill(gsd:discuss-phase)",
-      "Bash(rm -f '/Users/vasilenovatchii/My Projects/Flutter/Weeklet/.claude/cache/gsd-update-check.json')",
-      "Bash(rm -f __TRACKED_VAR__/.claude/cache/gsd-update-check.json)",
       "Bash(rm -f \"/Users/vasilenovatchii/My Projects/Flutter/Weeklet/package.json\")",
-      "Bash(rm -rf \"/Users/vasilenovatchii/My Projects/Flutter/Weeklet/node_modules\")",
-      "Skill(gsd:progress)",
-      "Bash(rm -f \"/Users/vasilenovatchii/My Projects/Flutter/Weeklet/.claude/cache/gsd-update-check.json\")",
-      "Skill(gsd-next)",
-      "Skill(gsd-complete-milestone)",
-      "Skill(gsd-plan-milestone-gaps)",
-      "Skill(gsd:update)",
-      "Skill(gsd:new-milestone)",
-      "Skill(gsd:quick)",
-      "Skill(gsd:health)",
-      "Skill(gsd:pause-work)"
+      "Bash(rm -rf \"/Users/vasilenovatchii/My Projects/Flutter/Weeklet/node_modules\")"
     ]
   }
 }

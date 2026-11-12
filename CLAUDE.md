@@ -118,7 +118,6 @@ Follow existing code for concrete examples:
 - Use case examples → [lib/domain/usecases/expense/](lib/domain/usecases/expense/)
 - DI registration → [lib/core/di/service_locator.dart](lib/core/di/service_locator.dart)
 
-<!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
 **Weeklet**
@@ -134,9 +133,7 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 - **Storage:** Hive only; no SQLite migration, no network calls
 - **Platform:** iOS and Android primary; macOS/Linux/Windows folders present but not target platforms
 - **Release:** Targeting public App Store / Play Store — requires proper icon, splash, localization completeness, stability
-<!-- GSD:project-end -->
 
-<!-- GSD:stack-start source:codebase/STACK.md -->
 ## Technology Stack
 
 ## Runtime
@@ -209,9 +206,7 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 | Linux | Present | `linux/` directory with CMakeLists.txt |
 | Windows | Present | `windows/` directory with CMakeLists.txt |
 | Web | Not detected | No `web/` directory found |
-<!-- GSD:stack-end -->
 
-<!-- GSD:conventions-start source:CONVENTIONS.md -->
 ## Conventions
 
 ## Naming
@@ -323,9 +318,7 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 - Strict mode: `strict-casts: true`, `strict-inference: true`, `strict-raw-types: true`
 - Page width: 80 characters
 - `trailing_commas: preserve`
-<!-- GSD:conventions-end -->
 
-<!-- GSD:architecture-start source:ARCHITECTURE.md -->
 ## Architecture
 
 ## Pattern
@@ -377,24 +370,3 @@ Weeklet is a Flutter app for simple personal finance management. Users track wee
 ### Routing
 ### Theme
 ### Localization
-<!-- GSD:architecture-end -->
-
-<!-- GSD:workflow-start source:GSD defaults -->
-## GSD Workflow Enforcement
-
-Before using Edit, Write, or other file-changing tools, start work through a GSD command so planning artifacts and execution context stay in sync.
-
-Use these entry points:
-- `/gsd:quick` for small fixes, doc updates, and ad-hoc tasks
-- `/gsd:debug` for investigation and bug fixing
-- `/gsd:execute-phase` for planned phase work
-
-Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
-<!-- GSD:workflow-end -->
-
-<!-- GSD:profile-start -->
-## Developer Profile
-
-> Profile not yet configured. Run `/gsd:profile-user` to generate your developer profile.
-> This section is managed by `generate-claude-profile` -- do not edit manually.
-<!-- GSD:profile-end -->
