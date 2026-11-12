@@ -2,35 +2,36 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: E2E Polish
-status: planning
-stopped_at: Phase 15 complete (4/4 plans); CR-01 layout bug found in code review and fixed
-last_updated: "2026-09-02T06:08:08.570Z"
-last_activity: 2026-09-02
+status: completed
+stopped_at: Phase 20 context gathered
+last_updated: "2026-11-12T15:23:23.641Z"
+last_activity: 2026-11-12 — Milestone v1.3 completed and archived
 progress:
-  total_phases: 6
-  completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 33
+  total_phases: 7
+  completed_phases: 7
+  total_plans: 47
+  completed_plans: 47
+  percent: 100
 ---
 
 # Project State
 
-**Status:** Phase 15 complete - ready to plan Phase 16
-**Last Updated:** 2026-09-02
+**Status:** v1.3 milestone complete
+**Last Updated:** 2026-11-12
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-20)
+See: .planning/PROJECT.md (updated 2026-11-12)
 
 **Core value:** Users can always see where their money went - fast entry, accurate totals, no friction.
-**Current focus:** Phase 15 complete; next is Phase 16 — Stats PDF Export
+**Current focus:** Planning next milestone
 
 ## Milestone History
 
 - **v1.0 MVP** - Phases 1-7 - shipped 2026-04-27
 - **v1.1 UX Polish** - Phases 8-9 - shipped 2026-05-03
 - **v1.2 Testing** - Phases 10-13 - shipped 2026-07-26 (0 → 169 tests, 27/27 requirements)
+- **v1.3 E2E Polish** - Phases 14-20 - shipped 2026-11-12 (47 plans, 17/17 requirements, 523 tests)
 
 ## Accumulated Context
 
@@ -78,27 +79,30 @@ See: .planning/PROJECT.md (updated 2026-08-20)
 - **Constraint note:** Flutter SDK upgrade explicitly deferred past v1.3 (see REQUIREMENTS.md Out of Scope).
 - Full decision log and requirement outcomes: `.planning/PROJECT.md`. Milestone summaries: `.planning/MILESTONES.md`.
 
+### Roadmap Evolution
+
+- Phase 20 added (2026-10-19): CI & Signed Release - GitHub Actions CI on push/PR; tag-triggered signed, obfuscated split-per-ABI APK release with SHA256SUMS on GitHub Releases; `key.properties` signing with debug fallback; private per-version debug symbols. GitHub-only distribution, no Play Store.
+
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260430-qou | compact all amounts in all screens like we did in stats | 2026-04-30 | ba8ac1b | [260430-qou](./quick/260430-qou-compact-all-amounts-in-all-screens-like-/) |
+| 261019-r49 | Upgrade Flutter to latest stable 3.47.7 | 2026-10-19 | ea18b2a | [261019-r49-upgrade-flutter-to-latest-stable-3-47-7](./quick/261019-r49-upgrade-flutter-to-latest-stable-3-47-7/) |
 
 ## Current Position
 
-Phase: 16 (Stats PDF Export)
-Plan: Not started
-Status: Phase 15 complete; ready to plan Phase 16
-Last activity: 2026-09-02 -- Phase 15 executed (4/4 plans, 2 waves); code review found and fixed a real FMT-02 layout regression (CR-01); full suite 266/266
-
-Progress: [██████████] 100% (Phase 15)
+Phase: Milestone v1.3 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-11-12 — Milestone v1.3 completed and archived
 
 ## Session Continuity
 
-Last session: 2026-09-02T06:08:08.570Z
-Stopped at: Phase 15 complete (FMT-01, FMT-02 both satisfied; 15-REVIEW.md clean after CR-01 fix)
-Resume file: none - Phase 15 is complete
-Next: /gsd:discuss-phase 16 (or /gsd:plan-phase 16 to skip discussion)
+Last session: 2026-10-21T17:23:02.815Z
+Stopped at: Phase 20 context gathered
+Resume file: .planning/phases/20-ci-signed-release/20-CONTEXT.md
+Next: /gsd:new-milestone
 
 Note: `fvm flutter pub get` was run this session to restore missing pinned packages
 (flutter_bloc 9.1.1, bloc 9.2.0, bloc_test 10.0.0, mocktail 1.0.5, fl_chart 1.1.1)
@@ -126,3 +130,17 @@ reports exactly the same 3 pre-existing infos. Zero existing assertions changed.
 Caution for later plans: `dart format <dir>` WRITES in place - it reformatted 44
 out-of-scope legacy files during 14-01 and had to be reverted file by file. Use
 `fvm dart format -o none --set-exit-if-changed <files>` to check formatting.
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
+
+## Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-11-12:
+
+| Category | Item | Status |
+|----------|------|--------|
+| uat | 16-UAT.md | resolved (0 pending scenarios) |
+| quick_task | 260430-qou-compact-all-amounts-in-all-screens-like- | missing |
+| quick_task | 261019-r49-upgrade-flutter-to-latest-stable-3-47-7 | missing |

@@ -95,6 +95,52 @@
 
 ---
 
+## Milestone: v1.3 — E2E Polish
+
+**Shipped:** 2026-11-12
+**Phases:** 7 (14–20) | **Plans:** 47 | **Sessions:** multiple across ~2.5 months
+
+### What Was Built
+
+- **Phase 14:** shared ISO week keys + pinned ordering, donut 3% floor, income focus-target reload, id-marker default category.
+- **Phase 15:** full-format amounts app-wide via shared `EllipsisTooltipText`.
+- **Phase 16:** stats PDF export (all-months aware), Unicode PDF font, localized expense/income PDFs, Android Share/Print-Save sheet; 22 plans after four UAT gap-closure rounds.
+- **Phases 17-19:** localization completeness, income/home UX, settings and system UI polish.
+- **Phase 20:** GitHub Actions CI and tag-triggered signed, obfuscated APK releases.
+
+### What Worked
+
+- **Gap-closure waves from UAT.** Phase 16 UAT findings were turned into numbered plans and closed in rounds, with on-device re-test as the final gate.
+- **Locking decisions into STATE.md notes and tests.** Traps like the non-self-clearing `lastCreatedCategoryId` and the triple-gated auto-select are documented and test-guarded.
+- **Display-only fixes** (3% donut floor) kept real amounts untouched.
+
+### What Was Inefficient
+
+- **Phase 16 grew to 22 plans.** UAT surfaced many adjacent issues (l10n, footer padding, empty states) that were not scoped up front.
+- **Verification paperwork skipped.** `workflow.verifier=false` meant no VERIFICATION.md for any phase; several VALIDATION.md remain draft.
+- **Legacy format debt** (~43 files fail `dart format`) forced care to avoid out-of-scope reformatting in every plan.
+- **Phase 20 added mid-milestone** without requirement IDs.
+
+### Patterns Established
+
+- Shared widgets for cross-cutting display policy (`EllipsisTooltipText`, `showAppBottomSheet`, `SheetFooterPadding`).
+- App-managed primitive markers in the settings box instead of Hive schema changes.
+- Release flow documented in `docs/RELEASING.md`.
+
+### Key Lessons
+
+1. Scope UAT-adjacent fixes (l10n, spacing, empty states) up front to avoid a 22-plan phase.
+2. Release workflows must be run live once before the milestone is called verified.
+3. Turn the verifier back on, or accept that the audit trail will rely on SUMMARYs and tests.
+
+### Cost Observations
+
+- Model: Claude Opus / Sonnet
+- Sessions: multiple across 2026-08-23 → 2026-11-12
+- Notable: tests grew 169 → 523 while behavior changed intentionally (amount formatting).
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -104,6 +150,7 @@
 | v1.0 | 7 | 21 | Initial GSD setup; single-agent sequential execution |
 | v1.1 | 2 | 12 | Parallel worktree execution for Wave 2; mandatory code review gate |
 | v1.2 | 4 | 16 | Wave-based test authoring; independent verifier re-runs suite; real-Hive integration harness |
+| v1.3 | 7 | 47 | UAT-driven gap-closure waves; verifier disabled; CI + signed release pipeline |
 
 ### Cumulative Quality
 
@@ -112,6 +159,7 @@
 | v1.0 | 34 (use case + export) | ✓ | ArgumentError (partial) |
 | v1.1 | 34 (stable) | ✓ | Typed exception enums (complete) |
 | v1.2 | 169 (use case + BLoC + widget + integration) | ✓ | Typed exception enums (complete) |
+| v1.3 | 523 (full suite) | ✓ | Typed exception enums (complete) |
 
 ### Top Lessons (Verified Across Milestones)
 
