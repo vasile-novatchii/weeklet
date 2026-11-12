@@ -1,0 +1,1 @@
+enum StatsTab { monthly, annual }

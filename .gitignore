@@ -43,3 +43,27 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# FVM Version Cache
+.fvm/
+
+.agent/
+.agents/
+.claude/
+.codex/
+.planning
+devtools_options.yaml
+.claude/settings.local.json
+.planning/STATE.md
+.planning/ROADMAP.md
+.planning/PROJECT.md
+AGENTS.md
+
+# gen-l10n generated files
+lib/l10n/app_localizations.dart
+lib/l10n/app_localizations_*.dart
+
+# Signing material (belt-and-braces; android/.gitignore also covers these)
+android/key.properties
+*.jks
+*.keystore

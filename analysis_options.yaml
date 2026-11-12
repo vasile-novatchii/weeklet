@@ -19,7 +19,6 @@ linter:
     prefer_const_literals_to_create_immutables: true
     prefer_constructors_over_static_methods: true
     prefer_contains: true
-    prefer_equal_for_default_values: true
     prefer_expression_function_bodies: true
     prefer_final_fields: true
     prefer_final_in_for_each: true
@@ -52,14 +51,21 @@ linter:
     unnecessary_this: true
     unnecessary_to_list_in_spreads: true
     unrelated_type_equality_checks: true
-    unsafe_html: true
     use_named_constants: true
     use_string_buffers: true
+    use_super_parameters: false
+    unnecessary_underscores: false
 
 analyzer:
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
+    - build/**
+    - android/**
+    - ios/**
+    - windows/**
+    - macos/**
+    - linux/**
   errors:
     missing_required_param: error
     missing_return: error
@@ -71,3 +77,4 @@ analyzer:
 
 formatter:
   trailing_commas: preserve
+  page_width: 80

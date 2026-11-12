@@ -1,0 +1,1220 @@
+{
+  "@@locale": "en",
+
+  "expensesScreenTitle": "My Expenses",
+  "@expensesScreenTitle": {
+    "description": "AppBar title for the Expenses screen"
+  },
+
+  "incomeScreenTitle": "My Income",
+  "@incomeScreenTitle": {
+    "description": "AppBar title for the Income screen"
+  },
+
+  "statsScreenTitle": "Statistics",
+  "@statsScreenTitle": {
+    "description": "AppBar title for the Statistics screen"
+  },
+
+  "categoriesScreenTitle": "Categories",
+  "@categoriesScreenTitle": {
+    "description": "AppBar title for the Categories screen"
+  },
+
+  "addCategoryScreenTitle": "Add Category",
+  "@addCategoryScreenTitle": {
+    "description": "AppBar title for the Add Category screen"
+  },
+
+  "settingsScreenTitle": "Settings",
+  "@settingsScreenTitle": {
+    "description": "AppBar title for the Settings screen"
+  },
+
+  "expensesEmptyTitle": "No expenses yet",
+  "@expensesEmptyTitle": {
+    "description": "Empty state title on the Expenses screen"
+  },
+
+  "expensesEmptySubtitle": "Tap + to add your first expense",
+  "@expensesEmptySubtitle": {
+    "description": "Empty state subtitle on the Expenses screen"
+  },
+
+  "incomeEmptyTitle": "No income yet",
+  "@incomeEmptyTitle": {
+    "description": "Empty state title on the Income screen"
+  },
+
+  "incomeEmptySubtitle": "Tap + to add your first income",
+  "@incomeEmptySubtitle": {
+    "description": "Empty state subtitle on the Income screen"
+  },
+
+  "categoriesEmptyTitle": "No categories yet",
+  "@categoriesEmptyTitle": {
+    "description": "Empty state title on the Categories screen"
+  },
+
+  "categoriesEmptySubtitle": "Tap + to add your first category",
+  "@categoriesEmptySubtitle": {
+    "description": "Empty state subtitle on the Categories screen"
+  },
+
+  "statsEmptyTitle": "No stats available",
+  "@statsEmptyTitle": {
+    "description": "Empty state title on the Statistics screen"
+  },
+
+  "statsEmptySubtitle": "Add some income or expenses to see your statistics",
+  "@statsEmptySubtitle": {
+    "description": "Empty state subtitle on the Statistics screen"
+  },
+
+  "expensesLoadError": "Failed to load expenses",
+  "@expensesLoadError": {
+    "description": "Error message when expenses fail to load"
+  },
+
+  "incomeLoadError": "Failed to load income",
+  "@incomeLoadError": {
+    "description": "Error message when income fails to load"
+  },
+
+  "statsErrorTitle": "Whoops! Something went wrong",
+  "@statsErrorTitle": {
+    "description": "Error state title on the Statistics screen"
+  },
+
+  "retryButtonLabel": "Retry",
+  "@retryButtonLabel": {
+    "description": "Label for the Retry button"
+  },
+
+  "tryAgainButtonLabel": "Try Again",
+  "@tryAgainButtonLabel": {
+    "description": "Label for the Try Again button"
+  },
+
+  "addExpenseButtonLabel": "Add Expense",
+  "@addExpenseButtonLabel": {
+    "description": "Label for the Add Expense floating action button"
+  },
+
+  "addIncomeButtonLabel": "Add Income",
+  "@addIncomeButtonLabel": {
+    "description": "Label for the Add Income floating action button"
+  },
+
+  "saveExpenseButtonLabel": "Save Expense",
+  "@saveExpenseButtonLabel": {
+    "description": "Label for the Save Expense submit button in the form"
+  },
+
+  "saveIncomeButtonLabel": "Save Income",
+  "@saveIncomeButtonLabel": {
+    "description": "Label for the Save Income submit button in the form"
+  },
+
+  "saveButtonLabel": "Save",
+  "@saveButtonLabel": {
+    "description": "Generic Save button label"
+  },
+
+  "cancelButtonLabel": "Cancel",
+  "@cancelButtonLabel": {
+    "description": "Generic Cancel button label"
+  },
+
+  "categoriesTooltip": "Categories",
+  "@categoriesTooltip": {
+    "description": "Tooltip for the categories icon button in the Expenses AppBar"
+  },
+
+  "exportPdfTooltip": "Export as PDF",
+  "@exportPdfTooltip": {
+    "description": "Tooltip for the PDF export icon button"
+  },
+
+  "exportActionShare": "Share",
+  "@exportActionShare": {
+    "description": "Action in the post-export sheet (Android) that opens the share sheet"
+  },
+  "exportActionPrint": "Print / Save as PDF",
+  "@exportActionPrint": {
+    "description": "Action in the post-export sheet (Android) that opens the print dialog to save the PDF with its file name"
+  },
+  "exportPrintFailed": "Could not open print dialog",
+  "@exportPrintFailed": {
+    "description": "Error snackbar shown when the native print dialog cannot be opened"
+  },
+
+  "addExpenseTooltip": "Add new expense",
+  "@addExpenseTooltip": {
+    "description": "Tooltip for the add expense FAB"
+  },
+
+  "addIncomeTooltip": "Add new income",
+  "@addIncomeTooltip": {
+    "description": "Tooltip for the add income FAB"
+  },
+
+  "createCategoryTooltip": "Create new category",
+  "@createCategoryTooltip": {
+    "description": "Tooltip for the create category FAB"
+  },
+
+  "moreOptionsTooltip": "More options",
+  "@moreOptionsTooltip": {
+    "description": "Tooltip for the more options menu button"
+  },
+
+  "amountFieldLabel": "Amount ({currency})",
+  "@amountFieldLabel": {
+    "description": "Label for amount input field with dynamic currency symbol",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+
+  "amountFieldHint": "0.00",
+  "@amountFieldHint": {
+    "description": "Hint text for the amount input field"
+  },
+
+  "descriptionFieldLabel": "Description",
+  "@descriptionFieldLabel": {
+    "description": "Label for the description input field"
+  },
+
+  "descriptionFieldHint": "For ex.: Grocery shopping",
+  "@descriptionFieldHint": {
+    "description": "Hint text for the description input field"
+  },
+
+  "incomeDescriptionFieldHint": "For ex.: Salary",
+  "@incomeDescriptionFieldHint": {
+    "description": "Hint text for the description input field on income forms"
+  },
+
+  "dateFieldLabel": "Date",
+  "@dateFieldLabel": {
+    "description": "Label for the date input field"
+  },
+
+  "dateFieldHint": "Select date",
+  "@dateFieldHint": {
+    "description": "Hint text for the date input field"
+  },
+
+  "categoryFieldLabel": "Category",
+  "@categoryFieldLabel": {
+    "description": "Label for the category dropdown field"
+  },
+
+  "categoryFieldHint": "Select Category",
+  "@categoryFieldHint": {
+    "description": "Hint text for the category dropdown field"
+  },
+
+  "categoryLoadError": "Could not load categories",
+  "@categoryLoadError": {
+    "description": "Error message when categories cannot be loaded in the expense form"
+  },
+
+  "categoryNameFieldLabel": "Category Name *",
+  "@categoryNameFieldLabel": {
+    "description": "Label for the category name input field (required)"
+  },
+
+  "categoryNameFieldHint": "e.g., Shopping",
+  "@categoryNameFieldHint": {
+    "description": "Hint text for the category name input field"
+  },
+
+  "categoryNameValidationRequired": "Please enter a category name.",
+  "@categoryNameValidationRequired": {
+    "description": "Validation error when category name is empty"
+  },
+
+  "iconSearchHint": "Search icons, like \"shopping\" or \"travel\"",
+  "@iconSearchHint": {
+    "description": "Hint text for the icon search field in category creation"
+  },
+
+  "noIconSelectedLabel": "No icon selected",
+  "@noIconSelectedLabel": {
+    "description": "Label shown when no icon has been selected for a category"
+  },
+
+  "dateValidationRequired": "Please select a date",
+  "@dateValidationRequired": {
+    "description": "Validation error when no date has been selected"
+  },
+
+  "defaultCategoryName": "Daily",
+  "@defaultCategoryName": {
+    "description": "Name given to the auto-created fallback category used when an expense is saved with no category selected. Resolved once from the active app locale at creation time and stored as a normal user-owned category; it is renamable and is NOT re-translated when the app language changes (D-09)."
+  },
+
+  "addExpenseSheetTitle": "Add Expense",
+  "@addExpenseSheetTitle": {
+    "description": "Title of the Add Expense bottom sheet"
+  },
+
+  "addIncomeSheetTitle": "Add Income",
+  "@addIncomeSheetTitle": {
+    "description": "Title of the Add Income bottom sheet"
+  },
+
+  "editExpenseSheetTitle": "Edit Expense",
+  "@editExpenseSheetTitle": {
+    "description": "Title of the Edit Expense bottom sheet"
+  },
+
+  "editIncomeSheetTitle": "Edit Income",
+  "@editIncomeSheetTitle": {
+    "description": "Title of the Edit Income bottom sheet"
+  },
+
+  "allMonthsLabel": "All Months",
+  "@allMonthsLabel": {
+    "description": "Label for the 'all months' option in the month filter"
+  },
+
+  "selectMonthHint": "Select Month",
+  "@selectMonthHint": {
+    "description": "Hint text for the month selector dropdown"
+  },
+
+  "selectYearHint": "Select Year",
+  "@selectYearHint": {
+    "description": "Hint text for the year selector dropdown"
+  },
+
+
+  "navExpenses": "Expenses",
+  "@navExpenses": {
+    "description": "Label for the Expenses navigation tab"
+  },
+
+  "navStats": "Stats",
+  "@navStats": {
+    "description": "Label for the Stats navigation tab"
+  },
+
+  "navSettings": "Settings",
+  "@navSettings": {
+    "description": "Label for the Settings navigation tab"
+  },
+
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Label for the Home navigation item"
+  },
+
+  "navIncome": "Income",
+  "@navIncome": {
+    "description": "Label for the Income navigation tab"
+  },
+
+  "settingsSectionSecurity": "Security",
+  "@settingsSectionSecurity": {
+    "description": "Settings section header for Security"
+  },
+
+  "settingsSectionAppearance": "Appearance",
+  "@settingsSectionAppearance": {
+    "description": "Settings section header for Appearance"
+  },
+
+  "settingsSectionData": "Data",
+  "@settingsSectionData": {
+    "description": "Settings section header for Data"
+  },
+
+  "settingsSectionLegal": "Legal",
+  "@settingsSectionLegal": {
+    "description": "Settings section header for Legal"
+  },
+
+  "settingsSectionAbout": "About",
+  "@settingsSectionAbout": {
+    "description": "Settings section header for About"
+  },
+
+  "settingsBiometricTitle": "Biometric Authentication",
+  "@settingsBiometricTitle": {
+    "description": "Settings tile title for biometric authentication"
+  },
+
+  "settingsBiometricEnabledSubtitle": "Enabled — Face ID / Touch ID required on resume",
+  "@settingsBiometricEnabledSubtitle": {
+    "description": "Settings tile subtitle when biometric authentication is enabled"
+  },
+
+  "settingsBiometricDisabledSubtitle": "Disabled",
+  "@settingsBiometricDisabledSubtitle": {
+    "description": "Settings tile subtitle when biometric authentication is disabled"
+  },
+
+  "settingsThemeTitle": "Theme",
+  "@settingsThemeTitle": {
+    "description": "Settings tile title for theme selection"
+  },
+
+  "themeSystemDefault": "System default",
+  "@themeSystemDefault": {
+    "description": "Theme option label for system default theme"
+  },
+
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Theme option label for light theme"
+  },
+
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Theme option label for dark theme"
+  },
+
+  "settingsLanguageTitle": "Language",
+  "@settingsLanguageTitle": {
+    "description": "Settings tile title for language selection"
+  },
+
+  "languageSystemDefault": "System default",
+  "@languageSystemDefault": {
+    "description": "Language option label for system default language"
+  },
+
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Language option label for English"
+  },
+
+  "languageRomanian": "Romanian",
+  "@languageRomanian": {
+    "description": "Language option label for Romanian"
+  },
+
+  "languageRussian": "Russian",
+  "@languageRussian": {
+    "description": "Language option label for Russian"
+  },
+
+  "settingsCurrencyTitle": "Currency",
+  "@settingsCurrencyTitle": {
+    "description": "Settings tile title for currency selection"
+  },
+
+  "settingsClearPreferencesTitle": "Clear Preferences",
+  "@settingsClearPreferencesTitle": {
+    "description": "Settings tile title for clearing preferences"
+  },
+
+  "settingsClearPreferencesSubtitle": "Resets theme, language, and currency to defaults",
+  "@settingsClearPreferencesSubtitle": {
+    "description": "Settings tile subtitle for clearing preferences"
+  },
+
+  "settingsResetDataTitle": "Reset All Data",
+  "@settingsResetDataTitle": {
+    "description": "Settings tile title for resetting all data"
+  },
+
+  "settingsResetDataSubtitle": "Permanently deletes all expenses, income, and categories",
+  "@settingsResetDataSubtitle": {
+    "description": "Settings tile subtitle for resetting all data"
+  },
+
+  "settingsPrivacyPolicyTitle": "Privacy Policy",
+  "@settingsPrivacyPolicyTitle": {
+    "description": "Settings tile title for privacy policy"
+  },
+
+  "settingsTermsTitle": "Terms & Conditions",
+  "@settingsTermsTitle": {
+    "description": "Settings tile title for terms and conditions"
+  },
+
+  "settingsAppVersionTitle": "App Version",
+  "@settingsAppVersionTitle": {
+    "description": "Settings tile title for app version"
+  },
+
+  "settingsLoadError": "Settings could not be loaded.",
+  "@settingsLoadError": {
+    "description": "Error message when settings fail to load"
+  },
+
+  "languageSheetTitle": "Language",
+  "@languageSheetTitle": {
+    "description": "Title of the language selection bottom sheet"
+  },
+
+  "themeSystemDefaultSubtitle": "Follows device setting",
+  "@themeSystemDefaultSubtitle": {
+    "description": "Subtitle for the system default theme option"
+  },
+
+  "currencyMDL": "MDL",
+  "@currencyMDL": {
+    "description": "Currency label for Moldovan Leu"
+  },
+
+  "currencyRON": "RON",
+  "@currencyRON": {
+    "description": "Currency label for Romanian Leu"
+  },
+
+  "currencyEUR": "EUR",
+  "@currencyEUR": {
+    "description": "Currency label for Euro"
+  },
+
+  "currencyUSD": "USD",
+  "@currencyUSD": {
+    "description": "Currency label for US Dollar"
+  },
+
+  "currencyRUB": "RUB",
+  "@currencyRUB": {
+    "description": "Currency label for Russian Ruble"
+  },
+
+  "clearPreferencesDialogTitle": "Clear Preferences",
+  "@clearPreferencesDialogTitle": {
+    "description": "Title of the clear preferences confirmation dialog"
+  },
+
+  "clearPreferencesDialogSubtitle1": "This will reset your theme, language, and currency to defaults.",
+  "@clearPreferencesDialogSubtitle1": {
+    "description": "First subtitle line of the clear preferences dialog"
+  },
+
+  "clearPreferencesDialogSubtitle2": "Your expenses, income, and categories will not be affected.",
+  "@clearPreferencesDialogSubtitle2": {
+    "description": "Second subtitle line of the clear preferences dialog"
+  },
+
+  "clearButtonLabel": "Clear",
+  "@clearButtonLabel": {
+    "description": "Label for the Clear confirm button"
+  },
+
+  "keepSettingsButtonLabel": "Keep Settings",
+  "@keepSettingsButtonLabel": {
+    "description": "Label for the keep settings cancel button in clear preferences dialog"
+  },
+
+  "resetDataDialogTitle": "Reset All Data",
+  "@resetDataDialogTitle": {
+    "description": "Title of the reset all data confirmation dialog"
+  },
+
+  "resetDataDialogSubtitle1": "This will permanently delete all your expenses, income, and categories.",
+  "@resetDataDialogSubtitle1": {
+    "description": "First subtitle line of the reset all data dialog"
+  },
+
+  "actionCannotBeUndone": "This action cannot be undone.",
+  "@actionCannotBeUndone": {
+    "description": "Warning that an action cannot be undone, used in multiple dialogs"
+  },
+
+  "resetButtonLabel": "Reset",
+  "@resetButtonLabel": {
+    "description": "Label for the Reset confirm button"
+  },
+
+  "keepDataButtonLabel": "Keep Data",
+  "@keepDataButtonLabel": {
+    "description": "Label for the keep data cancel button in reset all data dialog"
+  },
+
+  "deleteExpenseDialogTitle": "Delete expense?",
+  "@deleteExpenseDialogTitle": {
+    "description": "Title of the delete expense confirmation dialog"
+  },
+
+  "deleteConfirmSubtitle1": "Are you sure you want to delete",
+  "@deleteConfirmSubtitle1": {
+    "description": "First line of deletion confirmation dialog subtitle"
+  },
+
+  "deleteButtonLabel": "Delete",
+  "@deleteButtonLabel": {
+    "description": "Label for the Delete confirm button"
+  },
+
+  "deleteIncomeDialogTitle": "Delete income?",
+  "@deleteIncomeDialogTitle": {
+    "description": "Title of the delete income confirmation dialog"
+  },
+
+  "deleteIncomeFallbackName": "this income",
+  "@deleteIncomeFallbackName": {
+    "description": "Fallback name used in the delete income dialog when income has no description"
+  },
+
+  "deleteCategoryDialogTitle": "Delete category?",
+  "@deleteCategoryDialogTitle": {
+    "description": "Title of the delete category confirmation dialog"
+  },
+
+  "discardChangesDialogTitle": "Discard changes?",
+  "@discardChangesDialogTitle": {
+    "description": "Title of the discard unsaved changes confirmation dialog"
+  },
+
+  "discardButtonLabel": "Discard",
+  "@discardButtonLabel": {
+    "description": "Label for the Discard confirm button"
+  },
+
+  "editMenuLabel": "Edit",
+  "@editMenuLabel": {
+    "description": "Label for the Edit option in item context menus"
+  },
+
+  "deleteMenuLabel": "Delete",
+  "@deleteMenuLabel": {
+    "description": "Label for the Delete option in item context menus"
+  },
+
+  "statsAnnualIncome": "Annual Income",
+  "@statsAnnualIncome": {
+    "description": "Label for the annual income summary card"
+  },
+
+  "statsMonthlyIncome": "Monthly Income",
+  "@statsMonthlyIncome": {
+    "description": "Label for the monthly income summary card"
+  },
+
+  "statsAnnualExpenses": "Annual Expenses",
+  "@statsAnnualExpenses": {
+    "description": "Label for the annual expenses summary card"
+  },
+
+  "statsMonthlyExpenses": "Monthly Expenses",
+  "@statsMonthlyExpenses": {
+    "description": "Label for the monthly expenses summary card"
+  },
+
+  "statsAnnualBalance": "Annual Balance",
+  "@statsAnnualBalance": {
+    "description": "Label for the annual balance card"
+  },
+
+  "statsMonthlyBalance": "Monthly Balance",
+  "@statsMonthlyBalance": {
+    "description": "Label for the monthly balance card"
+  },
+
+  "statsRealizedSavings": "Realized Savings",
+  "@statsRealizedSavings": {
+    "description": "Label for the realized savings card"
+  },
+
+  "statsVsLastMonth": "vs last month",
+  "@statsVsLastMonth": {
+    "description": "Comparison label in stats small card showing change vs last month"
+  },
+
+  "statsVsLastYear": "vs last year",
+  "@statsVsLastYear": {
+    "description": "Comparison label in stats small card showing change vs last year"
+  },
+
+  "statsTabMonthly": "Monthly",
+  "@statsTabMonthly": {
+    "description": "Label for the Monthly tab in statistics"
+  },
+
+  "statsTabAnnualEvolution": "Annual Evolution",
+  "@statsTabAnnualEvolution": {
+    "description": "Label for the Annual Evolution tab in statistics"
+  },
+
+  "statsMonthlyBreakdownTitle": "Monthly Breakdown",
+  "@statsMonthlyBreakdownTitle": {
+    "description": "Title for the monthly breakdown section in statistics"
+  },
+
+  "incomeBarLabel": "Income",
+  "@incomeBarLabel": {
+    "description": "Label for the income bar in bar charts"
+  },
+
+  "expensesBarLabel": "Expenses",
+  "@expensesBarLabel": {
+    "description": "Label for the expenses bar in bar charts"
+  },
+
+  "homeIncomeSubtitle": "Income: {amount}",
+  "@homeIncomeSubtitle": {
+    "description": "Subtitle under the Expenses title showing total income for the selected period",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+
+  "incomeTotalForMonth": "Total income for {month}",
+  "@incomeTotalForMonth": {
+    "description": "Total income card label when a specific month is selected",
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+
+  "incomeTotalAllMonths": "Total income",
+  "@incomeTotalAllMonths": {
+    "description": "Total income card label when all months are selected"
+  },
+
+  "biometricGateTitle": "Authenticate to continue",
+  "@biometricGateTitle": {
+    "description": "Title shown on the biometric authentication gate screen"
+  },
+
+  "biometricGateSubtitle": "Use Face ID or fingerprint to access Weeklet.",
+  "@biometricGateSubtitle": {
+    "description": "Subtitle shown on the biometric authentication gate screen"
+  },
+
+  "biometricAuthReason": "Authenticate to access Weeklet.",
+  "@biometricAuthReason": {
+    "description": "Reason string passed to the biometric authentication API"
+  },
+
+  "biometricVerifyReason": "Verify your identity to enable biometric authentication.",
+  "@biometricVerifyReason": {
+    "description": "Reason string passed to biometric API when enabling biometric authentication in settings"
+  },
+
+  "pdfExportError": "Failed to generate PDF. Please try again.",
+  "@pdfExportError": {
+    "description": "Error message shown when PDF generation fails"
+  },
+
+  "errorInvalidAmount": "Amount must be a positive number",
+  "@errorInvalidAmount": {
+    "description": "Error shown when amount is invalid or not positive"
+  },
+
+  "errorEmptyDescription": "Description cannot be empty",
+  "@errorEmptyDescription": {
+    "description": "Error shown when description is empty"
+  },
+
+  "errorEmptyCategory": "Category cannot be empty",
+  "@errorEmptyCategory": {
+    "description": "Error shown when no category is selected"
+  },
+
+  "errorGeneric": "Something went wrong. Please try again.",
+  "@errorGeneric": {
+    "description": "Generic error message for unexpected failures"
+  },
+
+  "errorBiometricFailed": "Biometric authentication could not be verified.",
+  "@errorBiometricFailed": {
+    "description": "Error shown when biometric authentication fails"
+  },
+
+  "errorCategoryNotFound": "Category not found",
+  "@errorCategoryNotFound": {
+    "description": "Error shown when a category cannot be found"
+  },
+
+  "categoryAddedSuccess": "Category added successfully",
+  "@categoryAddedSuccess": {
+    "description": "Success message shown after adding a category"
+  },
+
+  "categoryUpdatedSuccess": "Category updated successfully",
+  "@categoryUpdatedSuccess": {
+    "description": "Success message shown after updating a category"
+  },
+
+  "categoryDeletedSuccess": "Category deleted successfully",
+  "@categoryDeletedSuccess": {
+    "description": "Success message shown after deleting a category"
+  },
+
+  "validationRequired": "This field is required",
+  "@validationRequired": {
+    "description": "Validation error message when a required field is empty"
+  },
+
+  "validationInvalidAmountFormat": "Invalid format (e.g., 10.50)",
+  "@validationInvalidAmountFormat": {
+    "description": "Validation error message when amount format is invalid"
+  },
+
+  "validationAmountMustBePositive": "Amount must be greater than 0",
+  "@validationAmountMustBePositive": {
+    "description": "Validation error message when amount is not greater than zero"
+  },
+  "statsPdfReportTitle": "Statistics Report",
+  "@statsPdfReportTitle": {
+    "description": "Title of the statistics PDF report"
+  },
+  "statsPdfGeneratedLabel": "Generated",
+  "@statsPdfGeneratedLabel": {
+    "description": "Label before the generation date in the PDF"
+  },
+  "statsPdfCategoryBreakdownTitle": "Expenses by Category",
+  "@statsPdfCategoryBreakdownTitle": {
+    "description": "Heading of the category breakdown table in the PDF"
+  },
+  "statsPdfColumnCategory": "Category",
+  "@statsPdfColumnCategory": {
+    "description": "Category column header in the PDF"
+  },
+  "statsPdfColumnAmount": "Amount",
+  "@statsPdfColumnAmount": {
+    "description": "Amount column header in the PDF"
+  },
+  "statsPdfColumnShare": "Share",
+  "@statsPdfColumnShare": {
+    "description": "Share (percent) column header in the PDF"
+  },
+  "statsPdfColumnMonth": "Month",
+  "@statsPdfColumnMonth": {
+    "description": "Month column header in the PDF"
+  },
+  "statsPdfColumnBalance": "Balance",
+  "@statsPdfColumnBalance": {
+    "description": "Balance column header in the PDF"
+  },
+  "statsPdfTotal": "Total",
+  "@statsPdfTotal": {
+    "description": "Total row label in the PDF"
+  },
+  "statsPdfNoExpenses": "No expenses for this period",
+  "@statsPdfNoExpenses": {
+    "description": "Message shown in the PDF when there are no expenses"
+  },
+  "pdfReportTitleExpenses": "Expense Report",
+  "@pdfReportTitleExpenses": {
+    "description": "Title of the expenses PDF report"
+  },
+  "pdfReportTitleIncome": "Income Report",
+  "@pdfReportTitleIncome": {
+    "description": "Title of the income PDF report"
+  },
+  "pdfRecordsLabel": "Records",
+  "@pdfRecordsLabel": {
+    "description": "Label before the record count in the PDF"
+  },
+  "pdfColumnDate": "Date",
+  "@pdfColumnDate": {
+    "description": "Date column header in the PDF"
+  },
+  "pdfColumnDescription": "Description",
+  "@pdfColumnDescription": {
+    "description": "Description column header in the PDF"
+  },
+  "pdfNoRecords": "No records for",
+  "@pdfNoRecords": {
+    "description": "Message prefix in the PDF when there are no records; the period is appended"
+  },
+  "pdfUnknownCategory": "Unknown",
+  "@pdfUnknownCategory": {
+    "description": "Category name shown in the PDF when the category no longer exists"
+  },
+  "weekHeaderLabel": "Week {number}",
+  "@weekHeaderLabel": {
+    "description": "Header of a week group in lists",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "weekTotalLabel": "Total week",
+  "@weekTotalLabel": {
+    "description": "Label of the weekly total row"
+  },
+  "incomeItemFallbackTitle": "Income",
+  "@incomeItemFallbackTitle": {
+    "description": "Fallback title and category name for an income list row"
+  },
+  "editCategorySheetTitle": "Edit Category",
+  "@editCategorySheetTitle": {
+    "description": "Title of the edit category sheet"
+  },
+  "categoryNameNotSetLabel": "Category name not set",
+  "@categoryNameNotSetLabel": {
+    "description": "Shown when the category name is empty"
+  },
+  "selectedIconPreviewSemanticLabel": "Selected icon preview",
+  "@selectedIconPreviewSemanticLabel": {
+    "description": "Semantic label of the selected icon preview"
+  },
+  "editExpenseSemanticLabel": "Edit expense",
+  "@editExpenseSemanticLabel": {
+    "description": "Semantic label of the edit expense action"
+  },
+  "deleteExpenseSemanticLabel": "Delete expense",
+  "@deleteExpenseSemanticLabel": {
+    "description": "Semantic label of the delete expense action"
+  },
+  "editIncomeSemanticLabel": "Edit income",
+  "@editIncomeSemanticLabel": {
+    "description": "Semantic label of the edit income action"
+  },
+  "deleteIncomeSemanticLabel": "Delete income",
+  "@deleteIncomeSemanticLabel": {
+    "description": "Semantic label of the delete income action"
+  },
+  "editCategorySemanticLabel": "Edit category",
+  "@editCategorySemanticLabel": {
+    "description": "Semantic label of the edit category action"
+  },
+  "deleteCategorySemanticLabel": "Delete category",
+  "@deleteCategorySemanticLabel": {
+    "description": "Semantic label of the delete category action"
+  },
+
+  "statsIncomeVsExpensesTitle": "Income vs Expenses",
+  "@statsIncomeVsExpensesTitle": {
+    "description": "Title of the annual income vs expenses bar chart"
+  },
+
+  "statsDonutTotalLabel": "Total",
+  "@statsDonutTotalLabel": {
+    "description": "Label above the total amount in the center of the donut chart"
+  },
+
+  "statsCategoryDetailsTitle": "Category Details",
+  "@statsCategoryDetailsTitle": {
+    "description": "Title of the category details list on the stats screen"
+  },
+
+  "statsSpendingByCategoryTitle": "Spending by Category",
+  "@statsSpendingByCategoryTitle": {
+    "description": "Title of the spending by category donut chart"
+  },
+
+  "categoryIconHome": "Home",
+  "@categoryIconHome": {
+    "description": "Label of the Home category icon"
+  },
+
+  "categoryIconWifi": "WiFi",
+  "@categoryIconWifi": {
+    "description": "Label of the WiFi category icon"
+  },
+
+  "categoryIconShoppingCart": "Cart",
+  "@categoryIconShoppingCart": {
+    "description": "Label of the Cart category icon"
+  },
+
+  "categoryIconDirectionsCar": "Car",
+  "@categoryIconDirectionsCar": {
+    "description": "Label of the Car category icon"
+  },
+
+  "categoryIconAccountBalanceWallet": "Wallet",
+  "@categoryIconAccountBalanceWallet": {
+    "description": "Label of the Wallet category icon"
+  },
+
+  "categoryIconTrendingUp": "Income",
+  "@categoryIconTrendingUp": {
+    "description": "Label of the Income category icon"
+  },
+
+  "categoryIconRestaurant": "Restaurant",
+  "@categoryIconRestaurant": {
+    "description": "Label of the Restaurant category icon"
+  },
+
+  "categoryIconLocalCafe": "Coffee",
+  "@categoryIconLocalCafe": {
+    "description": "Label of the Coffee category icon"
+  },
+
+  "categoryIconMovie": "Movie",
+  "@categoryIconMovie": {
+    "description": "Label of the Movie category icon"
+  },
+
+  "categoryIconSportsEsports": "Gaming",
+  "@categoryIconSportsEsports": {
+    "description": "Label of the Gaming category icon"
+  },
+
+  "categoryIconFitnessCenter": "Sport",
+  "@categoryIconFitnessCenter": {
+    "description": "Label of the Sport category icon"
+  },
+
+  "categoryIconFlightTakeoff": "Travel",
+  "@categoryIconFlightTakeoff": {
+    "description": "Label of the Travel category icon"
+  },
+
+  "categoryIconFavorite": "Health",
+  "@categoryIconFavorite": {
+    "description": "Label of the Health category icon"
+  },
+
+  "categoryIconSchool": "Education",
+  "@categoryIconSchool": {
+    "description": "Label of the Education category icon"
+  },
+
+  "categoryIconWork": "Work",
+  "@categoryIconWork": {
+    "description": "Label of the Work category icon"
+  },
+
+  "categoryIconDirectionsBus": "Transport",
+  "@categoryIconDirectionsBus": {
+    "description": "Label of the Transport category icon"
+  },
+
+  "categoryIconLocalGasStation": "Fuel",
+  "@categoryIconLocalGasStation": {
+    "description": "Label of the Fuel category icon"
+  },
+
+  "categoryIconPhoneIphone": "Phone",
+  "@categoryIconPhoneIphone": {
+    "description": "Label of the Phone category icon"
+  },
+
+  "categoryIconCheckroom": "Clothes",
+  "@categoryIconCheckroom": {
+    "description": "Label of the Clothes category icon"
+  },
+
+  "categoryIconChair": "Furniture",
+  "@categoryIconChair": {
+    "description": "Label of the Furniture category icon"
+  },
+
+  "categoryIconPets": "Pets",
+  "@categoryIconPets": {
+    "description": "Label of the Pets category icon"
+  },
+
+  "categoryIconShield": "Insurance",
+  "@categoryIconShield": {
+    "description": "Label of the Insurance category icon"
+  },
+
+  "categoryIconMedication": "Medicine",
+  "@categoryIconMedication": {
+    "description": "Label of the Medicine category icon"
+  },
+
+  "categoryIconMenuBook": "Books",
+  "@categoryIconMenuBook": {
+    "description": "Label of the Books category icon"
+  },
+
+  "categoryIconMusicNote": "Music",
+  "@categoryIconMusicNote": {
+    "description": "Label of the Music category icon"
+  },
+
+  "categoryIconCardGiftcard": "Gifts",
+  "@categoryIconCardGiftcard": {
+    "description": "Label of the Gifts category icon"
+  },
+
+  "categoryIconSavings": "Savings",
+  "@categoryIconSavings": {
+    "description": "Label of the Savings category icon"
+  },
+
+  "categoryIconLightbulb": "Utilities",
+  "@categoryIconLightbulb": {
+    "description": "Label of the Utilities category icon"
+  },
+
+  "categoryIconBuild": "Repairs",
+  "@categoryIconBuild": {
+    "description": "Label of the Repairs category icon"
+  },
+
+  "categoryIconPark": "Garden",
+  "@categoryIconPark": {
+    "description": "Label of the Garden category icon"
+  },
+
+  "categoryIconChildFriendly": "Kids",
+  "@categoryIconChildFriendly": {
+    "description": "Label of the Kids category icon"
+  },
+
+  "categoryIconFamilyRestroom": "Family",
+  "@categoryIconFamilyRestroom": {
+    "description": "Label of the Family category icon"
+  },
+
+  "categoryIconMoreHoriz": "Other",
+  "@categoryIconMoreHoriz": {
+    "description": "Label of the Other category icon"
+  },
+
+  "pickIconLabel": "Pick an icon *",
+  "@pickIconLabel": {
+    "description": "Label above the icon picker in category form"
+  },
+
+  "selectedIconLabel": "Selected Icon",
+  "@selectedIconLabel": {
+    "description": "Label above the selected icon preview in category form"
+  },
+
+  "noIconsFoundForSearch": "No icons found for \"{searchTerm}\"",
+  "@noIconsFoundForSearch": {
+    "description": "Empty state shown when the icon search has no results",
+    "placeholders": {
+      "searchTerm": {
+        "type": "String"
+      }
+    }
+  },
+
+  "unsavedChangesDialogContent": "You have unsaved changes. Are you sure you want to leave without saving?",
+  "@unsavedChangesDialogContent": {
+    "description": "Body text of the discard unsaved changes confirmation dialog"
+  },
+
+  "dropdownLoadingLabel": "Loading...",
+  "@dropdownLoadingLabel": {
+    "description": "Placeholder text shown in a dropdown while its items are loading"
+  },
+
+  "unknownCategoryLabel": "Unknown",
+  "@unknownCategoryLabel": {
+    "description": "Fallback category name shown on an expense whose category no longer exists"
+  },
+  "legalLastUpdated": "Last updated: October 2026",
+  "@legalLastUpdated": {
+    "description": "Legal screen text: legalLastUpdated"
+  },
+  "legalRepoLinkLabel": "Source code on GitHub",
+  "@legalRepoLinkLabel": {
+    "description": "Legal screen text: legalRepoLinkLabel"
+  },
+  "privacySection1Title": "1. Overview",
+  "@privacySection1Title": {
+    "description": "Legal screen text: privacySection1Title"
+  },
+  "privacySection1Body": "Weeklet is a local-first app. Everything you enter is stored only on your device.",
+  "@privacySection1Body": {
+    "description": "Legal screen text: privacySection1Body"
+  },
+  "privacySection2Title": "2. Data we collect",
+  "@privacySection2Title": {
+    "description": "Legal screen text: privacySection2Title"
+  },
+  "privacySection2Body": "None. Weeklet has no accounts and no analytics, and it does not collect or send any personal data.",
+  "@privacySection2Body": {
+    "description": "Legal screen text: privacySection2Body"
+  },
+  "privacySection3Title": "3. Network and cloud",
+  "@privacySection3Title": {
+    "description": "Legal screen text: privacySection3Title"
+  },
+  "privacySection3Body": "Weeklet does not use the network or any cloud service. Your data never leaves your device unless you choose to share an export.",
+  "@privacySection3Body": {
+    "description": "Legal screen text: privacySection3Body"
+  },
+  "privacySection4Title": "4. Biometric authentication",
+  "@privacySection4Title": {
+    "description": "Legal screen text: privacySection4Title"
+  },
+  "privacySection4Body": "If you enable app lock, authentication is handled on your device by the operating system. Weeklet does not store or transmit biometric data.",
+  "@privacySection4Body": {
+    "description": "Legal screen text: privacySection4Body"
+  },
+  "privacySection5Title": "5. Exports and sharing",
+  "@privacySection5Title": {
+    "description": "Legal screen text: privacySection5Title"
+  },
+  "privacySection5Body": "PDF exports are created only when you ask for them and are shared through the system share sheet. You decide where they go.",
+  "@privacySection5Body": {
+    "description": "Legal screen text: privacySection5Body"
+  },
+  "privacySection6Title": "6. Your control",
+  "@privacySection6Title": {
+    "description": "Legal screen text: privacySection6Title"
+  },
+  "privacySection6Body": "You can erase all data with \"Reset all data\" in Settings. Uninstalling the app also removes its data from your device.",
+  "@privacySection6Body": {
+    "description": "Legal screen text: privacySection6Body"
+  },
+  "privacySection7Title": "7. Contact",
+  "@privacySection7Title": {
+    "description": "Legal screen text: privacySection7Title"
+  },
+  "privacySection7Body": "Questions can be raised in the project repository on GitHub.",
+  "@privacySection7Body": {
+    "description": "Legal screen text: privacySection7Body"
+  },
+  "termsSection1Title": "1. Acceptance",
+  "@termsSection1Title": {
+    "description": "Legal screen text: termsSection1Title"
+  },
+  "termsSection1Body": "By using Weeklet you agree to these terms. If you do not agree, please do not use the app.",
+  "@termsSection1Body": {
+    "description": "Legal screen text: termsSection1Body"
+  },
+  "termsSection2Title": "2. Use of the app",
+  "@termsSection2Title": {
+    "description": "Legal screen text: termsSection2Title"
+  },
+  "termsSection2Body": "Weeklet is provided for personal use, as is.",
+  "@termsSection2Body": {
+    "description": "Legal screen text: termsSection2Body"
+  },
+  "termsSection3Title": "3. Your data and backups",
+  "@termsSection3Title": {
+    "description": "Legal screen text: termsSection3Title"
+  },
+  "termsSection3Body": "Your data is stored only on your device. It can be lost if you uninstall the app or reset your data, so export what you want to keep.",
+  "@termsSection3Body": {
+    "description": "Legal screen text: termsSection3Body"
+  },
+  "termsSection4Title": "4. No warranty",
+  "@termsSection4Title": {
+    "description": "Legal screen text: termsSection4Title"
+  },
+  "termsSection4Body": "Weeklet is provided without warranties of any kind. The authors are not liable for any loss or damage arising from its use.",
+  "@termsSection4Body": {
+    "description": "Legal screen text: termsSection4Body"
+  },
+  "termsSection5Title": "5. Changes",
+  "@termsSection5Title": {
+    "description": "Legal screen text: termsSection5Title"
+  },
+  "termsSection5Body": "These terms may be updated in future versions of the app. Continued use means you accept the updated terms.",
+  "@termsSection5Body": {
+    "description": "Legal screen text: termsSection5Body"
+  },
+  "termsSection6Title": "6. Contact",
+  "@termsSection6Title": {
+    "description": "Legal screen text: termsSection6Title"
+  },
+  "termsSection6Body": "Questions can be raised in the project repository on GitHub.",
+  "@termsSection6Body": {
+    "description": "Legal screen text: termsSection6Body"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-09-02T06:14:05.586Z",
+  "phase": "15",
+  "phase_name": "amount-display-policy",
+  "phase_dir": ".planning/phases/15-amount-display-policy",
+  "plan": 4,
+  "task": null,
+  "total_tasks": 4,
+  "status": "complete",
+  "completed_tasks": [
+    {"id": "15-01", "name": "Shared EllipsisTooltipText widget + ExpenseAmountText/WeekTotalRow wiring", "status": "done", "commit": "ff254f2"},
+    {"id": "15-02", "name": "formatCompact(WithSign) -> formatCurrency(WithSign) swap at list-screen call sites", "status": "done", "commit": "ea40bc2"},
+    {"id": "15-03", "name": "Full-format + wire income/stats headline cards", "status": "done", "commit": "ce79c25"},
+    {"id": "15-04", "name": "Full-format + wire stats-breakdown call sites", "status": "done", "commit": "eda07a2"},
+    {"id": "code-review-fix", "name": "CR-01: Flexible-wrap 3 unflexed amount widgets to fix broken FMT-02 ellipsis-trim guarantee", "status": "done", "commit": "0ef356b"},
+    {"id": "phase-complete", "name": "Mark phase 15 complete in ROADMAP.md/STATE.md", "status": "done", "commit": "7cb982c"}
+  ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "human_actions_pending": [],
+  "decisions": [
+    {"decision": "Executed gsd-executor agents without isolation=\"worktree\" for plans 15-02, and had 15-01/15-03/15-04's worktree agents manually copy .planning/ files in and reset their branch to dev before proceeding", "rationale": "This project's .gitignore excludes .planning/ entirely except STATE.md/ROADMAP.md/PROJECT.md, so a git worktree (which only sees committed history) can never see phase plan/context files regardless of which branch it's based on. The harness's isolation=\"worktree\" also defaulted to branching from main instead of dev, compounding the issue.", "phase": "15"},
+    {"decision": "Used .claude/get-shit-done/bin/gsd-tools.cjs (the deprecated-but-functional compat CLI) in place of `gsd-sdk query ...` throughout", "rationale": "gsd-sdk is not installed in this environment (command not found, not in npm registry). gsd-tools.cjs exposes near-equivalent commands (init execute-phase, phase-plan-index, config-get, roadmap update-plan-progress, phase complete, etc.)", "phase": "15"},
+    {"decision": "Fixed CR-01 (a real FMT-02 layout regression found by code review) before marking the phase complete, rather than deferring it", "rationale": "It broke this phase's own core deliverable (ellipsis-trim guarantee) with a 7-digit amount - not pre-existing debt. User's global CLAUDE.md instructs fixing anything that 'clearly looks off' encountered along the way.", "phase": "15"},
+    {"decision": "Committed STATE.md/ROADMAP.md changes despite config.json's commit_docs:false", "rationale": "Every historical phase-completion commit in this repo's git log (e.g. b9e5ddf, 6229da9) committed these two files together in one docs commit; commit_docs:false appears to gate a different, more granular auto-commit path (the old manual worktree-merge amend flow), not phase-completion tracking.", "phase": "15"},
+    {"decision": "Did NOT touch PROJECT.md, and left .planning/phases/01-12's deleted files untouched", "rationale": "Both are pre-existing uncommitted changes that predate this session (present in the initial git status) and look like the user's own in-progress v1.2->v1.3 milestone cleanup, unrelated to Phase 15. Flagged to the user at the start of the session rather than acted on.", "phase": "15"}
+  ],
+  "uncommitted_files": [
+    ".planning/PROJECT.md (pre-existing, user's own in-progress milestone-transition edit - not touched this session)",
+    "71 deleted files under .planning/phases/01-12 (pre-existing, not touched this session)"
+  ],
+  "next_action": "Start Phase 16 (Stats PDF Export) - run /gsd:discuss-phase 16 or /gsd:plan-phase 16",
+  "context_notes": "Phase 15 is fully complete and verified: 4/4 plans, full suite 266/266 passing, analyzer clean (3 pre-existing baseline infos only), code review clean after fixing CR-01. Nothing is in-progress or blocked. The two structural issues found this session (gsd-sdk missing, worktree isolation incompatible with this repo's gitignored .planning/) will recur on the next execute-phase run unless addressed - see Critical Anti-Patterns in .continue-here.md."
+}

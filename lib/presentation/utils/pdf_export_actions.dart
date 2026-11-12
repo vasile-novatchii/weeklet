@@ -1,0 +1,108 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:weeklet/core/di/service_locator.dart';
+import 'package:weeklet/core/extensions/context_extensions.dart';
+import 'package:weeklet/core/platform/pdf_print_service.dart';
+import 'package:weeklet/l10n/app_localizations.dart';
+import 'package:weeklet/presentation/utils/app_bottom_sheet.dart';
+import 'package:weeklet/presentation/utils/pdf_share_helper.dart';
+
+enum _ExportAction { share, print }
+
+/// Presents the post-export actions for a generated PDF.
+///
+/// iOS (and any non-Android platform) opens the share sheet directly. On
+/// Android a small sheet offers Share and Print / Save as PDF, so the user
+/// can save the file under its custom name via the native print dialog.
+class PdfExportActions {
+  const PdfExportActions._();
+
+  static Future<void> present(
+    BuildContext context, {
+    required String filePath,
+    required String subject,
+  }) async {
+    void showShareError() {
+      if (context.mounted) {
+        context.showErrorSnackBar(
+          AppLocalizations.of(context).pdfExportError,
+        );
+      }
+    }
+
+    if (defaultTargetPlatform != TargetPlatform.android) {
+      await _share(
+        filePath: filePath,
+        subject: subject,
+        onError: showShareError,
+      );
+      return;
+    }
+
+    final action = await showAppBottomSheet<_ExportAction>(
+      context: context,
+      useRootNavigator: true,
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext);
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.share_outlined),
+                title: Text(l10n.exportActionShare),
+                onTap: () => Navigator.of(sheetContext).pop(
+                  _ExportAction.share,
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.print_outlined),
+                title: Text(l10n.exportActionPrint),
+                onTap: () => Navigator.of(sheetContext).pop(
+                  _ExportAction.print,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    switch (action) {
+      case _ExportAction.share:
+        await _share(
+          filePath: filePath,
+          subject: subject,
+          onError: showShareError,
+        );
+      case _ExportAction.print:
+        try {
+          await sl<PdfPrintService>().printPdf(filePath: filePath);
+        } on PdfPrintException catch (e) {
+          debugPrint('[PdfExportActions.present] print error: $e');
+          if (context.mounted) {
+            context.showErrorSnackBar(
+              AppLocalizations.of(context).exportPrintFailed,
+            );
+          }
+        }
+      case null:
+        break;
+    }
+  }
+
+  /// Shares the PDF; failures are logged and surfaced as a snackbar so the
+  /// caller's follow-up (export reset) always runs.
+  static Future<void> _share({
+    required String filePath,
+    required String subject,
+    required VoidCallback onError,
+  }) async {
+    try {
+      await PdfShareHelper.share(filePath: filePath, subject: subject);
+    } on Object catch (e) {
+      debugPrint('[PdfExportActions.present] share error: $e');
+      onError();
+    }
+  }
+}
