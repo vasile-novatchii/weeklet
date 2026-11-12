@@ -59,6 +59,8 @@ jobs:
           cache: gradle
       - run: flutter pub get
       - run: flutter gen-l10n
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
       - run: flutter analyze --no-fatal-infos
       - run: flutter test
       - name: Set up release keystore
@@ -137,7 +139,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
-          gh release create "$TAG" dist/*.apk dist/SHA256SUMS --verify-tag --generate-notes --title "$TAG"
+          scripts/changelog.sh "$TAG" "$GITHUB_REPOSITORY" > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" dist/*.apk dist/SHA256SUMS --verify-tag --notes-file "$RUNNER_TEMP/notes.md" --title "$TAG"
       - name: Clean up signing material
         if: always()
         shell: bash
