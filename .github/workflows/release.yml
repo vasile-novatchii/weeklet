@@ -107,6 +107,7 @@ jobs:
           STOREPASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
+          # newest apksigner from the SDK build-tools
           APKSIGNER=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
           EXPECTED=$(keytool -exportcert -alias "$ALIAS" -keystore "$RUNNER_TEMP/release.jks" -storepass "$STOREPASS" | sha256sum | cut -d' ' -f1 | tr 'A-F' 'a-f')
           for apk in dist/*.apk; do
