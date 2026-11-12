@@ -75,8 +75,7 @@ class _StubSaveCurrencyUseCase implements SaveCurrencyUseCase {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _StubSaveBiometricEnabledUseCase
-    implements SaveBiometricEnabledUseCase {
+class _StubSaveBiometricEnabledUseCase implements SaveBiometricEnabledUseCase {
   bool shouldThrow = false;
 
   @override
@@ -145,24 +144,24 @@ late _StubBiometricService _stubAuth;
 // ---------------------------------------------------------------------------
 
 SettingsBloc _makeBloc() => SettingsBloc(
-      getSettingsUseCase: _stubGet,
-      saveThemeUseCase: _stubTheme,
-      saveLocaleUseCase: _stubLocale,
-      saveCurrencyUseCase: _stubCurrency,
-      saveBiometricEnabledUseCase: _stubBiometric,
-      clearPreferencesUseCase: _stubClear,
-      resetAllDataUseCase: _stubReset,
-      biometricService: _stubAuth,
-    );
+  getSettingsUseCase: _stubGet,
+  saveThemeUseCase: _stubTheme,
+  saveLocaleUseCase: _stubLocale,
+  saveCurrencyUseCase: _stubCurrency,
+  saveBiometricEnabledUseCase: _stubBiometric,
+  clearPreferencesUseCase: _stubClear,
+  resetAllDataUseCase: _stubReset,
+  biometricService: _stubAuth,
+);
 
 SettingsLoaded _loadedSeed() => const SettingsLoaded(
-      settings: Settings(
-        themeMode: ThemeMode.system,
-        locale: null,
-        currencySymbol: 'MDL',
-        biometricEnabled: false,
-      ),
-    );
+  settings: Settings(
+    themeMode: ThemeMode.system,
+    locale: null,
+    currencySymbol: 'MDL',
+    biometricEnabled: false,
+  ),
+);
 
 void _resetStubs() {
   _stubGet = _StubGetSettingsUseCase();

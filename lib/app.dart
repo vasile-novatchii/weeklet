@@ -39,8 +39,7 @@ class WeekletApp extends StatelessWidget {
         // Only rebuild MaterialApp when theme or locale changes.
         // Currency and biometric changes must NOT trigger MaterialApp rebuild.
         if (prev is SettingsLoaded && curr is SettingsLoaded) {
-          return prev.themeMode != curr.themeMode ||
-              prev.locale != curr.locale;
+          return prev.themeMode != curr.themeMode || prev.locale != curr.locale;
         }
         return prev.runtimeType != curr.runtimeType;
       },

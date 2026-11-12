@@ -25,8 +25,9 @@ class StatsSummaryCards extends StatelessWidget {
           children: [
             Expanded(
               child: StatsSmallCard(
-                title:
-                    isAnnual ? l10n.statsAnnualIncome : l10n.statsMonthlyIncome,
+                title: isAnnual
+                    ? l10n.statsAnnualIncome
+                    : l10n.statsMonthlyIncome,
                 amount: stats.totalIncome,
                 percentage: stats.incomeGrowthPercentage,
                 isIncome: true,

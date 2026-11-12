@@ -20,55 +20,55 @@ class StatsBalanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: context.theme.appBarTheme.backgroundColor,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.account_balance_wallet,
-              color: Colors.white,
-              size: 16,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                isAnnual ? l10n.statsAnnualBalance : l10n.statsMonthlyBalance,
-                overflow: TextOverflow.ellipsis,
-                style: context.bodySmall?.copyWith(
-                  color: Colors.white,
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: context.theme.appBarTheme.backgroundColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.account_balance_wallet,
+                color: Colors.white,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  isAnnual ? l10n.statsAnnualBalance : l10n.statsMonthlyBalance,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.bodySmall?.copyWith(
+                    color: Colors.white,
+                  ),
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          EllipsisTooltipText(
+            text: NumberFormatter.formatCurrencyWithSign(
+              balance,
+              currencySymbol,
+              isIncome: balance >= 0,
             ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        EllipsisTooltipText(
-          text: NumberFormatter.formatCurrencyWithSign(
-            balance,
-            currencySymbol,
-            isIncome: balance >= 0,
+            style: context.headlineSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          style: context.headlineSmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+          const SizedBox(height: 8),
+          Text(
+            l10n.statsRealizedSavings,
+            style: context.bodySmall?.copyWith(
+              color: Colors.white,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.statsRealizedSavings,
-          style: context.bodySmall?.copyWith(
-            color: Colors.white,
-          ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
   }
 }

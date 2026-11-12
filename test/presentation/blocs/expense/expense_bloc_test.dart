@@ -204,8 +204,7 @@ void main() {
       'FilterDateChanged by year filters expenses',
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) =>
-          bloc.add(FilterDateChanged(year: DateTime.now().year)),
+      act: (bloc) => bloc.add(FilterDateChanged(year: DateTime.now().year)),
       expect: () => [isA<ExpenseSuccess>()],
       verify: (bloc) {
         final s = bloc.state as ExpenseSuccess;
@@ -356,8 +355,7 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) =>
-          bloc.add(UpdateExpenseStarted(_fakeExpense())),
+      act: (bloc) => bloc.add(UpdateExpenseStarted(_fakeExpense())),
       expect: () => [const ExpenseLoading(), isA<ExpenseSuccess>()],
       tearDown: () async => GetIt.instance.reset(),
     );
@@ -370,8 +368,7 @@ void main() {
       },
       build: _makeBloc,
       seed: _successSeed,
-      act: (bloc) =>
-          bloc.add(UpdateExpenseStarted(_fakeExpense())),
+      act: (bloc) => bloc.add(UpdateExpenseStarted(_fakeExpense())),
       expect: () => [
         isA<ExpenseSuccess>().having(
           (s) => s.actionError,

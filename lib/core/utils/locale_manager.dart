@@ -47,8 +47,7 @@ class LocaleManager {
 
   /// Initialize LocaleManager with device locale
   void initialize(Locale? deviceLocale) {
-    _currentLocale =
-        _findMatchingLocale(deviceLocale) ?? const Locale('en');
+    _currentLocale = _findMatchingLocale(deviceLocale) ?? const Locale('en');
     intl.Intl.defaultLocale = _currentLocale.toString().replaceAll('-', '_');
   }
 

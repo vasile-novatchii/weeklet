@@ -10,11 +10,11 @@ class Settings extends Equatable {
   });
 
   factory Settings.defaults() => const Settings(
-        themeMode: ThemeMode.system,
-        locale: null,
-        currencySymbol: 'MDL',
-        biometricEnabled: false,
-      );
+    themeMode: ThemeMode.system,
+    locale: null,
+    currencySymbol: 'MDL',
+    biometricEnabled: false,
+  );
 
   final ThemeMode themeMode;
   final Locale? locale; // null = system default
@@ -26,19 +26,19 @@ class Settings extends Equatable {
     Locale? locale,
     String? currencySymbol,
     bool? biometricEnabled,
-  }) =>
-      Settings(
-        themeMode: themeMode ?? this.themeMode,
-        locale: locale, // allow null to reset to system (DO NOT use locale ?? this.locale)
-        currencySymbol: currencySymbol ?? this.currencySymbol,
-        biometricEnabled: biometricEnabled ?? this.biometricEnabled,
-      );
+  }) => Settings(
+    themeMode: themeMode ?? this.themeMode,
+    locale:
+        locale, // allow null to reset to system (DO NOT use locale ?? this.locale)
+    currencySymbol: currencySymbol ?? this.currencySymbol,
+    biometricEnabled: biometricEnabled ?? this.biometricEnabled,
+  );
 
   @override
   List<Object?> get props => [
-        themeMode,
-        locale,
-        currencySymbol,
-        biometricEnabled,
-      ];
+    themeMode,
+    locale,
+    currencySymbol,
+    biometricEnabled,
+  ];
 }

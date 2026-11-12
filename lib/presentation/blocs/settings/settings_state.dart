@@ -35,12 +35,11 @@ final class SettingsLoaded extends SettingsState {
   SettingsLoaded copyWith({
     Settings? settings,
     String? actionError,
-  }) =>
-      SettingsLoaded(
-        settings: settings ?? this.settings,
-        actionError:
-            actionError, // allow null to reset actionError (DO NOT use ?? this.actionError)
-      );
+  }) => SettingsLoaded(
+    settings: settings ?? this.settings,
+    actionError:
+        actionError, // allow null to reset actionError (DO NOT use ?? this.actionError)
+  );
 
   @override
   List<Object?> get props => [settings, actionError];

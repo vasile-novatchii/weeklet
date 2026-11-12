@@ -48,8 +48,9 @@ void main() {
   setUp(() {
     mockSettingsBloc = MockSettingsBloc();
 
-    when(() => mockSettingsBloc.state)
-        .thenReturn(SettingsLoaded(settings: Settings.defaults()));
+    when(
+      () => mockSettingsBloc.state,
+    ).thenReturn(SettingsLoaded(settings: Settings.defaults()));
     whenListen(
       mockSettingsBloc,
       const Stream<SettingsState>.empty(),
@@ -90,8 +91,7 @@ void main() {
     testWidgets(
       'shows CircularProgressIndicator when state is SettingsLoading',
       (tester) async {
-        when(() => mockSettingsBloc.state)
-            .thenReturn(const SettingsLoading());
+        when(() => mockSettingsBloc.state).thenReturn(const SettingsLoading());
         whenListen(
           mockSettingsBloc,
           const Stream<SettingsState>.empty(),

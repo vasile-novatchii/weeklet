@@ -19,7 +19,11 @@ class _StubStatisticsRepository implements StatisticsRepository {
     Map<int, List<int>>? availablePeriods,
   }) : _monthlyStats = monthlyStats ?? _fakeMonthlyStats(),
        _evolutionStats = evolutionStats ?? _fakeEvolutionStats(),
-       _availablePeriods = availablePeriods ?? {2024: [1, 2, 3]};
+       _availablePeriods =
+           availablePeriods ??
+           {
+             2024: [1, 2, 3],
+           };
 
   final bool shouldThrow;
   final MonthlyStats _monthlyStats;
@@ -67,7 +71,9 @@ MonthlyStatsLoaded _fakeLoadedState() => MonthlyStatsLoaded(
   stats: _fakeMonthlyStats(),
   month: 3,
   year: 2024,
-  availablePeriods: const {2024: [1, 2, 3]},
+  availablePeriods: const {
+    2024: [1, 2, 3],
+  },
   evolutionStats: _fakeEvolutionStats(),
 );
 
@@ -94,7 +100,7 @@ void main() {
 
     blocTest<StatsBloc, StatsState>(
       'LoadMonthlyStats failure from StatsInitial emits '
-          '[StatsLoading, StatsFailure]',
+      '[StatsLoading, StatsFailure]',
       build: () => _makeBloc(_StubStatisticsRepository(shouldThrow: true)),
       act: (bloc) => bloc.add(const LoadMonthlyStats(year: 2024, month: 3)),
       expect: () => [
@@ -108,8 +114,8 @@ void main() {
     // ------------------------------------------------------------------
     blocTest<StatsBloc, StatsState>(
       'LoadMonthlyStats from seeded MonthlyStatsLoaded emits '
-          '[MonthlyStatsLoaded] WITHOUT StatsLoading (no-flicker) '
-          'and resets touchedIndex to -1',
+      '[MonthlyStatsLoaded] WITHOUT StatsLoading (no-flicker) '
+      'and resets touchedIndex to -1',
       build: () => _makeBloc(_StubStatisticsRepository()),
       // Seed with touchedIndex = 2 so the copyWith(touchedIndex: -1) produces
       // a state that differs from seed — guaranteeing a real emit occurs.
@@ -129,7 +135,7 @@ void main() {
     // ------------------------------------------------------------------
     blocTest<StatsBloc, StatsState>(
       'ChangeStatsTab from seeded MonthlyStatsLoaded emits '
-          '[MonthlyStatsLoaded] with updated currentTab',
+      '[MonthlyStatsLoaded] with updated currentTab',
       build: () => _makeBloc(_StubStatisticsRepository()),
       seed: _fakeLoadedState,
       act: (bloc) => bloc.add(const ChangeStatsTab(StatsTab.annual)),
@@ -154,7 +160,7 @@ void main() {
     // ------------------------------------------------------------------
     blocTest<StatsBloc, StatsState>(
       'ChartTouchInteraction from seeded MonthlyStatsLoaded emits '
-          '[MonthlyStatsLoaded] with updated touchedIndex',
+      '[MonthlyStatsLoaded] with updated touchedIndex',
       build: () => _makeBloc(_StubStatisticsRepository()),
       seed: _fakeLoadedState,
       act: (bloc) => bloc.add(const ChartTouchInteraction(3)),

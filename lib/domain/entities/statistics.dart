@@ -14,6 +14,7 @@ class MonthlyStats extends Equatable {
   final double totalIncome;
   final double totalExpenses;
   final double balance;
+
   /// Growth percentage as a fraction, e.g. 0.12 means 12% growth.
   /// Negative values indicate a decrease. Compared to last month.
   final double incomeGrowthPercentage;

@@ -97,29 +97,33 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
     final allExpenses = await expenseRepository.getAllExpenses();
     final allIncomes = await incomeRepository.getIncomes();
 
-    final yearExpenses =
-        allExpenses.where((e) => e.createdAt.year == year).toList();
-    final yearIncomes =
-        allIncomes.where((i) => i.date.year == year).toList();
+    final yearExpenses = allExpenses
+        .where((e) => e.createdAt.year == year)
+        .toList();
+    final yearIncomes = allIncomes.where((i) => i.date.year == year).toList();
 
     // Calculate totals for the entire year
-    final totalIncome =
-        yearIncomes.fold(0.0, (sum, i) => sum + i.amount);
-    final totalExpense =
-        yearExpenses.fold(0.0, (sum, e) => sum + e.amount);
+    final totalIncome = yearIncomes.fold(0.0, (sum, i) => sum + i.amount);
+    final totalExpense = yearExpenses.fold(0.0, (sum, e) => sum + e.amount);
     final balance = totalIncome - totalExpense;
 
     // Compare with previous year for growth
     final prevYear = year - 1;
-    final prevYearExpenses =
-        allExpenses.where((e) => e.createdAt.year == prevYear).toList();
-    final prevYearIncomes =
-        allIncomes.where((i) => i.date.year == prevYear).toList();
+    final prevYearExpenses = allExpenses
+        .where((e) => e.createdAt.year == prevYear)
+        .toList();
+    final prevYearIncomes = allIncomes
+        .where((i) => i.date.year == prevYear)
+        .toList();
 
-    final prevTotalIncome =
-        prevYearIncomes.fold(0.0, (sum, i) => sum + i.amount);
-    final prevTotalExpense =
-        prevYearExpenses.fold(0.0, (sum, e) => sum + e.amount);
+    final prevTotalIncome = prevYearIncomes.fold(
+      0.0,
+      (sum, i) => sum + i.amount,
+    );
+    final prevTotalExpense = prevYearExpenses.fold(
+      0.0,
+      (sum, e) => sum + e.amount,
+    );
 
     final incomeGrowth = _calculateGrowth(totalIncome, prevTotalIncome);
     final expenseGrowth = _calculateGrowth(totalExpense, prevTotalExpense);
@@ -129,8 +133,9 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
     final categoryStats = <CategoryStats>[];
 
     for (final category in allCategories) {
-      final categoryExpenses = yearExpenses
-          .where((e) => e.categoryId == category.id);
+      final categoryExpenses = yearExpenses.where(
+        (e) => e.categoryId == category.id,
+      );
       final categoryTotal = categoryExpenses.fold(
         0.0,
         (sum, e) => sum + e.amount,
@@ -169,16 +174,22 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
 
     // Fixed Jan–Dec iteration — D-01
     for (int m = 1; m <= 12; m++) {
-      final monthExpenses =
-          await expenseRepository.getExpensesByMonthYear(m, year);
+      final monthExpenses = await expenseRepository.getExpensesByMonthYear(
+        m,
+        year,
+      );
       final monthIncomes = allIncomes
           .where((inc) => inc.date.month == m && inc.date.year == year)
           .toList();
 
-      final totalIncome =
-          monthIncomes.fold(0.0, (sum, inc) => sum + inc.amount);
-      final totalExpenses =
-          monthExpenses.fold(0.0, (sum, exp) => sum + exp.amount);
+      final totalIncome = monthIncomes.fold(
+        0.0,
+        (sum, inc) => sum + inc.amount,
+      );
+      final totalExpenses = monthExpenses.fold(
+        0.0,
+        (sum, exp) => sum + exp.amount,
+      );
       final balance = totalIncome - totalExpenses;
 
       final categoryStats = <CategoryStats>[];
@@ -191,8 +202,9 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
             CategoryStats(
               category: category,
               totalAmount: categoryTotal,
-              percentage:
-                  totalExpenses > 0 ? categoryTotal / totalExpenses : 0.0,
+              percentage: totalExpenses > 0
+                  ? categoryTotal / totalExpenses
+                  : 0.0,
             ),
           );
         }
@@ -223,7 +235,9 @@ class StatisticsRepositoryImpl implements StatisticsRepository {
 
     // Extract periods from expenses
     for (final expense in expenses) {
-      periods.putIfAbsent(expense.createdAt.year, () => {}).add(expense.createdAt.month);
+      periods
+          .putIfAbsent(expense.createdAt.year, () => {})
+          .add(expense.createdAt.month);
     }
 
     // Extract periods from incomes

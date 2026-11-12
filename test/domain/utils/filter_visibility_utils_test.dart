@@ -49,7 +49,10 @@ void main() {
     });
     test('true when another year has data', () {
       expect(
-        FilterVisibilityUtils.showStatsFilter({2026: [], 2025: [3]}),
+        FilterVisibilityUtils.showStatsFilter({
+          2026: [],
+          2025: [3],
+        }),
         isTrue,
       );
     });

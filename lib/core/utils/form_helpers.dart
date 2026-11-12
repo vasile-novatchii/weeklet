@@ -20,7 +20,9 @@ class FormHelpers {
     List<bool Function()> customValidations,
   ) {
     final formValid = formKey.currentState?.validate() ?? false;
-    final allCustomValid = customValidations.every((validation) => validation());
+    final allCustomValid = customValidations.every(
+      (validation) => validation(),
+    );
     return formValid && allCustomValid;
   }
 }

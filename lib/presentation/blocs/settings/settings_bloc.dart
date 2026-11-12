@@ -79,10 +79,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (state case final SettingsLoaded st) {
       try {
         await saveThemeUseCase(event.themeMode);
-        emit(st.copyWith(
-          settings: st.settings.copyWith(themeMode: event.themeMode),
-          actionError: null,
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(themeMode: event.themeMode),
+            actionError: null,
+          ),
+        );
       } catch (e) {
         debugPrint('error in _onThemeChanged: $e');
         emit(st.copyWith(actionError: e.toString()));
@@ -105,10 +107,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           final deviceLocale = PlatformDispatcher.instance.locale;
           LocaleManager().initialize(deviceLocale);
         }
-        emit(st.copyWith(
-          settings: st.settings.copyWith(locale: event.locale),
-          actionError: null,
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(locale: event.locale),
+            actionError: null,
+          ),
+        );
       } catch (e) {
         debugPrint('error in _onLocaleChanged: $e');
         emit(st.copyWith(actionError: e.toString()));
@@ -123,10 +127,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (state case final SettingsLoaded st) {
       try {
         await saveCurrencyUseCase(event.symbol);
-        emit(st.copyWith(
-          settings: st.settings.copyWith(currencySymbol: event.symbol),
-          actionError: null,
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(currencySymbol: event.symbol),
+            actionError: null,
+          ),
+        );
       } catch (e) {
         debugPrint('error in _onCurrencyChanged: $e');
         emit(st.copyWith(actionError: e.toString()));
@@ -145,10 +151,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
           await saveBiometricEnabledUseCase(
             const SaveBiometricEnabledParams(enabled: false),
           );
-          emit(st.copyWith(
-            settings: st.settings.copyWith(biometricEnabled: false),
-            actionError: null,
-          ));
+          emit(
+            st.copyWith(
+              settings: st.settings.copyWith(biometricEnabled: false),
+              actionError: null,
+            ),
+          );
         } catch (e) {
           debugPrint('error in _onBiometricToggled (disable): $e');
           emit(st.copyWith(actionError: e.toString()));
@@ -169,10 +177,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
       if (!authenticated) {
         // Revert — scan failed or was cancelled (per D-08)
-        emit(st.copyWith(
-          settings: st.settings.copyWith(biometricEnabled: false),
-          actionError: 'errorBiometricFailed',
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(biometricEnabled: false),
+            actionError: 'errorBiometricFailed',
+          ),
+        );
         return;
       }
 
@@ -180,16 +190,20 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         await saveBiometricEnabledUseCase(
           const SaveBiometricEnabledParams(enabled: true),
         );
-        emit(st.copyWith(
-          settings: st.settings.copyWith(biometricEnabled: true),
-          actionError: null,
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(biometricEnabled: true),
+            actionError: null,
+          ),
+        );
       } catch (e) {
         debugPrint('error in _onBiometricToggled (enable, save): $e');
-        emit(st.copyWith(
-          settings: st.settings.copyWith(biometricEnabled: false),
-          actionError: e.toString(),
-        ));
+        emit(
+          st.copyWith(
+            settings: st.settings.copyWith(biometricEnabled: false),
+            actionError: e.toString(),
+          ),
+        );
       }
     }
   }

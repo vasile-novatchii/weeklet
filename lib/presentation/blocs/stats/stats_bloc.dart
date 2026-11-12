@@ -7,7 +7,6 @@ import 'package:weeklet/domain/usecases/stats/get_evolution_stats_use_case.dart'
 import 'package:weeklet/presentation/blocs/stats/stats_event.dart';
 import 'package:weeklet/presentation/blocs/stats/stats_state.dart';
 
-
 class StatsBloc extends Bloc<StatsEvent, StatsState> {
   StatsBloc({
     required this.getMonthlyStatsUseCase,

@@ -47,8 +47,9 @@ class StatsErrorView extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             label: Text(l10n.tryAgainButtonLabel),
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  context.colorScheme.primary.withValues(alpha: .1),
+              backgroundColor: context.colorScheme.primary.withValues(
+                alpha: .1,
+              ),
               foregroundColor: context.colorScheme.primary,
               elevation: 0,
             ),

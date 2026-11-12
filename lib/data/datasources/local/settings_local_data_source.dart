@@ -25,19 +25,25 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   @override
   Future<Settings> getSettings() async {
     try {
-      final themeIndex = _box.get(
-        _themeKey,
-        defaultValue: ThemeMode.system.index,
-      ) as int;
+      final themeIndex =
+          _box.get(
+                _themeKey,
+                defaultValue: ThemeMode.system.index,
+              )
+              as int;
       final localeCode = _box.get(_localeKey) as String?;
-      final currencySymbol = _box.get(
-        _currencyKey,
-        defaultValue: AppConstants.DEFAULT_CURRENCY,
-      ) as String;
-      final biometricEnabled = _box.get(
-        _biometricKey,
-        defaultValue: false,
-      ) as bool;
+      final currencySymbol =
+          _box.get(
+                _currencyKey,
+                defaultValue: AppConstants.DEFAULT_CURRENCY,
+              )
+              as String;
+      final biometricEnabled =
+          _box.get(
+                _biometricKey,
+                defaultValue: false,
+              )
+              as bool;
 
       final themeMode = themeIndex >= 0 && themeIndex < ThemeMode.values.length
           ? ThemeMode.values[themeIndex]

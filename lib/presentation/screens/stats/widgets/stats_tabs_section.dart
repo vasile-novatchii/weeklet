@@ -19,8 +19,9 @@ class StatsTabsSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
-        color:
-            context.colorScheme.surfaceContainerHighest.withValues(alpha: .3),
+        color: context.colorScheme.surfaceContainerHighest.withValues(
+          alpha: .3,
+        ),
         borderRadius: BorderRadius.circular(24),
       ),
       padding: const EdgeInsets.all(4),

@@ -77,7 +77,10 @@ class _EditExpenseFormViewState extends State<EditExpenseFormView> {
         _descriptionController.text.trim() != widget.expense.description;
     final categoryChanged = _selectedCategory?.id != widget.expense.categoryId;
     final dateChanged = _selectedDate != widget.expense.createdAt;
-    return amountChanged || descriptionChanged || categoryChanged || dateChanged;
+    return amountChanged ||
+        descriptionChanged ||
+        categoryChanged ||
+        dateChanged;
   }
 
   Future<void> _handleClose() async {

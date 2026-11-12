@@ -24,7 +24,9 @@ void main() {
         locale: const Locale('en'),
         theme: theme,
         home: Scaffold(
-          body: Center(child: EllipsisTooltipText(text: text, style: style)),
+          body: Center(
+            child: EllipsisTooltipText(text: text, style: style),
+          ),
         ),
       ),
     );

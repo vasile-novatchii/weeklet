@@ -7,17 +7,14 @@ class EvolutionStatsUtils {
   /// Gets snapshots that have actual data (income or expenses > 0)
   static List<MonthlySnapshot> getSnapshotsWithData(
     EvolutionStats evolutionStats,
-  ) =>
-      evolutionStats.snapshots
-          .where((s) => s.totalIncome > 0 || s.totalExpenses > 0)
-          .toList();
+  ) => evolutionStats.snapshots
+      .where((s) => s.totalIncome > 0 || s.totalExpenses > 0)
+      .toList();
 
   /// Gets the maximum total income from snapshots with data
   static double getMaxIncomeFromSnapshots(List<MonthlySnapshot> snapshots) {
     if (snapshots.isEmpty) return 0;
-    return snapshots
-        .map((s) => s.totalIncome)
-        .reduce((a, b) => a > b ? a : b);
+    return snapshots.map((s) => s.totalIncome).reduce((a, b) => a > b ? a : b);
   }
 
   /// Gets the maximum total income across all snapshots

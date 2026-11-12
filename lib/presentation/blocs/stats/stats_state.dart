@@ -39,7 +39,8 @@ final class MonthlyStatsLoaded extends StatsState {
   final String? actionError;
 
   List<int> get availableYears {
-    final years = availablePeriods.keys.toList()..sort((a, b) => b.compareTo(a));
+    final years = availablePeriods.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
     return years;
   }
 
