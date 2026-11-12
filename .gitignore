@@ -46,7 +46,6 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
-.fvmrc
 
 .agent/
 .agents/
@@ -63,3 +62,8 @@ AGENTS.md
 # gen-l10n generated files
 lib/l10n/app_localizations.dart
 lib/l10n/app_localizations_*.dart
+
+# Signing material (belt-and-braces; android/.gitignore also covers these)
+android/key.properties
+*.jks
+*.keystore
